@@ -2,13 +2,14 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerview;
 
 import android.view.View;
 
-import com.github.rooneyandshadows.lightbulb.recycleradapters.LightBulbAdapter;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.LightBulbAdapterDataModel;
+import com.factor.bouncy.BouncyRecyclerView;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-final class VerticalLinearLayoutManager<IType extends LightBulbAdapterDataModel, AType extends LightBulbAdapter<IType>> extends LinearLayoutManager {
+final class VerticalLinearLayoutManager<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> extends LinearLayoutManager {
     private final EasyRecyclerView<IType, AType> easyRecyclerView;
 
     public VerticalLinearLayoutManager(EasyRecyclerView<IType, AType> easyRecyclerView) {

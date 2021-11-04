@@ -12,8 +12,8 @@ import android.util.SparseArray;
 import android.view.View;
 
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.LightBulbAdapter;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.LightBulbAdapterDataModel;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
-public class EasyRecyclerViewSwipeHandler<IType extends LightBulbAdapterDataModel, AType extends LightBulbAdapter<IType>> extends ItemTouchHelper.SimpleCallback {
+public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> extends ItemTouchHelper.SimpleCallback {
     private Boolean undoClicked = false;
     private Snackbar snackbar;
     private Runnable pendingAction;
@@ -262,7 +262,7 @@ public class EasyRecyclerViewSwipeHandler<IType extends LightBulbAdapterDataMode
         }
     }
 
-    public interface SwipeCallbacks<ItemType extends LightBulbAdapterDataModel> {
+    public interface SwipeCallbacks<ItemType extends EasyAdapterDataModel> {
 
         int setMovementFlags(ItemType item);
 
