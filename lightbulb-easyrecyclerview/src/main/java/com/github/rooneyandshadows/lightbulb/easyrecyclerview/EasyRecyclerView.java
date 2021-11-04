@@ -15,15 +15,14 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.dinuscxj.refresh.IDragDistanceConverter;
 import com.dinuscxj.refresh.RecyclerRefreshLayout;
 import com.factor.bouncy.BouncyRecyclerView;
 import com.github.rooneyandshadows.java.commons.string.StringUtils;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.refresh_views.RefreshView;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.HeaderViewRecyclerAdapter;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.HeaderFooterViewAdapter;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.LightBulbAdapter;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.LightBulbAdapterDataModel;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.xiaofeng.flowlayoutmanager.Alignment;
 
@@ -36,7 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import static com.dinuscxj.refresh.RecyclerRefreshLayout.*;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
-public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> extends RelativeLayout {
+public class EasyRecyclerView<IType extends LightBulbAdapterDataModel, AType extends LightBulbAdapter<IType>> extends RelativeLayout {
     private final int showRefreshManualDelay = 300;
     private final int showLoadingManualDelay = 300;
     private final float bouncyFlingAnimationSize = 0.1f;
@@ -57,7 +56,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     private Integer emptyLayoutId;
     private LayoutManagerTypes layoutManagerType;
     private LinearProgressIndicator loadingIndicator;
-    private HeaderViewRecyclerAdapter wrapperAdapter;
+    private HeaderFooterViewAdapter wrapperAdapter;
     private BouncyRecyclerView recyclerView;
     private RelativeLayout recyclerEmptyLayoutContainer;
     private RecyclerRefreshLayout refreshLayout;
@@ -178,7 +177,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
      */
     public void setAdapter(AType adapter) {
         if (adapter != null) {
-            wrapperAdapter = new HeaderViewRecyclerAdapter();
+            wrapperAdapter = new HeaderFooterViewAdapter();
             dataAdapter = adapter;
             dataAdapter.setWrapperAdapter(wrapperAdapter);
             dataAdapter.addOnCollectionChangedListener(() -> setEmptyLayoutVisibility(!dataAdapter.hasItems()));
@@ -555,8 +554,8 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     private void initView() {
-        inflate(getContext(), R.layout.lv_layout, this);
-        loadingFooterView = View.inflate(getContext(), R.layout.lv_loading_footer, null);
+        inflate(getContext(), R.layout.erv_layout, this);
+        loadingFooterView = View.inflate(getContext(), R.layout.erv_loading_footer, null);
         initLoadingIndicator();
         configureRecycler();
         configureLayoutManager();
@@ -746,15 +745,11 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         void onHide(View view);
     }
 
-    public interface EasyRecyclerViewAdapterAction<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> {
-        void execute(EasyRecyclerAdapter<IType> adapter);
-    }
-
-    public interface RefreshCallback<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> {
+    public interface RefreshCallback<IType extends LightBulbAdapterDataModel, AType extends LightBulbAdapter<IType>> {
         void refresh(EasyRecyclerView<IType, AType> view);
     }
 
-    public interface LoadMoreCallback<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> {
+    public interface LoadMoreCallback<IType extends LightBulbAdapterDataModel, AType extends LightBulbAdapter<IType>> {
         void loadMore(EasyRecyclerView<IType, AType> view);
     }
 }
