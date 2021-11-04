@@ -1,0 +1,3 @@
+rootProject.name = "EasyRecyclerView"
+include ':app'
+include ':lightbulb-easyrecyclerview'

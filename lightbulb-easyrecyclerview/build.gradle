@@ -1,0 +1,68 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+android {
+    compileSdkVersion 31
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 31
+        versionCode 101
+        versionName "1.0.1"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+    buildFeatures {
+        dataBinding true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:unchecked"
+    options.deprecation = true
+}
+
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            mavenLocal()
+        }
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId "$environment.group_id"
+                version android.defaultConfig.versionName
+                artifactId project.name
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "androidx.appcompat:appcompat:$versions.android_appcompat"
+    implementation "androidx.recyclerview:recyclerview:$versions.android_recyclerview"
+    implementation "androidx.dynamicanimation:dynamicanimation:$versions.android_dynamication"
+    implementation "com.google.android.material:material:$versions.material"
+    implementation 'org.jetbrains:annotations:15.0'
+    implementation 'com.factor:bouncy:1.8'
+    implementation 'com.github.simonebortolin:FlowLayoutManager:1.8.0'
+    implementation 'com.dinuscxj:recyclerrefreshlayout:2.0.5'
+    implementation "com.github.rooneyandshadows:java-commons:$versions.java.commons"
+    implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycleradapters"
+    implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
+}
