@@ -15,7 +15,6 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.dinuscxj.refresh.IDragDistanceConverter;
 import com.dinuscxj.refresh.RecyclerRefreshLayout;
 import com.factor.bouncy.BouncyRecyclerView;
 import com.github.rooneyandshadows.java.commons.string.StringUtils;
@@ -66,8 +65,8 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     private RefreshCallback<IType, AType> refreshCallback;
     private EasyRecyclerViewSwipeHandler.SwipeConfiguration swipeConfiguration;
     private EasyRecyclerViewSwipeHandler<IType, AType> swipeToDeleteCallbacks;
-    private EasyRecyclerItemsReadyCallback renderedCallback = null;
-    private EasyRecyclerEmptyLayoutListeners emptyLayoutListeners = null;
+    private EasyRecyclerItemsReadyListener renderedCallback = null;
+    private EasyRecyclerEmptyLayoutListener emptyLayoutListeners = null;
     private final Runnable showRefreshLayoutDelayedRunnable = () -> refreshLayout.setRefreshing(true);
     private final Runnable showLoadingDelayedRunnable = () -> {
         if (showingLoadingHeader) {
@@ -249,7 +248,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
      * @param emptyLayoutId - Resource identifier for layout to show.
      * @param onLayoutReady - Callback to be executed when layout is ready.
      */
-    public void setEmptyLayout(int emptyLayoutId, EasyRecyclerEmptyLayoutListeners onLayoutReady) {
+    public void setEmptyLayout(int emptyLayoutId, EasyRecyclerEmptyLayoutListener onLayoutReady) {
         this.emptyLayoutId = emptyLayoutId;
         View layout = LayoutInflater.from(getContext()).inflate(emptyLayoutId, null);
         setEmptyLayout(layout, onLayoutReady);
@@ -258,10 +257,10 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     /**
      * Sets alternative layout to show in case of empty list.
      *
-     * @param emptyLayout          - Layout to show.
-     * @param emptyLayoutListeners - Callbacks to be executed on show/hide.
+     * @param emptyLayout    - Layout to show.
+     * @param layoutListener - Callbacks to be executed on show/hide.
      */
-    public void setEmptyLayout(View emptyLayout, EasyRecyclerEmptyLayoutListeners emptyLayoutListeners) {
+    public void setEmptyLayout(View emptyLayout, EasyRecyclerEmptyLayoutListener layoutListener) {
         if (emptyLayout == null) {
             emptyLayoutView = null;
             recyclerEmptyLayoutContainer.removeAllViews();
@@ -269,7 +268,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         }
         recyclerEmptyLayoutContainer.removeAllViews();
         emptyLayoutView = emptyLayout;
-        this.emptyLayoutListeners = emptyLayoutListeners;
+        this.emptyLayoutListeners = layoutListener;
         this.emptyLayoutView.setTag(EMPTY_LAYOUT_VIEW_TAG);
         boolean isListEmpty = getAdapter() == null || !getAdapter().hasItems();
         recyclerEmptyLayoutContainer.setVisibility(isListEmpty ? VISIBLE : GONE);
@@ -281,6 +280,8 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+        if (this.emptyLayoutListeners != null)
+            this.emptyLayoutListeners.onInflated(emptyLayoutView);
         this.recyclerEmptyLayoutContainer.addView(emptyLayoutView, params);
     }
 
@@ -404,11 +405,11 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     /**
-     * Sets the {@link EasyRecyclerItemsReadyCallback} to be executed on view ready.
+     * Sets the {@link EasyRecyclerItemsReadyListener} to be executed on view ready.
      *
      * @param renderedCallback - The EasyRecyclerItemsReadyCallback to be executed on view ready.
      */
-    public void setRenderedCallback(EasyRecyclerItemsReadyCallback renderedCallback) {
+    public void setRenderedCallback(EasyRecyclerItemsReadyListener renderedCallback) {
         this.renderedCallback = renderedCallback;
     }
 
@@ -736,14 +737,20 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         }
     }
 
-    public interface EasyRecyclerItemsReadyCallback {
-        void execute();
+    public static class EasyRecyclerEmptyLayoutListener {
+        public void onInflated(View view) {
+        }
+
+        public void onShow(View view) {
+        }
+
+        public void onHide(View view) {
+        }
     }
 
-    public interface EasyRecyclerEmptyLayoutListeners {
-        void onShow(View view);
 
-        void onHide(View view);
+    public interface EasyRecyclerItemsReadyListener {
+        void execute();
     }
 
     public interface EasyRecyclerViewAdapterAction<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> {
