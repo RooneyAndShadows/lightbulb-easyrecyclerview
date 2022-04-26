@@ -15,11 +15,12 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.dinuscxj.refresh.RecyclerRefreshLayout;
 import com.factor.bouncy.BouncyRecyclerView;
 import com.github.rooneyandshadows.java.commons.string.StringUtils;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.refresh_views.RefreshView;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.IRefreshStatus;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RefreshView;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.HeaderViewRecyclerAdapter;
@@ -32,7 +33,8 @@ import androidx.dynamicanimation.animation.SpringForce;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.dinuscxj.refresh.RecyclerRefreshLayout.*;
+import static com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout.RefreshStyle.*;
+
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> extends RelativeLayout {
@@ -617,9 +619,10 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         int refreshStrokeColor = ResourceUtils.getColorByAttribute(getContext(), android.R.attr.colorPrimary);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(indicatorSize, indicatorSize);
         RefreshView refreshView = new RefreshView(getContext());
+        refreshView.setTag("REFRESH_VIEW");
         refreshView.setBackgroundColor(refreshBackgroundColor);
         refreshLayout.setRefreshView(refreshView, layoutParams);
-        refreshLayout.setRefreshStyle(RefreshStyle.NORMAL);
+        refreshLayout.setRefreshStyle(NORMAL);
         refreshLayout.setEnabled(supportsRefresh);
     }
 

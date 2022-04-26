@@ -1,4 +1,4 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview.refresh_views;
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -9,8 +9,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
-import com.dinuscxj.refresh.IRefreshStatus;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R;
 
 
 /**

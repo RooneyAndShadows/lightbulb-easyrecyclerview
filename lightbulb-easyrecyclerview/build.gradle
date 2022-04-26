@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 31
-        versionCode 104
-        versionName "1.0.4"
+        versionCode 105
+        versionName "1.0.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -61,7 +61,6 @@ dependencies {
     implementation 'org.jetbrains:annotations:15.0'
     implementation 'com.factor:bouncy:1.8'
     implementation 'com.github.simonebortolin:FlowLayoutManager:1.8.0'
-    implementation 'com.dinuscxj:recyclerrefreshlayout:2.0.5'
     implementation "com.github.rooneyandshadows:java-commons:$versions.java.commons"
     implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycleradapters"
     implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"

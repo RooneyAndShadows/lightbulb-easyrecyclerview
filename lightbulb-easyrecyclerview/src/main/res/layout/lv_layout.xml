@@ -6,18 +6,14 @@
     android:clipToPadding="false"
     tools:parentTag="android.widget.RelativeLayout">
 
-    <com.dinuscxj.refresh.RecyclerRefreshLayout
+    <com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipChildren="false"
-        android:clipToPadding="false">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="false"
-            android:clipToPadding="false">
+            android:layout_height="match_parent">
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/loadingIndicator"
@@ -36,10 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/loadingIndicator"
-                android:clipChildren="false"
-                android:clipToPadding="false"
                 tools:itemCount="20" />
         </RelativeLayout>
 
-    </com.dinuscxj.refresh.RecyclerRefreshLayout>
+    </com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout>
 </merge>
