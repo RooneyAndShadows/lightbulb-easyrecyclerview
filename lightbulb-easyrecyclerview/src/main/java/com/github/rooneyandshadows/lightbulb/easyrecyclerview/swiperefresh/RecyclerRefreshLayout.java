@@ -360,15 +360,7 @@ public class RecyclerRefreshLayout extends ViewGroup {
     // NestedScrollingParent
     @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
-     /*   switch (mRefreshStyle) {
-            case FLOAT:
-                return isEnabled() && canChildScrollUp(mTarget) && !mIsRefreshing
-                        && (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
-            default:
-                return isEnabled() && canChildScrollUp(mTarget)
-                        && (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
-        }*/
-        return true;
+        return isEnabled();
     }
 
     @Override
