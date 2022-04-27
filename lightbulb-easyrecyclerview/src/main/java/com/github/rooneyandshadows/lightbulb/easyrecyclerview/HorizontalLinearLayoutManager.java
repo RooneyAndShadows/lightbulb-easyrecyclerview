@@ -2,7 +2,6 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerview;
 
 import android.view.View;
 
-import com.factor.bouncy.BouncyRecyclerView;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
 
@@ -21,17 +20,19 @@ final class HorizontalLinearLayoutManager<IType extends EasyAdapterDataModel, AT
     public int scrollVerticallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scrollRange = super.scrollVerticallyBy(dx, recycler, state);
         int overScroll = dx - scrollRange;
+        if (!easyRecyclerView.supportsBounceOverscroll() || !easyRecyclerView.supportsPullToRefresh())
+            return scrollRange;
         if (overScroll > 0) {
             //Bottom overscroll disable refreshLayout and enable bounce overscroll.
-            if (easyRecyclerView.isSupportsRefresh() && !easyRecyclerView.isShowingLoadingHeader()) {
+            if (!easyRecyclerView.isShowingLoadingHeader()) {
                 easyRecyclerView.enableBounceOverscroll(true);
-                easyRecyclerView.enableSwipeToRefreshLayout(false);
+                easyRecyclerView.enablePullToRefreshLayout(false);
             }
         } else if (overScroll < 0) {
             //top overscroll enable refreshLayout and disable bounce overscroll
-            if (easyRecyclerView.isSupportsRefresh() && !easyRecyclerView.isShowingLoadingHeader()) {
+            if (!easyRecyclerView.isShowingLoadingHeader()) {
                 easyRecyclerView.enableBounceOverscroll(false);
-                easyRecyclerView.enableSwipeToRefreshLayout(true);
+                easyRecyclerView.enablePullToRefreshLayout(true);
             }
         }
         if (Math.abs(dx) > 20)
