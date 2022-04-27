@@ -639,9 +639,8 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         int indicatorSize = ResourceUtils.getDimenPxById(getContext(), R.dimen.lv_header_refresh_indicator_size);
         int refreshBackgroundColor = ResourceUtils.getColorByAttribute(getContext(), android.R.attr.colorBackground);
         int refreshStrokeColor = ResourceUtils.getColorByAttribute(getContext(), android.R.attr.colorPrimary);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(indicatorSize, indicatorSize);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, indicatorSize);
         RefreshView refreshView = new RefreshView(getContext());
-        refreshView.setTag("REFRESH_VIEW");
         refreshView.setBackgroundColor(refreshBackgroundColor);
         refreshLayout.setRefreshView(refreshView, layoutParams);
         refreshLayout.setRefreshStyle(NORMAL);

@@ -1,6 +1,8 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -11,6 +13,9 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.Transformation;
 import android.widget.AbsListView;
+
+import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.NestedScrollingChildHelper;
@@ -156,22 +161,16 @@ public class RecyclerRefreshLayout extends ViewGroup {
 
     public RecyclerRefreshLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-
+        setWillNotDraw(false);
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
         mRefreshViewSize = (int) (DEFAULT_REFRESH_SIZE_DP * metrics.density);
-
         mRefreshTargetOffset = DEFAULT_REFRESH_TARGET_OFFSET_DP * metrics.density;
-
         mTargetOrRefreshViewOffsetY = 0.0f;
         mRefreshInitialOffset = 0.0f;
-
         mNestedScrollingParentHelper = new NestedScrollingParentHelper(this);
         mNestedScrollingChildHelper = new NestedScrollingChildHelper(this);
-
         initRefreshView();
         initDragDistanceConverter();
-        setNestedScrollingEnabled(true);
-        setChildrenDrawingOrderEnabled(true);
     }
 
     @Override
@@ -242,7 +241,6 @@ public class RecyclerRefreshLayout extends ViewGroup {
         }
         refreshView.setVisibility(View.GONE);
         addView(refreshView, layoutParams);
-
         mRefreshView = refreshView;
     }
 
@@ -311,37 +309,6 @@ public class RecyclerRefreshLayout extends ViewGroup {
         mRefreshInitialOffset = refreshInitialOffset;
         mUsingCustomRefreshInitialOffset = true;
         requestLayout();
-    }
-
-    @Override
-    protected int getChildDrawingOrder(int childCount, int i) {
-        switch (mRefreshStyle) {
-            case FLOAT:
-                if (mRefreshViewIndex < 0) {
-                    return i;
-                } else if (i == childCount - 1) {
-                    // Draw the selected child last
-                    return mRefreshViewIndex;
-                } else if (i >= mRefreshViewIndex) {
-                    // Move the children after the selected child earlier one
-                    return i + 1;
-                } else {
-                    // Keep the children before the selected child the same
-                    return i;
-                }
-            default:
-                if (mRefreshViewIndex < 0) {
-                    return i;
-                } else if (i == 0) {
-                    // Draw the selected child first
-                    return mRefreshViewIndex;
-                } else if (i <= mRefreshViewIndex) {
-                    // Move the children before the selected child earlier one
-                    return i - 1;
-                } else {
-                    return i;
-                }
-        }
     }
 
     // NestedScrollingParent
@@ -583,6 +550,13 @@ public class RecyclerRefreshLayout extends ViewGroup {
                 break;
             }
         }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (mIsRefreshing && (mRefreshStyle == RefreshStyle.NORMAL || mRefreshStyle == RefreshStyle.PINNED))
+            canvas.clipRect(getLeft(), mRefreshView.getTop(), getRight(), getBottom());
 
     }
 
@@ -810,7 +784,6 @@ public class RecyclerRefreshLayout extends ViewGroup {
         if (mTarget == null) {
             return;
         }
-
         switch (mRefreshStyle) {
             case FLOAT:
                 mRefreshView.offsetTopAndBottom(offsetY);
