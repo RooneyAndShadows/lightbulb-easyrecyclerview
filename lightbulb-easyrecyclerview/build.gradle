@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 31
-        versionCode 109
-        versionName "1.0.9"
+        versionCode 1010
+        versionName "1.0.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -59,7 +59,7 @@ dependencies {
     implementation "androidx.dynamicanimation:dynamicanimation:$versions.android_dynamication"
     implementation "com.google.android.material:material:$versions.material"
     implementation 'org.jetbrains:annotations:15.0'
-    implementation 'com.factor:bouncy:1.8'
+    implementation 'com.github.valkriaine:Bouncy:2.1'
     implementation 'com.github.simonebortolin:FlowLayoutManager:1.8.0'
     implementation "com.github.rooneyandshadows:java-commons:$versions.java.commons"
     implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycleradapters"

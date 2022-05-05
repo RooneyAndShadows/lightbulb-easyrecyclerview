@@ -18,6 +18,10 @@ import android.widget.TextView;
 import com.factor.bouncy.BouncyRecyclerView;
 import com.github.rooneyandshadows.java.commons.string.StringUtils;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewSwipeHandler;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.FlowLayoutManager;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalLinearLayoutManager;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RefreshView;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
@@ -83,8 +87,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     };
 
     public EasyRecyclerView(Context context) {
-        super(context);
-        initView();
+        this(context, null);
     }
 
     public EasyRecyclerView(Context context, AttributeSet attrs) {
@@ -102,6 +105,8 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     public Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
         SavedState myState = new SavedState(superState);
+        if (dataAdapter != null)
+            myState.adapterState = getAdapter().saveAdapterState();
         myState.supportsLoadMore = supportsLazyLoading;
         myState.supportsPullToRefresh = supportsPullToRefresh;
         myState.supportsBounceOverscroll = supportsBounceOverscroll;
@@ -128,6 +133,8 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     public void onRestoreInstanceState(Parcelable state) {
         SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
+        if (dataAdapter != null)
+            getAdapter().restoreAdapterState(savedState.adapterState);
         supportsLazyLoading = savedState.supportsLoadMore;
         supportsPullToRefresh = savedState.supportsPullToRefresh;
         supportsBounceOverscroll = savedState.supportsBounceOverscroll;
@@ -157,14 +164,14 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             swipeToDeleteCallbacks.cancelPendingAction();
     }
 
-    void enableBounceOverscroll(boolean enabled) {
+    public void enableBounceOverscroll(boolean enabled) {
         overscrollBounceEnabled = enabled;
         recyclerView.setFlingAnimationSize(enabled ? bouncyFlingAnimationSize : 0f);
         recyclerView.setOverscrollAnimationSize(enabled ? bouncyOverscrollAnimationSize : 0f);
         recyclerView.setDampingRatio(enabled ? SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY : SpringForce.DAMPING_RATIO_NO_BOUNCY);
     }
 
-    void enablePullToRefreshLayout(boolean enabled) {
+    public void enablePullToRefreshLayout(boolean enabled) {
         pullToRefreshEnabled = enabled;
         pullToRefreshLayoutEnabled = enabled;
         refreshLayout.setEnabled(enabled);
@@ -671,6 +678,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     private static class SavedState extends BaseSavedState {
+        private Bundle adapterState;
         private boolean overscrollBounceEnabled;
         private boolean supportsBounceOverscroll;
         private boolean swipeToRefreshLayoutEnabled;
@@ -692,6 +700,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
 
         private SavedState(Parcel in) {
             super(in);
+            adapterState = in.readBundle(EasyRecyclerView.class.getClassLoader());
             overscrollBounceEnabled = in.readByte() != 0;
             swipeToRefreshLayoutEnabled = in.readByte() != 0;
             supportsPullToRefresh = in.readByte() != 0;
@@ -711,6 +720,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
+            out.writeBundle(adapterState);
             out.writeByte((byte) (overscrollBounceEnabled ? 1 : 0));
             out.writeByte((byte) (swipeToRefreshLayoutEnabled ? 1 : 0));
             out.writeByte((byte) (supportsPullToRefresh ? 1 : 0));

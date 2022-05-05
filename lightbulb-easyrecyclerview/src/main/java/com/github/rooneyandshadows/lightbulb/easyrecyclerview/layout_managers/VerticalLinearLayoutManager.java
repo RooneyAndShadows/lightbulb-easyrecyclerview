@@ -1,25 +1,28 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview;
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers;
 
 import android.view.View;
 
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-final class HorizontalLinearLayoutManager<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> extends LinearLayoutManager {
+public final class VerticalLinearLayoutManager<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> extends LinearLayoutManager {
     private final EasyRecyclerView<IType, AType> easyRecyclerView;
 
-    public HorizontalLinearLayoutManager(EasyRecyclerView<IType, AType> easyRecyclerView) {
-        super(easyRecyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false);
+    public VerticalLinearLayoutManager(EasyRecyclerView<IType, AType> easyRecyclerView) {
+        super(easyRecyclerView.getContext(), LinearLayoutManager.VERTICAL, false);
         this.easyRecyclerView = easyRecyclerView;
     }
 
     @Override
-    public int scrollVerticallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
-        int scrollRange = super.scrollVerticallyBy(dx, recycler, state);
-        int overScroll = dx - scrollRange;
+    public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
+        int scrollRange = super.scrollVerticallyBy(dy, recycler, state);
+        int overScroll = dy - scrollRange;
+        if (easyRecyclerView.isShowingLoadingHeader())
+            return scrollRange;
         if (!easyRecyclerView.supportsBounceOverscroll() || !easyRecyclerView.supportsPullToRefresh())
             return scrollRange;
         if (overScroll > 0) {
@@ -35,7 +38,7 @@ final class HorizontalLinearLayoutManager<IType extends EasyAdapterDataModel, AT
                 easyRecyclerView.enablePullToRefreshLayout(true);
             }
         }
-        if (Math.abs(dx) > 20)
+        if (Math.abs(dy) > 20)
             easyRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
         if (!easyRecyclerView.isShowingLoadingHeader())
             handleLoadMore();

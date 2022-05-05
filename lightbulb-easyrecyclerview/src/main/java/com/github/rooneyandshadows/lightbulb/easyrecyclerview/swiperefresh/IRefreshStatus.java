@@ -1,7 +1,5 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh;
 
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout;
-
 /**
  * {@link RecyclerRefreshLayout#mRefreshView} all the custom drop-down refresh view need to
  * implements the interface

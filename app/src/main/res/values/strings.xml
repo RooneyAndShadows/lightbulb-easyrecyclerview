@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">EasyRecyclerView</string>
+    <string name="regular_demo">Regular demo</string>
+    <string name="selectable_demo">Selection demo</string>
+    <string name="header_and_footer_demo">Header &amp; footer demo</string>
+    <string name="empty_layout_demo">Empty layout demo</string>
+    <string name="bounce_effect_demo">Bounce effect demo</string>
 </resources>

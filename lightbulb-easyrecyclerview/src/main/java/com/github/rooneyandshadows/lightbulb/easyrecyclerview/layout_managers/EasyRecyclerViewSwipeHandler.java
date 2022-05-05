@@ -1,4 +1,4 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview;
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -12,6 +12,8 @@ import android.util.SparseArray;
 import android.view.View;
 
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -34,11 +36,11 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     private final RecyclerView recyclerView;
     private final Handler actionsHandler = new Handler(Looper.getMainLooper(), null);
 
-    void setSwipeCallbacks(SwipeCallbacks<IType> callbacks) {
+    public void setSwipeCallbacks(SwipeCallbacks<IType> callbacks) {
         this.swipeCallbacks = callbacks;
     }
 
-    EasyRecyclerViewSwipeHandler(EasyRecyclerView<IType, AType> easyRecyclerView, AType adapter, SwipeConfiguration configuration) {
+    public EasyRecyclerViewSwipeHandler(EasyRecyclerView<IType, AType> easyRecyclerView, AType adapter, SwipeConfiguration configuration) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         this.configuration = configuration;
         this.easyRecyclerView = easyRecyclerView;
@@ -104,12 +106,12 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
-    void cancelPendingAction() {
+    public void cancelPendingAction() {
         undoClicked = true;
         runPending();
     }
 
-    void executePendingAction() {
+    public void executePendingAction() {
         runPending();
     }
 
@@ -308,7 +310,7 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         }
     }
 
-    static class SwipeConfiguration {
+    public static class SwipeConfiguration {
         private static final String EDIT_MODE_TAG = "EDIT_MODE_TAG";
         private static final String UNDO_TEXT_TAG = "UNDO_TEXT_TAG";
         private static final String ICON_SIZE_TAG = "ICON_SIZE_TAG";

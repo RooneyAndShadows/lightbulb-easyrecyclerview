@@ -2,7 +2,6 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -12,10 +11,6 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.Transformation;
-import android.widget.AbsListView;
-
-import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.NestedScrollingChildHelper;
