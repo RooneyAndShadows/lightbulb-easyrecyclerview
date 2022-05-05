@@ -23,19 +23,23 @@ public final class VerticalLinearLayoutManager<IType extends EasyAdapterDataMode
         int overScroll = dy - scrollRange;
         if (easyRecyclerView.isShowingLoadingHeader())
             return scrollRange;
-        if (!easyRecyclerView.supportsBounceOverscroll() || !easyRecyclerView.supportsPullToRefresh())
-            return scrollRange;
+        //if (!easyRecyclerView.supportsBounceOverscroll() || !easyRecyclerView.supportsPullToRefresh())
+        //    return scrollRange;
         if (overScroll > 0) {
             //Bottom overscroll disable refreshLayout and enable bounce overscroll.
             if (!easyRecyclerView.isShowingLoadingHeader()) {
-                easyRecyclerView.enableBounceOverscroll(true);
-                easyRecyclerView.enablePullToRefreshLayout(false);
+                if (easyRecyclerView.supportsPullToRefresh() && easyRecyclerView.supportsBounceOverscroll()) {
+                    easyRecyclerView.enableBounceOverscroll(true);
+                    easyRecyclerView.enablePullToRefreshLayout(false);
+                }
             }
         } else if (overScroll < 0) {
             //top overscroll enable refreshLayout and disable bounce overscroll
             if (!easyRecyclerView.isShowingLoadingHeader()) {
-                easyRecyclerView.enableBounceOverscroll(false);
-                easyRecyclerView.enablePullToRefreshLayout(true);
+                if (easyRecyclerView.supportsPullToRefresh() && easyRecyclerView.supportsBounceOverscroll()) {
+                    easyRecyclerView.enableBounceOverscroll(false);
+                    easyRecyclerView.enablePullToRefreshLayout(true);
+                }
             }
         }
         if (Math.abs(dy) > 20)
@@ -52,6 +56,7 @@ public final class VerticalLinearLayoutManager<IType extends EasyAdapterDataMode
         int size = easyRecyclerView.getItems().size();
         int last = ((RecyclerView.LayoutParams) lastView.getLayoutParams()).getAbsoluteAdapterPosition() - easyRecyclerView.getAdapter().getHeadersCount();
         if (last == size - 1 && !easyRecyclerView.isShowingLoadingFooter()) {
+            easyRecyclerView.showLoadingFooter(true);
             easyRecyclerView.loadMoreData();
         }
     }

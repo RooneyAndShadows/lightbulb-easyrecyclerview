@@ -5,6 +5,8 @@ import com.github.rooneyandshadows.lightbulb.application.activity.routing.BaseAp
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.BounceEffectDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.EmptylayoutDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.HeaderAndFooterDemoFragment;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.LazyLoadingDemoFragment;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.PullToRefreshDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.RegularDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.SelectionDemoFragment;
 
@@ -39,6 +41,16 @@ public class AppRouter extends BaseApplicationRouter {
 
     public void toBounceEffect(NavigationCommands command) {
         Screen screen = new Screens.BounceEffect();
+        navigate(command, screen);
+    }
+
+    public void toPullToRefresh(NavigationCommands command) {
+        Screen screen = new Screens.PullToRefresh();
+        navigate(command, screen);
+    }
+
+    public void toLazyLoading(NavigationCommands command) {
+        Screen screen = new Screens.LazyLoading();
         navigate(command, screen);
     }
 
@@ -84,6 +96,22 @@ public class AppRouter extends BaseApplicationRouter {
             @Override
             public Fragment getFragment() {
                 return BounceEffectDemoFragment.getNewInstance();
+            }
+        }
+
+        public static final class PullToRefresh extends Screen {
+            @NonNull
+            @Override
+            public Fragment getFragment() {
+                return PullToRefreshDemoFragment.getNewInstance();
+            }
+        }
+
+        public static final class LazyLoading extends Screen {
+            @NonNull
+            @Override
+            public Fragment getFragment() {
+                return LazyLoadingDemoFragment.getNewInstance();
             }
         }
     }

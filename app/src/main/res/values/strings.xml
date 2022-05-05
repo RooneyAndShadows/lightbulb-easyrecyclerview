@@ -5,4 +5,6 @@
     <string name="header_and_footer_demo">Header &amp; footer demo</string>
     <string name="empty_layout_demo">Empty layout demo</string>
     <string name="bounce_effect_demo">Bounce effect demo</string>
+    <string name="pull_to_refresh_demo">Pull to refresh demo</string>
+    <string name="lazy_loading_demo">Lazy loading demo</string>
 </resources>

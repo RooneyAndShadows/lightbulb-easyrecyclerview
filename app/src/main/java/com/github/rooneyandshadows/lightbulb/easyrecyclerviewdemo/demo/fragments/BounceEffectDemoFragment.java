@@ -39,7 +39,7 @@ public class BounceEffectDemoFragment extends BaseFragment {
                 .withActionBarConfiguration(new BaseFragmentConfiguration.ActionBarConfiguration(R.id.toolbar)
                         .withActionButtons(true)
                         .attachToDrawer(false)
-                        .withSubTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.regular_demo))
+                        .withSubTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.bounce_effect_demo))
                         .withTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.app_name))
                 );
     }

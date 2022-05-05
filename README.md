@@ -8,7 +8,7 @@ All-in-one easy to use RecyclerView for your android project
 
 - **Lifecycle aware adapter state**
 - Selection support
-- Swipe to refresh support
+- Pull to refresh support
 - Swipe to delete support
 - Lazy loading support
 - Empty layout support

@@ -66,6 +66,26 @@ public class MenuConfigurations {
                     Router.getInstance().getRouter().toBounceEffect(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO);
                     slider.closeSlider();
                 })
+        )).addMenuItem(new PrimaryMenuItem(
+                -1,
+                ResourceUtils.getPhrase(activity, R.string.pull_to_refresh_demo),
+                null,
+                null,
+                1,
+                action((slider) -> {
+                    Router.getInstance().getRouter().toPullToRefresh(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO);
+                    slider.closeSlider();
+                })
+        )).addMenuItem(new PrimaryMenuItem(
+                -1,
+                ResourceUtils.getPhrase(activity, R.string.lazy_loading_demo),
+                null,
+                null,
+                1,
+                action((slider) -> {
+                    Router.getInstance().getRouter().toLazyLoading(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO);
+                    slider.closeSlider();
+                })
         ));
         return configuration;
     }
