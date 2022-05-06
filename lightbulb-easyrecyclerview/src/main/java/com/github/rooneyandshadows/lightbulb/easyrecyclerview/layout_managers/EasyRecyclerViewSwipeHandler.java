@@ -51,12 +51,12 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-        int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+        Directions dragDirections = Directions.UP_DOWN;
+        Directions swipeDirections = Directions.LEFT_RIGHT;
         IType item = getItem(viewHolder);
-        int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
         if (swipeCallbacks != null)
-            swipeFlags = swipeCallbacks.setMovementFlags(item);
-        return ItemTouchHelper.Callback.makeMovementFlags(dragFlags, swipeFlags);
+            swipeDirections = swipeCallbacks.setAllowedSwipeDirections(item);
+        return ItemTouchHelper.Callback.makeMovementFlags(dragDirections.value, swipeDirections.value);
     }
 
     @Override
@@ -129,6 +129,9 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
             if (swipeCallbacks != null) {
                 if (undoClicked)
                     swipeCallbacks.cancelAction(item, position);
+                else {
+
+                }
                 else if (direction == ItemTouchHelper.LEFT) {
                     swipeCallbacks.swipedLeftAction(item, position);
                 } else if (direction == ItemTouchHelper.RIGHT) {
@@ -268,9 +271,11 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
     public interface SwipeCallbacks<ItemType extends EasyAdapterDataModel> {
 
-        int setMovementFlags(ItemType item);
+        Directions setAllowedSwipeDirections(ItemType item);
 
         String getActionBackgroundText(ItemType item);
+
+        void onSwipedAction(ItemType item, int position);
 
         void swipedLeftAction(ItemType item, Integer position);
 
@@ -281,6 +286,37 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         String getPendingActionText(Integer direction);
 
         String getCancelActionText();
+    }
+
+    public enum Directions {
+        UP(ItemTouchHelper.UP),
+        DOWN(ItemTouchHelper.DOWN),
+        LEFT(ItemTouchHelper.LEFT),
+        RIGHT(ItemTouchHelper.RIGHT),
+        LEFT_RIGHT(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT),
+        UP_DOWN(ItemTouchHelper.UP | ItemTouchHelper.DOWN),
+        ALL(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.UP | ItemTouchHelper.DOWN);
+
+        private final int value;
+        private static final SparseArray<Modes> values = new SparseArray<>();
+
+        Directions(int value) {
+            this.value = value;
+        }
+
+        static {
+            for (Modes editMode : Modes.values()) {
+                values.put(editMode.value, editMode);
+            }
+        }
+
+        public static Modes valueOf(int pageType) {
+            return values.get(pageType);
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
     public enum Modes {

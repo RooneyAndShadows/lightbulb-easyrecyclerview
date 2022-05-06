@@ -86,6 +86,16 @@ public class MenuConfigurations {
                     Router.getInstance().getRouter().toLazyLoading(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO);
                     slider.closeSlider();
                 })
+        )).addMenuItem(new PrimaryMenuItem(
+                -1,
+                ResourceUtils.getPhrase(activity, R.string.swipe_to_delete_demo),
+                null,
+                null,
+                1,
+                action((slider) -> {
+                    Router.getInstance().getRouter().toSwipeToDelete(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO);
+                    slider.closeSlider();
+                })
         ));
         return configuration;
     }

@@ -9,6 +9,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.PullToRefreshDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.RegularDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.SelectionDemoFragment;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.SwipeToDeleteDemoFragment;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -51,6 +52,11 @@ public class AppRouter extends BaseApplicationRouter {
 
     public void toLazyLoading(NavigationCommands command) {
         Screen screen = new Screens.LazyLoading();
+        navigate(command, screen);
+    }
+
+    public void toSwipeToDelete(NavigationCommands command) {
+        Screen screen = new Screens.SwipeToDelete();
         navigate(command, screen);
     }
 
@@ -112,6 +118,14 @@ public class AppRouter extends BaseApplicationRouter {
             @Override
             public Fragment getFragment() {
                 return LazyLoadingDemoFragment.getNewInstance();
+            }
+        }
+
+        public static final class SwipeToDelete extends Screen {
+            @NonNull
+            @Override
+            public Fragment getFragment() {
+                return SwipeToDeleteDemoFragment.getNewInstance();
             }
         }
     }
