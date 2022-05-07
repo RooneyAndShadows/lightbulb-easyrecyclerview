@@ -74,12 +74,12 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
     private EasyRecyclerViewSwipeHandler.SwipeCallbacks<DemoModel> configureSwipeHandler(EasyRecyclerView<DemoModel, SimpleAdapter> recyclerView) {
         return new EasyRecyclerViewSwipeHandler.SwipeCallbacks<DemoModel>() {
             @Override
-            public Directions setAllowedSwipeDirections(DemoModel item) {
+            public Directions getAllowedSwipeDirections(DemoModel item) {
                 return Directions.LEFT_RIGHT;
             }
 
             @Override
-            public Directions setAllowedDragDirections(DemoModel item) {
+            public Directions getAllowedDragDirections(DemoModel item) {
                 return Directions.UP_DOWN;
             }
 

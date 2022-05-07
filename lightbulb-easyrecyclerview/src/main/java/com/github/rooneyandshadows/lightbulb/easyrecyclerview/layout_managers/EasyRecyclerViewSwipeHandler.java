@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +36,8 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     private final EasyRecyclerView<IType, AType> recyclerView;
     private final Handler actionsHandler = new Handler(Looper.getMainLooper(), null);
     private final boolean isVerticalLayoutManager;
+    private Directions allowedSwipeDirections;
+    private Directions allowedDragDirections;
 
     public void setSwipeCallbacks(SwipeCallbacks<IType> callbacks) {
         this.swipeCallbacks = callbacks;
@@ -52,17 +55,19 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-        Directions dragDirections = Directions.UP_DOWN;
-        Directions swipeDirections = Directions.LEFT_RIGHT;
+        allowedSwipeDirections = Directions.NONE;
+        allowedDragDirections = Directions.NONE;
         IType item = getItem(viewHolder);
-        if (swipeCallbacks != null)
-            swipeDirections = swipeCallbacks.setAllowedSwipeDirections(item);
-        return ItemTouchHelper.Callback.makeMovementFlags(dragDirections.value, swipeDirections.value);
+        if (swipeCallbacks != null) {
+            allowedSwipeDirections = swipeCallbacks.getAllowedSwipeDirections(item);
+            allowedDragDirections = swipeCallbacks.getAllowedDragDirections(item);
+        }
+        return ItemTouchHelper.Callback.makeMovementFlags(allowedDragDirections.value, allowedSwipeDirections.value);
     }
 
     @Override
     public boolean isLongPressDragEnabled() {
-        return true;
+        return allowedDragDirections != Directions.NONE;
     }
 
     @Override
@@ -80,8 +85,16 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     }
 
     @Override
+    public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+        super.onSelectedChanged(viewHolder, actionState);
+        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && viewHolder != null)
+            viewHolder.itemView.setAlpha(0.6F);
+    }
+
+    @Override
     public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
+        viewHolder.itemView.setAlpha(1F);
         if (easyRecyclerView.supportsPullToRefresh())
             easyRecyclerView.enablePullToRefreshLayout(true);
         if (isItemVisible(viewHolder))
@@ -189,7 +202,7 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         }
         snackbar = Snackbar.make(recyclerView, pendingActionText, configuration.pendingActionDelay)
                 .setAction(undoText, view -> cancelPendingAction())
-                .setActionTextColor(configuration.swipeNegativeBackgroundColor)
+                .setActionTextColor(ResourceUtils.getColorByAttribute(recyclerView.getContext(), R.attr.colorError))
                 .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
         View backgroundView = snackbar.getView();
         snackbar.show();
@@ -217,6 +230,7 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
     private Drawable getActionIcon(Directions directions) {
         Drawable icon = ResourceUtils.getDrawable(recyclerView.getContext(), R.drawable.icon_delete);
+        icon.setTint(configuration.swipeAccentColor);
         if (swipeCallbacks != null)
             icon = swipeCallbacks.getSwipeIcon(directions);
         return icon;
@@ -303,9 +317,9 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
     public interface SwipeCallbacks<ItemType extends EasyAdapterDataModel> {
 
-        Directions setAllowedSwipeDirections(ItemType item);
+        Directions getAllowedSwipeDirections(ItemType item);
 
-        Directions setAllowedDragDirections(ItemType item);
+        Directions getAllowedDragDirections(ItemType item);
 
         String getActionBackgroundText(ItemType item);
 
@@ -329,7 +343,8 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         RIGHT(ItemTouchHelper.RIGHT),
         LEFT_RIGHT(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT),
         UP_DOWN(ItemTouchHelper.UP | ItemTouchHelper.DOWN),
-        ALL(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.UP | ItemTouchHelper.DOWN);
+        ALL(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.UP | ItemTouchHelper.DOWN),
+        NONE(0);
 
         private final int value;
         private static final SparseArray<Directions> values = new SparseArray<>();
@@ -366,8 +381,6 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         private int swipeAccentColor;
         private int swipeIconSize;
         private int swipeTextSize;
-        private int swipePositiveBackgroundColor;
-        private int swipeNegativeBackgroundColor;
         private final int pendingActionDelay = 4000;
 
         public Bundle saveConfigurationState() {
@@ -376,8 +389,6 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
             savedState.putInt(ICON_SIZE_TAG, swipeIconSize);
             savedState.putInt(TEXT_SIZE_TAG, swipeTextSize);
             savedState.putInt(COLOR_ACCENT_TAG, swipeAccentColor);
-            savedState.putInt(COLOR_BG_POSITIVE_TAG, swipePositiveBackgroundColor);
-            savedState.putInt(COLOR_BG_NEGATIVE_TAG, swipeNegativeBackgroundColor);
             return savedState;
         }
 
@@ -386,8 +397,6 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
             swipeIconSize = savedState.getInt(ICON_SIZE_TAG);
             swipeTextSize = savedState.getInt(TEXT_SIZE_TAG);
             swipeAccentColor = savedState.getInt(COLOR_ACCENT_TAG);
-            swipePositiveBackgroundColor = savedState.getInt(COLOR_BG_POSITIVE_TAG);
-            swipeNegativeBackgroundColor = savedState.getInt(COLOR_BG_NEGATIVE_TAG);
         }
 
         public void setSwipeSnackBarUndoTextPhrase(String swipeSnackBarUndoTextPhrase) {
@@ -406,14 +415,6 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
             this.swipeAccentColor = swipeAccentColor;
         }
 
-        public void setSwipePositiveBackgroundColor(int swipePositiveBackgroundColor) {
-            this.swipePositiveBackgroundColor = swipePositiveBackgroundColor;
-        }
-
-        public void setSwipeNegativeBackgroundColor(int swipeNegativeBackgroundColor) {
-            this.swipeNegativeBackgroundColor = swipeNegativeBackgroundColor;
-        }
-
         public String getSwipeSnackBarUndoTextPhrase() {
             return swipeSnackBarUndoTextPhrase;
         }
@@ -428,14 +429,6 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
         public int getSwipeTextSize() {
             return swipeTextSize;
-        }
-
-        public int getSwipePositiveBackgroundColor() {
-            return swipePositiveBackgroundColor;
-        }
-
-        public int getSwipeNegativeBackgroundColor() {
-            return swipeNegativeBackgroundColor;
         }
 
         public int getPendingActionDelay() {

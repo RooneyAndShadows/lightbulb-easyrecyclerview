@@ -14,8 +14,6 @@
             <enum name="LAYOUT_LINEAR_HORIZONTAL" value="2" />
             <enum name="LAYOUT_FLOW" value="3" />
         </attr>
-        <attr name="ERV_SwipeNegativeBackgroundColor" format="color" />
-        <attr name="ERV_SwipePositiveBackgroundColor" format="color" />
         <attr name="ERV_SwipeUndoTextPhrase" format="string" />
         <attr name="ERV_SwipeIconSize" format="dimension" />
         <attr name="ERV_SwipeTextSize" format="dimension" />

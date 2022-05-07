@@ -23,8 +23,6 @@ public final class VerticalLinearLayoutManager<IType extends EasyAdapterDataMode
         int overScroll = dy - scrollRange;
         if (easyRecyclerView.isShowingLoadingHeader())
             return scrollRange;
-        //if (!easyRecyclerView.supportsBounceOverscroll() || !easyRecyclerView.supportsPullToRefresh())
-        //    return scrollRange;
         if (overScroll > 0) {
             //Bottom overscroll disable refreshLayout and enable bounce overscroll.
             if (!easyRecyclerView.isShowingLoadingHeader()) {

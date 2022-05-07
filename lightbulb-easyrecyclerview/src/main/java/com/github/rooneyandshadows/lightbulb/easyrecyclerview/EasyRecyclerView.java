@@ -613,8 +613,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             swipeConfiguration.setSwipeIconSize(attributes.getDimensionPixelSize(R.styleable.EasyRecyclerView_ERV_SwipeIconSize, ResourceUtils.getDimenPxById(context, R.dimen.lv_swipe_icon_size)));
             swipeConfiguration.setSwipeTextSize(attributes.getDimensionPixelSize(R.styleable.EasyRecyclerView_ERV_SwipeTextSize, ResourceUtils.getDimenPxById(context, R.dimen.lv_swipe_text_size)));
             swipeConfiguration.setSwipeAccentColor(attributes.getColor(R.styleable.EasyRecyclerView_ERV_SwipeTextAndIconColor, ResourceUtils.getColorById(context, R.color.view_list_swipe_text_color)));
-            swipeConfiguration.setSwipePositiveBackgroundColor(attributes.getColor(R.styleable.EasyRecyclerView_ERV_SwipePositiveBackgroundColor, ResourceUtils.getColorById(context, R.color.view_list_swipe_positive_color)));
-            swipeConfiguration.setSwipeNegativeBackgroundColor(attributes.getColor(R.styleable.EasyRecyclerView_ERV_SwipeNegativeBackgroundColor, ResourceUtils.getColorById(context, R.color.view_list_swipe_negative_color)));
         } finally {
             attributes.recycle();
         }
