@@ -74,7 +74,7 @@ public class HeaderAndFooterDemoFragment extends BaseFragment {
         View footerView = getLayoutInflater().inflate(R.layout.demo_footer_item_layout, null);
         recyclerView.addHeaderView(headerView);
         recyclerView.addFooterView(footerView);
-        recyclerView.getRecyclerView().addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
+        recyclerView.addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
         if (savedState == null)
             recyclerView.getAdapter().setCollection(generateInitialData());
     }

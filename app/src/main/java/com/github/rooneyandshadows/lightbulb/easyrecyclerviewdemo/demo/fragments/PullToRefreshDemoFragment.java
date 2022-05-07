@@ -59,7 +59,7 @@ public class PullToRefreshDemoFragment extends BaseFragment {
 
     private void setupRecycler(Bundle savedState) {
         recyclerView.setAdapter(new SimpleAdapter());
-        recyclerView.getRecyclerView().addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
+        recyclerView.addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
         recyclerView.addHeaderView(getLayoutInflater().inflate(R.layout.demo_header_item_pull_to_refresh_layout, null));
         recyclerView.setRefreshCallback(view -> recyclerView.postDelayed(() -> {
             recyclerView.getAdapter().setCollection(generateData(10));

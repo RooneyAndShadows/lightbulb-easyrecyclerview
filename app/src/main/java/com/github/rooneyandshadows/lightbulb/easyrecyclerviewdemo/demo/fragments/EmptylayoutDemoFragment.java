@@ -78,7 +78,7 @@ public class EmptylayoutDemoFragment extends BaseFragment {
 
     private void setupRecycler() {
         recyclerView.setAdapter(new SimpleAdapter());
-        recyclerView.getRecyclerView().addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
+        recyclerView.addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
     }
 
     private View generateEmptyLayout() {

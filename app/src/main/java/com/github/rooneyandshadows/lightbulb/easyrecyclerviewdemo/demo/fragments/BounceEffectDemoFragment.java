@@ -63,7 +63,7 @@ public class BounceEffectDemoFragment extends BaseFragment {
 
     private void setupRecycler(Bundle savedState) {
         recyclerView.setAdapter(new SimpleAdapter());
-        recyclerView.getRecyclerView().addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
+        recyclerView.addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
         if (savedState == null)
             recyclerView.getAdapter().setCollection(generateInitialData());
     }

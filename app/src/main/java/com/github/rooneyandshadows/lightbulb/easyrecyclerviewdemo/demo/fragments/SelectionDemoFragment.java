@@ -65,7 +65,7 @@ public class SelectionDemoFragment extends BaseFragment {
     private void setupRecycler(Bundle savedState) {
         recyclerView.setAdapter(new SelectableAdapter());
         recyclerView.addHeaderView(getLayoutInflater().inflate(R.layout.demo_header_item_selectable_layout, null));
-        recyclerView.getRecyclerView().addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
+        recyclerView.addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
         if (savedState == null)
             recyclerView.getAdapter().setCollection(generateInitialData());
     }

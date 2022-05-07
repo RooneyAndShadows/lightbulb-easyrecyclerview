@@ -20,10 +20,5 @@
         <attr name="ERV_SwipeIconSize" format="dimension" />
         <attr name="ERV_SwipeTextSize" format="dimension" />
         <attr name="ERV_SwipeTextAndIconColor" format="color" />
-        <attr name="ERV_SwipeMode" format="enum">
-            <enum name="non_editable" value="1" />
-            <enum name="add_remove" value="2" />
-            <enum name="enable_disable" value="3" />
-        </attr>
     </declare-styleable>
 </resources>

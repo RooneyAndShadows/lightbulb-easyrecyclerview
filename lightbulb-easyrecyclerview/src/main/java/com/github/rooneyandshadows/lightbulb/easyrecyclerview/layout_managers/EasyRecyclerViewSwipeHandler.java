@@ -1,6 +1,5 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
@@ -33,8 +32,9 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     private final SwipeConfiguration configuration;
     private final SwipeToDeleteDrawerHelper drawer;
     private final EasyRecyclerView<IType, AType> easyRecyclerView;
-    private final RecyclerView recyclerView;
+    private final EasyRecyclerView<IType, AType> recyclerView;
     private final Handler actionsHandler = new Handler(Looper.getMainLooper(), null);
+    private final boolean isVerticalLayoutManager;
 
     public void setSwipeCallbacks(SwipeCallbacks<IType> callbacks) {
         this.swipeCallbacks = callbacks;
@@ -44,9 +44,10 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         this.configuration = configuration;
         this.easyRecyclerView = easyRecyclerView;
-        this.recyclerView = easyRecyclerView.getRecyclerView();
+        this.recyclerView = easyRecyclerView;
         this.adapter = adapter;
-        this.drawer = new SwipeToDeleteDrawerHelper(recyclerView.getContext(), configuration.getEditMode());
+        this.drawer = new SwipeToDeleteDrawerHelper();
+        this.isVerticalLayoutManager = recyclerView.getLayoutManager().canScrollVertically();
     }
 
     @Override
@@ -61,18 +62,21 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
     @Override
     public boolean isLongPressDragEnabled() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-        return false;
+        int fromPosition = viewHolder.getAbsoluteAdapterPosition() - adapter.getHeadersCount();
+        int toPosition = target.getAbsoluteAdapterPosition() - adapter.getHeadersCount();
+        adapter.moveItem(fromPosition, toPosition);
+        return true;
     }
 
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
         IType item = getItem(viewHolder);
-        showSwipedItemSnackBar(item, viewHolder.getAbsoluteAdapterPosition() - adapter.getHeadersCount(), direction);
+        showSwipedItemSnackBar(item, Directions.valueOf(direction));
     }
 
     @Override
@@ -86,24 +90,57 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
     @Override
     public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        switch (actionState) {
+            case ItemTouchHelper.ACTION_STATE_DRAG:
+                break;
+            case ItemTouchHelper.ACTION_STATE_SWIPE:
+                handleSwipeDraw(viewHolder, c, dX, dY);
+                break;
+        }
+        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+    }
+
+    private void handleSwipeDraw(RecyclerView.ViewHolder viewHolder, Canvas canvas, float dx, float dy) {
         View itemView = viewHolder.itemView;
         if (easyRecyclerView.supportsPullToRefresh())
             easyRecyclerView.enablePullToRefreshLayout(false);
-        if ((viewHolder.getAbsoluteAdapterPosition() - adapter.getHeadersCount()) != -1) {
+        int itemPosition = viewHolder.getAbsoluteAdapterPosition() - adapter.getHeadersCount();
+        if (itemPosition != -1) {
             IType item = getItem(viewHolder);
+            int moved = -1;
             if (item != null) {
-                Integer moved = (int) dX;
-                String actionText = getActionText(item);
-                if (dX > 0) {
-                    drawer.drawPositive(actionText, itemView, moved, c);
-                } else if (dX < 0) {
-                    drawer.drawNegative(actionText, itemView, moved, c);
+                Directions direction = null;
+                if (isVerticalLayoutManager) {
+                    if (dx > 0)
+                        direction = Directions.RIGHT;
+                    else if (dx < 0)
+                        direction = Directions.LEFT;
                 } else {
-                    drawer.clearBounds();
+                    if (dy > 0)
+                        direction = Directions.UP;
+                    else if (dy < 0)
+                        direction = Directions.DOWN;
                 }
+                if (direction == null) {
+                    drawer.clearBounds();
+                    return;
+                }
+                switch (direction) {
+                    case LEFT:
+                    case RIGHT:
+                        moved = (int) dx;
+                        break;
+                    case UP:
+                    case DOWN:
+                        moved = (int) dy;
+                        break;
+                }
+                String actionText = getActionText(item);
+                int backgroundColor = getActionBackgroundColor(direction);
+                Drawable icon = getActionIcon(direction);
+                drawer.draw(actionText, itemView, moved, canvas, direction, backgroundColor, icon);
             }
         }
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
     public void cancelPendingAction() {
@@ -123,19 +160,16 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         }
     }
 
-    private void addPendingAction(IType item, Integer position, Integer direction) {
+    private void addPendingAction(IType item, Directions direction) {
         undoClicked = false;
         pendingAction = () -> {
+            int position = adapter.getPosition(item);
             if (swipeCallbacks != null) {
-                if (undoClicked)
-                    swipeCallbacks.cancelAction(item, position);
-                else {
-
-                }
-                else if (direction == ItemTouchHelper.LEFT) {
-                    swipeCallbacks.swipedLeftAction(item, position);
-                } else if (direction == ItemTouchHelper.RIGHT) {
-                    swipeCallbacks.swipedRightAction(item, position);
+                if (undoClicked) {
+                    recyclerView.itemChanged(position);
+                    swipeCallbacks.onActionCancelled(item, position);
+                } else {
+                    swipeCallbacks.onSwipeActionApplied(item, position, direction);
                 }
                 pendingAction = null;
             }
@@ -144,9 +178,9 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     }
 
     @SuppressWarnings("ShowToast")
-    private synchronized void showSwipedItemSnackBar(IType item, Integer position, Integer direction) {
+    private synchronized void showSwipedItemSnackBar(IType item, Directions direction) {
         executePendingAction();
-        addPendingAction(item, position, direction);
+        addPendingAction(item, direction);
         String pendingActionText = "";
         String undoText = configuration.swipeSnackBarUndoTextPhrase;
         if (swipeCallbacks != null) {
@@ -174,91 +208,89 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         return actionText;
     }
 
+    private int getActionBackgroundColor(Directions directions) {
+        int background = ResourceUtils.getColorByAttribute(recyclerView.getContext(), R.attr.colorError);
+        if (swipeCallbacks != null)
+            background = swipeCallbacks.getSwipeBackgroundColor(directions);
+        return background;
+    }
+
+    private Drawable getActionIcon(Directions directions) {
+        Drawable icon = ResourceUtils.getDrawable(recyclerView.getContext(), R.drawable.icon_delete);
+        if (swipeCallbacks != null)
+            icon = swipeCallbacks.getSwipeIcon(directions);
+        return icon;
+    }
+
     private IType getItem(RecyclerView.ViewHolder viewHolder) {
         int position = viewHolder.getAbsoluteAdapterPosition() - adapter.getHeadersCount();
         return adapter.getItem(position);
     }
 
     private class SwipeToDeleteDrawerHelper {
-        private final Drawable negativeActionIcon;
-        private final Drawable positiveActionIcon;
-        private final ColorDrawable positiveBackground;
-        private final ColorDrawable negativeBackground;
-
-        SwipeToDeleteDrawerHelper(Context context, Modes editMode) {
-            if (editMode.equals(Modes.ADD_REMOVE)) {
-                positiveActionIcon = ResourceUtils.getDrawable(context, R.drawable.icon_enable);
-                negativeActionIcon = ResourceUtils.getDrawable(context, R.drawable.icon_delete);
-            } else {
-                positiveActionIcon = ResourceUtils.getDrawable(context, R.drawable.icon_enable);
-                negativeActionIcon = ResourceUtils.getDrawable(context, R.drawable.icon_disable);
-            }
-            positiveBackground = new ColorDrawable(configuration.swipePositiveBackgroundColor);
-            negativeBackground = new ColorDrawable(configuration.swipeNegativeBackgroundColor);
-        }
+        private ColorDrawable backgroundDrawable;
 
         void clearBounds() {
-            positiveActionIcon.setBounds(0, 0, 0, 0);
-            positiveBackground.setBounds(0, 0, 0, 0);
-            negativeActionIcon.setBounds(0, 0, 0, 0);
-            negativeBackground.setBounds(0, 0, 0, 0);
+            if (backgroundDrawable != null) {
+                backgroundDrawable.setBounds(0, 0, 0, 0);
+            }
         }
 
-        void drawPositive(String text, View itemView, Integer dX, Canvas canvas) {
+        void draw(String text, View itemView, int moved, Canvas canvas, Directions direction, int backgroundColor, Drawable icon) {
+            backgroundDrawable = new ColorDrawable(backgroundColor);
+            backgroundDrawable.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getRight(), itemView.getBottom());
+            backgroundDrawable.draw(canvas);
+            canvas.save();
             int backgroundCornerOffset = 20;
             int iconMargin = (itemView.getHeight() - configuration.swipeIconSize) / 2;
-            int iconTop = itemView.getTop() + (itemView.getHeight() - configuration.swipeIconSize) / 2;
-            int iconBottom = iconTop + configuration.swipeIconSize;
-            int iconLeft = itemView.getLeft() + iconMargin;
-            int iconRight = itemView.getLeft() + iconMargin + configuration.swipeIconSize;
-            canvas.clipRect(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + dX + backgroundCornerOffset, itemView.getBottom());
-            positiveBackground.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getRight(), itemView.getBottom());
-            positiveBackground.draw(canvas);
-            canvas.save();
-            drawPositiveText(text, canvas, itemView, iconRight, iconMargin);
-            positiveActionIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
-            positiveActionIcon.setTint(configuration.swipeAccentColor);
-            positiveActionIcon.draw(canvas);
+            int iconTop = -1;
+            int iconBottom = -1;
+            int iconLeft = -1;
+            int iconRight = -1;
+            Paint textPaint = new Paint();
+            textPaint.setColor(configuration.swipeAccentColor);
+            textPaint.setAntiAlias(true);
+            textPaint.setTextSize(configuration.swipeTextSize);
+            textPaint.setElegantTextHeight(true);
+            float yPos = calculateTextYpos(itemView, textPaint);
+            float textWidth = textPaint.measureText(text);
+            switch (direction) {
+                case LEFT:
+                    canvas.clipRect(itemView.getRight() + moved - backgroundCornerOffset, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                    iconTop = itemView.getTop() + (itemView.getHeight() - configuration.swipeIconSize) / 2;
+                    iconBottom = iconTop + configuration.swipeIconSize;
+                    iconLeft = itemView.getRight() - iconMargin - configuration.swipeIconSize;
+                    iconRight = itemView.getRight() - iconMargin;
+                    canvas.drawText(text, iconLeft - iconMargin - textWidth, yPos, textPaint);
+                    break;
+                case RIGHT:
+                    canvas.clipRect(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + moved + backgroundCornerOffset, itemView.getBottom());
+                    iconTop = itemView.getTop() + (itemView.getHeight() - configuration.swipeIconSize) / 2;
+                    iconBottom = iconTop + configuration.swipeIconSize;
+                    iconLeft = itemView.getLeft() + iconMargin;
+                    iconRight = itemView.getLeft() + iconMargin + configuration.swipeIconSize;
+                    canvas.drawText(text, iconRight + iconMargin, yPos, textPaint);
+                    break;
+                case UP:
+                    canvas.clipRect(itemView.getLeft(), itemView.getTop() + moved - backgroundCornerOffset, itemView.getRight(), itemView.getBottom());
+                    iconTop = itemView.getTop() + (itemView.getHeight() - configuration.swipeIconSize) / 2;
+                    iconBottom = iconTop + configuration.swipeIconSize;
+                    iconLeft = itemView.getLeft() + iconMargin;
+                    iconRight = itemView.getLeft() + iconMargin + configuration.swipeIconSize;
+                    canvas.drawText(text, iconRight + iconMargin, yPos, textPaint);
+                    break;
+                case DOWN:
+                    canvas.clipRect(itemView.getLeft(), itemView.getTop(), itemView.getRight(), itemView.getBottom() + moved - backgroundCornerOffset);
+                    iconTop = itemView.getTop() + (itemView.getHeight() - configuration.swipeIconSize) / 2;
+                    iconBottom = iconTop + configuration.swipeIconSize;
+                    iconLeft = itemView.getRight() - iconMargin - configuration.swipeIconSize;
+                    iconRight = itemView.getRight() - iconMargin;
+                    canvas.drawText(text, iconLeft - iconMargin - textWidth, yPos, textPaint);
+                    break;
+            }
+            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+            icon.draw(canvas);
             canvas.restore();
-        }
-
-        void drawNegative(String text, View itemView, Integer dX, Canvas canvas) {
-            int backgroundCornerOffset = 20;
-            int iconMargin = (itemView.getHeight() - configuration.swipeIconSize) / 2;
-            int iconTop = itemView.getTop() + (itemView.getHeight() - configuration.swipeIconSize) / 2;
-            int iconBottom = iconTop + configuration.swipeIconSize;
-            int iconLeft = itemView.getRight() - iconMargin - configuration.swipeIconSize;
-            int iconRight = itemView.getRight() - iconMargin;
-            canvas.clipRect(itemView.getRight() + dX - backgroundCornerOffset, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-            negativeBackground.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getRight(), itemView.getBottom());
-            negativeBackground.draw(canvas);
-            canvas.save();
-            drawNegativeText(text, canvas, itemView, iconLeft, iconMargin);
-            negativeActionIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
-            negativeActionIcon.setTint(configuration.swipeAccentColor);
-            negativeActionIcon.draw(canvas);
-            canvas.restore();
-        }
-
-        private void drawPositiveText(String text, Canvas canvas, View itemView, Integer iconRight, Integer iconMargin) {
-            Paint paint = new Paint();
-            paint.setColor(configuration.swipeAccentColor);
-            paint.setAntiAlias(true);
-            paint.setTextSize(configuration.swipeTextSize);
-            paint.setElegantTextHeight(true);
-            float yPos = calculateTextYpos(itemView, paint);
-            canvas.drawText(text, iconRight + iconMargin, yPos, paint);
-        }
-
-        private void drawNegativeText(String text, Canvas canvas, View itemView, Integer iconLeft, Integer iconMargin) {
-            Paint paint = new Paint();
-            paint.setColor(configuration.swipeAccentColor);
-            paint.setAntiAlias(true);
-            paint.setTextSize(configuration.swipeTextSize);
-            paint.setElegantTextHeight(true);
-            float textWidth = paint.measureText(text);
-            float yPos = calculateTextYpos(itemView, paint);
-            canvas.drawText(text, iconLeft - iconMargin - textWidth, yPos, paint);
         }
 
         private float calculateTextYpos(View itemView, Paint paint) {
@@ -273,17 +305,19 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
         Directions setAllowedSwipeDirections(ItemType item);
 
+        Directions setAllowedDragDirections(ItemType item);
+
         String getActionBackgroundText(ItemType item);
 
-        void onSwipedAction(ItemType item, int position);
+        void onSwipeActionApplied(ItemType item, int position, Directions direction);
 
-        void swipedLeftAction(ItemType item, Integer position);
+        void onActionCancelled(ItemType item, Integer position);
 
-        void swipedRightAction(ItemType item, Integer position);
+        int getSwipeBackgroundColor(Directions direction);
 
-        void cancelAction(ItemType item, Integer position);
+        Drawable getSwipeIcon(Directions direction);
 
-        String getPendingActionText(Integer direction);
+        String getPendingActionText(Directions direction);
 
         String getCancelActionText();
     }
@@ -298,46 +332,19 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         ALL(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.UP | ItemTouchHelper.DOWN);
 
         private final int value;
-        private static final SparseArray<Modes> values = new SparseArray<>();
+        private static final SparseArray<Directions> values = new SparseArray<>();
 
         Directions(int value) {
             this.value = value;
         }
 
         static {
-            for (Modes editMode : Modes.values()) {
+            for (Directions editMode : Directions.values()) {
                 values.put(editMode.value, editMode);
             }
         }
 
-        public static Modes valueOf(int pageType) {
-            return values.get(pageType);
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
-
-    public enum Modes {
-        NON_EDITABLE(1),
-        ADD_REMOVE(2),
-        ENABLE_DISABLE(3);
-
-        private final int value;
-        private static final SparseArray<Modes> values = new SparseArray<>();
-
-        Modes(int value) {
-            this.value = value;
-        }
-
-        static {
-            for (Modes editMode : Modes.values()) {
-                values.put(editMode.value, editMode);
-            }
-        }
-
-        public static Modes valueOf(int pageType) {
+        public static Directions valueOf(int pageType) {
             return values.get(pageType);
         }
 
@@ -347,7 +354,6 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     }
 
     public static class SwipeConfiguration {
-        private static final String EDIT_MODE_TAG = "EDIT_MODE_TAG";
         private static final String UNDO_TEXT_TAG = "UNDO_TEXT_TAG";
         private static final String ICON_SIZE_TAG = "ICON_SIZE_TAG";
         private static final String TEXT_SIZE_TAG = "TEXT_SIZE_TAG";
@@ -356,7 +362,6 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         private static final String COLOR_BG_NEGATIVE_TAG = "COLOR_BG_NEGATIVE_TAG";
         private static final String COLOR_BG_SNACKBAR_TAG = "COLOR_BG_SNACKBAR_TAG";
         private static final String SNACKBAR_TEXT_COLOR_TAG = "SNACKBAR_TEXT_COLOR_TAG";
-        private Modes editMode;
         private String swipeSnackBarUndoTextPhrase;
         private int swipeAccentColor;
         private int swipeIconSize;
@@ -367,7 +372,6 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
         public Bundle saveConfigurationState() {
             Bundle savedState = new Bundle();
-            savedState.putInt(EDIT_MODE_TAG, editMode.getValue());
             savedState.putString(UNDO_TEXT_TAG, swipeSnackBarUndoTextPhrase);
             savedState.putInt(ICON_SIZE_TAG, swipeIconSize);
             savedState.putInt(TEXT_SIZE_TAG, swipeTextSize);
@@ -378,17 +382,12 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         }
 
         public void restoreConfigurationState(Bundle savedState) {
-            editMode = Modes.valueOf(savedState.getInt(EDIT_MODE_TAG));
             swipeSnackBarUndoTextPhrase = savedState.getString(UNDO_TEXT_TAG);
             swipeIconSize = savedState.getInt(ICON_SIZE_TAG);
             swipeTextSize = savedState.getInt(TEXT_SIZE_TAG);
             swipeAccentColor = savedState.getInt(COLOR_ACCENT_TAG);
             swipePositiveBackgroundColor = savedState.getInt(COLOR_BG_POSITIVE_TAG);
             swipeNegativeBackgroundColor = savedState.getInt(COLOR_BG_NEGATIVE_TAG);
-        }
-
-        public void setEditMode(Modes editMode) {
-            this.editMode = editMode;
         }
 
         public void setSwipeSnackBarUndoTextPhrase(String swipeSnackBarUndoTextPhrase) {
@@ -413,10 +412,6 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
         public void setSwipeNegativeBackgroundColor(int swipeNegativeBackgroundColor) {
             this.swipeNegativeBackgroundColor = swipeNegativeBackgroundColor;
-        }
-
-        public Modes getEditMode() {
-            return editMode;
         }
 
         public String getSwipeSnackBarUndoTextPhrase() {
@@ -447,5 +442,4 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
             return pendingActionDelay;
         }
     }
-
 }

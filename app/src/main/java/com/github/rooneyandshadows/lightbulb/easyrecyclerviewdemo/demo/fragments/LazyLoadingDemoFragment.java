@@ -59,7 +59,7 @@ public class LazyLoadingDemoFragment extends BaseFragment {
 
     private void setupRecycler(Bundle savedState) {
         recyclerView.setAdapter(new SimpleAdapter());
-        recyclerView.getRecyclerView().addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
+        recyclerView.addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
         recyclerView.setLoadMoreCallback(view -> recyclerView.postDelayed(() -> {
                     recyclerView.getAdapter().appendCollection(generateData(10, recyclerView.getAdapter().getItems().size()));
                     recyclerView.showLoadingFooter(false);

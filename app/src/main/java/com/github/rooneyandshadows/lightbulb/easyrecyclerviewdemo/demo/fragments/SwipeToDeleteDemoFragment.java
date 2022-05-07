@@ -1,5 +1,6 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewSwipeHandler;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewSwipeHandler.Directions;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel;
@@ -64,7 +66,7 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
     private void setupRecycler(Bundle savedState) {
         recyclerView.setAdapter(new SimpleAdapter(), configureSwipeHandler(recyclerView));
         recyclerView.setEmptyLayout(generateEmptyLayout());
-        recyclerView.getRecyclerView().addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
+        recyclerView.addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
         if (savedState == null)
             recyclerView.getAdapter().setCollection(generateData(10));
     }
@@ -72,8 +74,13 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
     private EasyRecyclerViewSwipeHandler.SwipeCallbacks<DemoModel> configureSwipeHandler(EasyRecyclerView<DemoModel, SimpleAdapter> recyclerView) {
         return new EasyRecyclerViewSwipeHandler.SwipeCallbacks<DemoModel>() {
             @Override
-            public EasyRecyclerViewSwipeHandler.Directions setAllowedSwipeDirections(DemoModel item) {
-                return EasyRecyclerViewSwipeHandler.Directions.LEFT;
+            public Directions setAllowedSwipeDirections(DemoModel item) {
+                return Directions.LEFT_RIGHT;
+            }
+
+            @Override
+            public Directions setAllowedDragDirections(DemoModel item) {
+                return Directions.UP_DOWN;
             }
 
             @Override
@@ -82,26 +89,30 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
             }
 
             @Override
-            public void swipedLeftAction(DemoModel item, Integer position) {
-                //   int actualPosition = recyclerView.getAdapter().getPosition(item);
-                //   recyclerView.getAdapter().removeItem(actualPosition);
+            public void onSwipeActionApplied(DemoModel item, int position, Directions direction) {
+                int actualPosition = recyclerView.getAdapter().getPosition(item);
+                recyclerView.getAdapter().removeItem(actualPosition);
             }
 
             @Override
-            public void swipedRightAction(DemoModel item, Integer position) {
+            public void onActionCancelled(DemoModel item, Integer position) {
+                int actualPosition = recyclerView.getAdapter().getPosition(item);
+                recyclerView.itemChanged(actualPosition);
             }
 
             @Override
-            public void cancelAction(DemoModel item, Integer position) {
-                recyclerView.itemChanged(position);
+            public int getSwipeBackgroundColor(Directions direction) {
+                return ResourceUtils.getColorByAttribute(getContextActivity(), R.attr.colorError);
             }
 
             @Override
-            public String getPendingActionText(Integer direction) {
-                if (direction == ItemTouchHelper.LEFT) {
-                    return "Delete";
-                } else
-                    return "";
+            public Drawable getSwipeIcon(Directions direction) {
+                return ResourceUtils.getDrawable(recyclerView.getContext(), com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.drawable.icon_delete);
+            }
+
+            @Override
+            public String getPendingActionText(Directions direction) {
+                return "Delete";
             }
 
             @Override

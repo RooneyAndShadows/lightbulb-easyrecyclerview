@@ -22,6 +22,5 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/app_bar_layout"
-        app:ERV_SwipeMode="add_remove" />
+        android:layout_below="@id/app_bar_layout" />
 </RelativeLayout>

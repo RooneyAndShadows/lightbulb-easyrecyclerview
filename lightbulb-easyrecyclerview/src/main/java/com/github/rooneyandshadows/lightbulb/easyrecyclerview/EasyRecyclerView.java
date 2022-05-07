@@ -209,7 +209,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
      */
     public void setAdapter(AType adapter, EasyRecyclerViewSwipeHandler.SwipeCallbacks<IType> swipeCallbacks) {
         setAdapter(adapter);
-        if (!swipeConfiguration.getEditMode().equals(EasyRecyclerViewSwipeHandler.Modes.NON_EDITABLE)) {
+        if (swipeCallbacks != null) {
             swipeToDeleteCallbacks = new EasyRecyclerViewSwipeHandler<>(this, adapter, swipeConfiguration);
             swipeToDeleteCallbacks.setSwipeCallbacks(swipeCallbacks);
             ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeToDeleteCallbacks);
@@ -455,17 +455,24 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     /**
-     * @return original recycler view.
-     */
-    public RecyclerView getRecyclerView() {
-        return recyclerView;
-    }
-
-    /**
      * @return alternative layout for empty list or null if not presented.
      */
     public View getEmptyLayoutView() {
         return emptyLayoutView;
+    }
+
+    /**
+     * @return Layout manager for the view
+     */
+    public RecyclerView.LayoutManager getLayoutManager() {
+        return recyclerView.getLayoutManager();
+    }
+
+    /**
+     * @return Count of added item decorations to the recycler view.
+     */
+    public int getItemDecorationCount() {
+        return recyclerView.getItemDecorationCount();
     }
 
     /**
@@ -560,6 +567,33 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             swipeToDeleteCallbacks.cancelPendingAction();
     }
 
+    /**
+     * Adds item decoration to the recycler view
+     *
+     * @param itemDecoration - Item decoration to add.
+     */
+    public void addItemDecoration(RecyclerView.ItemDecoration itemDecoration) {
+        recyclerView.addItemDecoration(itemDecoration);
+    }
+
+    /**
+     * Removes item decoration from the recycler view
+     *
+     * @param itemDecoration - Item decoration to remove.
+     */
+    public void removeItemDecoration(RecyclerView.ItemDecoration itemDecoration) {
+        recyclerView.removeItemDecoration(itemDecoration);
+    }
+
+    /**
+     * Removes item decoration from the recycler view
+     *
+     * @param itemDecorationIndex - index of the item decoration to remove.
+     */
+    public void removeItemDecorationAt(int itemDecorationIndex) {
+        recyclerView.removeItemDecorationAt(itemDecorationIndex);
+    }
+
     private void readAttributes(Context context, AttributeSet attrs) {
         TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.EasyRecyclerView, 0, 0);
         try {
@@ -574,9 +608,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
                 layoutManagerType = LayoutManagerTypes.valueOf(attributes.getInt(R.styleable.EasyRecyclerView_ERV_LayoutManager, 1));
             else layoutManagerType = getLayoutManagerType();
             //SWIPE ATTRIBUTES
-            int editModeValue = attributes.getInteger(R.styleable.EasyRecyclerView_ERV_SwipeMode, 1);
             swipeConfiguration = new EasyRecyclerViewSwipeHandler.SwipeConfiguration();
-            swipeConfiguration.setEditMode(EasyRecyclerViewSwipeHandler.Modes.valueOf(editModeValue));
             swipeConfiguration.setSwipeSnackBarUndoTextPhrase(StringUtils.getOrDefault(attributes.getString(R.styleable.EasyRecyclerView_ERV_SwipeUndoTextPhrase), ResourceUtils.getPhrase(context, R.string.lv_swipe_undo_default_text)));
             swipeConfiguration.setSwipeIconSize(attributes.getDimensionPixelSize(R.styleable.EasyRecyclerView_ERV_SwipeIconSize, ResourceUtils.getDimenPxById(context, R.dimen.lv_swipe_icon_size)));
             swipeConfiguration.setSwipeTextSize(attributes.getDimensionPixelSize(R.styleable.EasyRecyclerView_ERV_SwipeTextSize, ResourceUtils.getDimenPxById(context, R.dimen.lv_swipe_text_size)));
