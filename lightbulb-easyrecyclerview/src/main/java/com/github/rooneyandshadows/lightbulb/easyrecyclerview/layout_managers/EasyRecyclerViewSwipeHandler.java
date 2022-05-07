@@ -33,7 +33,6 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     private final SwipeConfiguration configuration;
     private final SwipeToDeleteDrawerHelper drawer;
     private final EasyRecyclerView<IType, AType> easyRecyclerView;
-    private final EasyRecyclerView<IType, AType> recyclerView;
     private final Handler actionsHandler = new Handler(Looper.getMainLooper(), null);
     private final boolean isVerticalLayoutManager;
     private Directions allowedSwipeDirections;
@@ -47,10 +46,9 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         this.configuration = configuration;
         this.easyRecyclerView = easyRecyclerView;
-        this.recyclerView = easyRecyclerView;
         this.adapter = adapter;
         this.drawer = new SwipeToDeleteDrawerHelper();
-        this.isVerticalLayoutManager = recyclerView.getLayoutManager().canScrollVertically();
+        this.isVerticalLayoutManager = easyRecyclerView.getLayoutManager().canScrollVertically();
     }
 
     @Override
@@ -179,10 +177,10 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
             int position = adapter.getPosition(item);
             if (swipeCallbacks != null) {
                 if (undoClicked) {
-                    recyclerView.itemChanged(position);
-                    swipeCallbacks.onActionCancelled(item, position);
+                    easyRecyclerView.itemChanged(position);
+                    swipeCallbacks.onActionCancelled(item, adapter, position);
                 } else {
-                    swipeCallbacks.onSwipeActionApplied(item, position, direction);
+                    swipeCallbacks.onSwipeActionApplied(item, position, adapter, direction);
                 }
                 pendingAction = null;
             }
@@ -200,17 +198,17 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
             pendingActionText = swipeCallbacks.getPendingActionText(direction);
             undoText = swipeCallbacks.getCancelActionText();
         }
-        snackbar = Snackbar.make(recyclerView, pendingActionText, configuration.pendingActionDelay)
+        snackbar = Snackbar.make(easyRecyclerView, pendingActionText, configuration.pendingActionDelay)
                 .setAction(undoText, view -> cancelPendingAction())
-                .setActionTextColor(ResourceUtils.getColorByAttribute(recyclerView.getContext(), R.attr.colorError))
+                .setActionTextColor(ResourceUtils.getColorByAttribute(easyRecyclerView.getContext(), R.attr.colorError))
                 .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
         View backgroundView = snackbar.getView();
         snackbar.show();
     }
 
     private Boolean isItemVisible(RecyclerView.ViewHolder viewHolder) {
-        if (recyclerView.getLayoutManager() != null)
-            return recyclerView.getLayoutManager().isViewPartiallyVisible(viewHolder.itemView, false, true);
+        if (easyRecyclerView.getLayoutManager() != null)
+            return easyRecyclerView.getLayoutManager().isViewPartiallyVisible(viewHolder.itemView, false, true);
         return false;
     }
 
@@ -222,14 +220,14 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     }
 
     private int getActionBackgroundColor(Directions directions) {
-        int background = ResourceUtils.getColorByAttribute(recyclerView.getContext(), R.attr.colorError);
+        int background = ResourceUtils.getColorByAttribute(easyRecyclerView.getContext(), R.attr.colorError);
         if (swipeCallbacks != null)
             background = swipeCallbacks.getSwipeBackgroundColor(directions);
         return background;
     }
 
     private Drawable getActionIcon(Directions directions) {
-        Drawable icon = ResourceUtils.getDrawable(recyclerView.getContext(), R.drawable.icon_delete);
+        Drawable icon = ResourceUtils.getDrawable(easyRecyclerView.getContext(), R.drawable.icon_delete);
         icon.setTint(configuration.swipeAccentColor);
         if (swipeCallbacks != null)
             icon = swipeCallbacks.getSwipeIcon(directions);
@@ -323,9 +321,9 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
         String getActionBackgroundText(ItemType item);
 
-        void onSwipeActionApplied(ItemType item, int position, Directions direction);
+        void onSwipeActionApplied(ItemType item, int position, EasyRecyclerAdapter<ItemType> adapter, Directions direction);
 
-        void onActionCancelled(ItemType item, Integer position);
+        void onActionCancelled(ItemType item, EasyRecyclerAdapter<ItemType> adapter, Integer position);
 
         int getSwipeBackgroundColor(Directions direction);
 

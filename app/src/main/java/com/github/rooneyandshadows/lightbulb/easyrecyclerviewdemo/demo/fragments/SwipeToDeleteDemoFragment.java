@@ -18,6 +18,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.Ea
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,15 +90,13 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
             }
 
             @Override
-            public void onSwipeActionApplied(DemoModel item, int position, Directions direction) {
+            public void onSwipeActionApplied(DemoModel item, int position, EasyRecyclerAdapter<DemoModel> adapter, Directions direction) {
                 int actualPosition = recyclerView.getAdapter().getPosition(item);
-                recyclerView.getAdapter().removeItem(actualPosition);
+                adapter.removeItem(actualPosition);
             }
 
             @Override
-            public void onActionCancelled(DemoModel item, Integer position) {
-                int actualPosition = recyclerView.getAdapter().getPosition(item);
-                recyclerView.itemChanged(actualPosition);
+            public void onActionCancelled(DemoModel item, EasyRecyclerAdapter<DemoModel> adapter, Integer position) {
             }
 
             @Override
