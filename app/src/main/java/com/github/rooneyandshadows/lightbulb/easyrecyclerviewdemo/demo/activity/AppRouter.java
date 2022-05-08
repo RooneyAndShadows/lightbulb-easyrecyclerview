@@ -3,12 +3,14 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity
 import com.github.rooneyandshadows.lightbulb.application.activity.BaseActivity;
 import com.github.rooneyandshadows.lightbulb.application.activity.routing.BaseApplicationRouter;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.BounceEffectDemoFragment;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.DragToReorderDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.EmptylayoutDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.HeaderAndFooterDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.LazyLoadingDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.PullToRefreshDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.RegularDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.SelectionDemoFragment;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.StickyHeadersDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.SwipeToDeleteDemoFragment;
 
 import androidx.annotation.NonNull;
@@ -60,9 +62,17 @@ public class AppRouter extends BaseApplicationRouter {
         navigate(command, screen);
     }
 
+    public void toDragToReorder(NavigationCommands command) {
+        Screen screen = new Screens.DragToReorder();
+        navigate(command, screen);
+    }
+
+    public void toStickyHeaders(NavigationCommands command) {
+        Screen screen = new Screens.StickyHeaders();
+        navigate(command, screen);
+    }
+
     //SCREENS...
-
-
     public static final class Screens {
 
         public static final class Regular extends Screen {
@@ -126,6 +136,22 @@ public class AppRouter extends BaseApplicationRouter {
             @Override
             public Fragment getFragment() {
                 return SwipeToDeleteDemoFragment.getNewInstance();
+            }
+        }
+
+        public static final class DragToReorder extends Screen {
+            @NonNull
+            @Override
+            public Fragment getFragment() {
+                return DragToReorderDemoFragment.getNewInstance();
+            }
+        }
+
+        public static final class StickyHeaders extends Screen {
+            @NonNull
+            @Override
+            public Fragment getFragment() {
+                return StickyHeadersDemoFragment.getNewInstance();
             }
         }
     }

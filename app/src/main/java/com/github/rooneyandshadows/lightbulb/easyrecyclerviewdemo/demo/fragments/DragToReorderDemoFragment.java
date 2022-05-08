@@ -27,11 +27,11 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class SwipeToDeleteDemoFragment extends BaseFragment {
+public class DragToReorderDemoFragment extends BaseFragment {
     private EasyRecyclerView<DemoModel, SimpleAdapter> recyclerView;
 
-    public static SwipeToDeleteDemoFragment getNewInstance() {
-        return new SwipeToDeleteDemoFragment();
+    public static DragToReorderDemoFragment getNewInstance() {
+        return new DragToReorderDemoFragment();
     }
 
     @NonNull
@@ -49,7 +49,7 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
 
     @Override
     public View createView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_demo_swipe_to_delete, container, false);
+        return inflater.inflate(R.layout.fragment_demo_drag_to_reorder, container, false);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
     }
 
     private void setupRecycler(Bundle savedState) {
-        View headerView = getLayoutInflater().inflate(R.layout.demo_header_item_swipe_to_delete, null);
+        View headerView = getLayoutInflater().inflate(R.layout.demo_header_item_drag_to_reorder, null);
         recyclerView.setAdapter(new SimpleAdapter(), configureSwipeHandler(recyclerView));
         recyclerView.addHeaderView(headerView);
         recyclerView.setEmptyLayout(generateEmptyLayout());
@@ -78,12 +78,12 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
         return new EasyRecyclerViewTouchHandler.TouchCallbacks<DemoModel>() {
             @Override
             public Directions getAllowedSwipeDirections(DemoModel item) {
-                return Directions.LEFT_RIGHT;
+                return Directions.NONE;
             }
 
             @Override
             public Directions getAllowedDragDirections(DemoModel item) {
-                return Directions.NONE;
+                return Directions.UP_DOWN;
             }
 
             @Override
