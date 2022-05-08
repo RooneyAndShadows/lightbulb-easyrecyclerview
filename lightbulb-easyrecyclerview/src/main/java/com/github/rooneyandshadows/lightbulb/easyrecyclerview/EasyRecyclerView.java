@@ -16,7 +16,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.factor.bouncy.BouncyRecyclerView;
-import com.github.rooneyandshadows.java.commons.string.StringUtils;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewSwipeHandler;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.FlowLayoutManager;
@@ -70,7 +69,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     private LayoutAnimationController animationController;
     private LoadMoreCallback<IType, AType> loadMoreCallback;
     private RefreshCallback<IType, AType> refreshCallback;
-    private EasyRecyclerViewSwipeHandler.SwipeConfiguration swipeConfiguration;
     private EasyRecyclerViewSwipeHandler<IType, AType> swipeToDeleteCallbacks;
     private EasyRecyclerItemsReadyListener renderedCallback = null;
     private EasyRecyclerEmptyLayoutListener emptyLayoutListeners = null;
@@ -118,7 +116,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         myState.showingLoadingIndicator = showingLoadingHeader;
         myState.emptyLayoutShowing = showingEmptyLayout;
         myState.layoutManagerType = layoutManagerType.value;
-        myState.swipeConfigState = swipeConfiguration.saveConfigurationState();
         if (emptyLayoutId != null)
             myState.emptyLayoutId = emptyLayoutId;
         if (recyclerView != null && recyclerView.getLayoutManager() != null) {
@@ -150,7 +147,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         showLoadingFooter(savedState.showingLoadingFooterLayout);
         setEmptyLayoutVisibility(savedState.emptyLayoutShowing);
         configureLayoutManager();
-        swipeConfiguration.restoreConfigurationState(savedState.swipeConfigState);
         if (savedState.layoutManagerState != null && recyclerView != null && recyclerView.getLayoutManager() != null) {
             Parcelable layState = savedState.layoutManagerState.getParcelable(LAYOUT_MANAGER_STATE_TAG);
             recyclerView.getLayoutManager().onRestoreInstanceState(layState);
@@ -210,8 +206,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     public void setAdapter(AType adapter, EasyRecyclerViewSwipeHandler.SwipeCallbacks<IType> swipeCallbacks) {
         setAdapter(adapter);
         if (swipeCallbacks != null) {
-            swipeToDeleteCallbacks = new EasyRecyclerViewSwipeHandler<>(this, adapter, swipeConfiguration);
-            swipeToDeleteCallbacks.setSwipeCallbacks(swipeCallbacks);
+            swipeToDeleteCallbacks = new EasyRecyclerViewSwipeHandler<>(this, swipeCallbacks);
             ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeToDeleteCallbacks);
             itemTouchHelper.attachToRecyclerView(recyclerView);
         }
@@ -607,12 +602,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             if (getLayoutManagerType() == null || getLayoutManagerType().equals(LayoutManagerTypes.UNDEFINED))
                 layoutManagerType = LayoutManagerTypes.valueOf(attributes.getInt(R.styleable.EasyRecyclerView_ERV_LayoutManager, 1));
             else layoutManagerType = getLayoutManagerType();
-            //SWIPE ATTRIBUTES
-            swipeConfiguration = new EasyRecyclerViewSwipeHandler.SwipeConfiguration();
-            swipeConfiguration.setSwipeSnackBarUndoTextPhrase(StringUtils.getOrDefault(attributes.getString(R.styleable.EasyRecyclerView_ERV_SwipeUndoTextPhrase), ResourceUtils.getPhrase(context, R.string.lv_swipe_undo_default_text)));
-            swipeConfiguration.setSwipeIconSize(attributes.getDimensionPixelSize(R.styleable.EasyRecyclerView_ERV_SwipeIconSize, ResourceUtils.getDimenPxById(context, R.dimen.lv_swipe_icon_size)));
-            swipeConfiguration.setSwipeTextSize(attributes.getDimensionPixelSize(R.styleable.EasyRecyclerView_ERV_SwipeTextSize, ResourceUtils.getDimenPxById(context, R.dimen.lv_swipe_text_size)));
-            swipeConfiguration.setSwipeAccentColor(attributes.getColor(R.styleable.EasyRecyclerView_ERV_SwipeTextAndIconColor, ResourceUtils.getColorById(context, R.color.view_list_swipe_text_color)));
         } finally {
             attributes.recycle();
         }
@@ -673,7 +662,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
 
     private void configureRefreshLayout() {
         refreshLayout = findViewById(R.id.refreshLayout);
-        int indicatorSize = ResourceUtils.getDimenPxById(getContext(), R.dimen.lv_header_refresh_indicator_size);
+        int indicatorSize = ResourceUtils.getDimenPxById(getContext(), R.dimen.erv_header_refresh_indicator_size);
         int refreshBackgroundColor = ResourceUtils.getColorByAttribute(getContext(), android.R.attr.colorBackground);
         int refreshStrokeColor = ResourceUtils.getColorByAttribute(getContext(), android.R.attr.colorPrimary);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, indicatorSize);

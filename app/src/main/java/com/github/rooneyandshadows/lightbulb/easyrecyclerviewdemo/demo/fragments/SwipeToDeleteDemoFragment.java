@@ -1,5 +1,6 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,7 +26,6 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.ItemTouchHelper;
 
 public class SwipeToDeleteDemoFragment extends BaseFragment {
     private EasyRecyclerView<DemoModel, SimpleAdapter> recyclerView;
@@ -115,8 +115,8 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
             }
 
             @Override
-            public String getCancelActionText() {
-                return "Cancel";
+            public EasyRecyclerViewSwipeHandler.SwipeConfiguration getConfiguration(Context context) {
+                return new EasyRecyclerViewSwipeHandler.SwipeConfiguration(getContext());
             }
         };
     }

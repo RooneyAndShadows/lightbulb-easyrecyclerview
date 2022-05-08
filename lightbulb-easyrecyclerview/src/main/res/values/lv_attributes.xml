@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="view_list_transition_duration">250</integer>
-    <color name="view_list_swipe_text_color">#ffffff</color>
-    <color name="view_list_swipe_positive_color">#6db33f</color>
-    <color name="view_list_swipe_negative_color">#cf6679</color>
     <declare-styleable name="EasyRecyclerView">
         <attr name="ERV_EmptyLayoutId" format="reference" />
         <attr name="ERV_SupportsPullToRefresh" format="boolean" />
@@ -14,9 +11,5 @@
             <enum name="LAYOUT_LINEAR_HORIZONTAL" value="2" />
             <enum name="LAYOUT_FLOW" value="3" />
         </attr>
-        <attr name="ERV_SwipeUndoTextPhrase" format="string" />
-        <attr name="ERV_SwipeIconSize" format="dimension" />
-        <attr name="ERV_SwipeTextSize" format="dimension" />
-        <attr name="ERV_SwipeTextAndIconColor" format="color" />
     </declare-styleable>
 </resources>

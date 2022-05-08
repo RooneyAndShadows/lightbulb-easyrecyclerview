@@ -1,10 +1,10 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.SparseArray;
@@ -38,15 +38,12 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     private Directions allowedSwipeDirections;
     private Directions allowedDragDirections;
 
-    public void setSwipeCallbacks(SwipeCallbacks<IType> callbacks) {
-        this.swipeCallbacks = callbacks;
-    }
-
-    public EasyRecyclerViewSwipeHandler(EasyRecyclerView<IType, AType> easyRecyclerView, AType adapter, SwipeConfiguration configuration) {
+    public EasyRecyclerViewSwipeHandler(EasyRecyclerView<IType, AType> easyRecyclerView, SwipeCallbacks<IType> swipeCallbacks) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
-        this.configuration = configuration;
+        this.swipeCallbacks = swipeCallbacks;
+        this.configuration = swipeCallbacks.getConfiguration(easyRecyclerView.getContext());
         this.easyRecyclerView = easyRecyclerView;
-        this.adapter = adapter;
+        this.adapter = easyRecyclerView.getAdapter();
         this.drawer = new SwipeToDeleteDrawerHelper();
         this.isVerticalLayoutManager = easyRecyclerView.getLayoutManager().canScrollVertically();
     }
@@ -185,7 +182,7 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
                 pendingAction = null;
             }
         };
-        actionsHandler.postDelayed(pendingAction, configuration.pendingActionDelay);
+        actionsHandler.postDelayed(pendingAction, configuration.swipeActionDelay);
     }
 
     @SuppressWarnings("ShowToast")
@@ -193,12 +190,12 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         executePendingAction();
         addPendingAction(item, direction);
         String pendingActionText = "";
-        String undoText = configuration.swipeSnackBarUndoTextPhrase;
+        String undoText = configuration.swipeCancelActionText;
         if (swipeCallbacks != null) {
             pendingActionText = swipeCallbacks.getPendingActionText(direction);
-            undoText = swipeCallbacks.getCancelActionText();
+            undoText = configuration.getSwipeCancelActionText();
         }
-        snackbar = Snackbar.make(easyRecyclerView, pendingActionText, configuration.pendingActionDelay)
+        snackbar = Snackbar.make(easyRecyclerView, pendingActionText, configuration.swipeActionDelay)
                 .setAction(undoText, view -> cancelPendingAction())
                 .setActionTextColor(ResourceUtils.getColorByAttribute(easyRecyclerView.getContext(), R.attr.colorError))
                 .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
@@ -228,7 +225,7 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
     private Drawable getActionIcon(Directions directions) {
         Drawable icon = ResourceUtils.getDrawable(easyRecyclerView.getContext(), R.drawable.icon_delete);
-        icon.setTint(configuration.swipeAccentColor);
+        icon.setTint(configuration.swipeTextAndIconColor);
         if (swipeCallbacks != null)
             icon = swipeCallbacks.getSwipeIcon(directions);
         return icon;
@@ -260,7 +257,7 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
             int iconLeft = -1;
             int iconRight = -1;
             Paint textPaint = new Paint();
-            textPaint.setColor(configuration.swipeAccentColor);
+            textPaint.setColor(configuration.swipeTextAndIconColor);
             textPaint.setAntiAlias(true);
             textPaint.setTextSize(configuration.swipeTextSize);
             textPaint.setElegantTextHeight(true);
@@ -331,7 +328,7 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
         String getPendingActionText(Directions direction);
 
-        String getCancelActionText();
+        SwipeConfiguration getConfiguration(Context context);
     }
 
     public enum Directions {
@@ -367,58 +364,53 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     }
 
     public static class SwipeConfiguration {
-        private static final String UNDO_TEXT_TAG = "UNDO_TEXT_TAG";
-        private static final String ICON_SIZE_TAG = "ICON_SIZE_TAG";
-        private static final String TEXT_SIZE_TAG = "TEXT_SIZE_TAG";
-        private static final String COLOR_ACCENT_TAG = "COLOR_ACCENT_TAG";
-        private static final String COLOR_BG_POSITIVE_TAG = "COLOR_BG_POSITIVE_TAG";
-        private static final String COLOR_BG_NEGATIVE_TAG = "COLOR_BG_NEGATIVE_TAG";
-        private static final String COLOR_BG_SNACKBAR_TAG = "COLOR_BG_SNACKBAR_TAG";
-        private static final String SNACKBAR_TEXT_COLOR_TAG = "SNACKBAR_TEXT_COLOR_TAG";
-        private String swipeSnackBarUndoTextPhrase;
-        private int swipeAccentColor;
+        private String swipeCancelActionText;
+        private int swipeTextAndIconColor;
         private int swipeIconSize;
         private int swipeTextSize;
-        private final int pendingActionDelay = 4000;
+        private int swipeActionDelay;
 
-        public Bundle saveConfigurationState() {
-            Bundle savedState = new Bundle();
-            savedState.putString(UNDO_TEXT_TAG, swipeSnackBarUndoTextPhrase);
-            savedState.putInt(ICON_SIZE_TAG, swipeIconSize);
-            savedState.putInt(TEXT_SIZE_TAG, swipeTextSize);
-            savedState.putInt(COLOR_ACCENT_TAG, swipeAccentColor);
-            return savedState;
+        public SwipeConfiguration(Context context) {
+            this.swipeCancelActionText = ResourceUtils.getPhrase(context, R.string.erv_swipe_undo_default_text);
+            this.swipeTextAndIconColor = ResourceUtils.getColorById(context, R.color.white);
+            this.swipeIconSize = ResourceUtils.getDimenPxById(context, R.dimen.erv_swipe_icon_size);
+            this.swipeTextSize = ResourceUtils.getDimenPxById(context, R.dimen.erv_swipe_text_size);
+            this.swipeActionDelay = 4000;
         }
 
-        public void restoreConfigurationState(Bundle savedState) {
-            swipeSnackBarUndoTextPhrase = savedState.getString(UNDO_TEXT_TAG);
-            swipeIconSize = savedState.getInt(ICON_SIZE_TAG);
-            swipeTextSize = savedState.getInt(TEXT_SIZE_TAG);
-            swipeAccentColor = savedState.getInt(COLOR_ACCENT_TAG);
+        public SwipeConfiguration withSwipeCancelActionText(String text) {
+            this.swipeCancelActionText = text;
+            return this;
         }
 
-        public void setSwipeSnackBarUndoTextPhrase(String swipeSnackBarUndoTextPhrase) {
-            this.swipeSnackBarUndoTextPhrase = swipeSnackBarUndoTextPhrase;
+        public SwipeConfiguration withSwipeTextAndIconColor(int color) {
+            this.swipeTextAndIconColor = color;
+            return this;
         }
 
-        public void setSwipeIconSize(int swipeIconSize) {
-            this.swipeIconSize = swipeIconSize;
+        public SwipeConfiguration withSwipeIconSize(int color) {
+            this.swipeIconSize = color;
+            return this;
         }
 
-        public void setSwipeTextSize(int swipeTextSize) {
-            this.swipeTextSize = swipeTextSize;
+        public SwipeConfiguration withSwipeTextSize(int color) {
+            this.swipeTextSize = color;
+            return this;
         }
 
-        public void setSwipeAccentColor(int swipeAccentColor) {
-            this.swipeAccentColor = swipeAccentColor;
+        public SwipeConfiguration withSwipeActionDelay(int delay) {
+            if (delay < 2000)
+                delay = 2000;
+            this.swipeActionDelay = delay;
+            return this;
         }
 
-        public String getSwipeSnackBarUndoTextPhrase() {
-            return swipeSnackBarUndoTextPhrase;
+        public String getSwipeCancelActionText() {
+            return swipeCancelActionText;
         }
 
-        public int getSwipeAccentColor() {
-            return swipeAccentColor;
+        public int getSwipeTextAndIconColor() {
+            return swipeTextAndIconColor;
         }
 
         public int getSwipeIconSize() {
@@ -429,8 +421,8 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
             return swipeTextSize;
         }
 
-        public int getPendingActionDelay() {
-            return pendingActionDelay;
+        public int getSwipeActionDelay() {
+            return swipeActionDelay;
         }
     }
 }

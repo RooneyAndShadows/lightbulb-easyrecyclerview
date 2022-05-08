@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="lv_header_refresh_indicator_size" type="dimen">30dp</item>
-    <item name="lv_load_more_footer_pbar_size" type="dimen">32dp</item>
-    <item name="lv_load_more_footer_padding" type="dimen">8dp</item>
-    <item name="lv_swipe_icon_size" type="dimen">40dp</item>
-    <item name="lv_swipe_text_size" type="dimen">26sp</item>
+    <item name="erv_header_refresh_indicator_size" type="dimen">30dp</item>
+    <item name="erv_load_more_footer_pbar_size" type="dimen">32dp</item>
+    <item name="erv_load_more_footer_padding" type="dimen">8dp</item>
+    <item name="erv_swipe_icon_size" type="dimen">40dp</item>
+    <item name="erv_swipe_text_size" type="dimen">26sp</item>
 </resources>

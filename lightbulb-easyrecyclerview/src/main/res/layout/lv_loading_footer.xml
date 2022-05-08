@@ -4,11 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
-    android:padding="@dimen/lv_load_more_footer_padding">
+    android:padding="@dimen/erv_load_more_footer_padding">
 
     <ProgressBar
-        android:layout_width="@dimen/lv_load_more_footer_pbar_size"
-        android:layout_height="@dimen/lv_load_more_footer_pbar_size"
+        android:layout_width="@dimen/erv_load_more_footer_pbar_size"
+        android:layout_height="@dimen/erv_load_more_footer_pbar_size"
         android:layout_centerInParent="true" />
 
 </RelativeLayout>
