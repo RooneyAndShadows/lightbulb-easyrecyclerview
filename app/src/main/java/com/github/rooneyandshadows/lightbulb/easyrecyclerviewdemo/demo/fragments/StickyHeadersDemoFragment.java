@@ -29,6 +29,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -86,7 +87,7 @@ public class StickyHeadersDemoFragment extends BaseFragment {
 
     private void setupRecycler(Bundle savedState) {
         recyclerView.setAdapter(new StickyAdapter());
-        //recyclerView.addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContextActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.addItemDecoration(new StickyHeaderItemDecoration(recyclerView.getAdapter()) {
             @Override
             public void onDrawOver(@NotNull Canvas c, @NotNull RecyclerView parent, RecyclerView.@NotNull State state) {
@@ -102,10 +103,9 @@ public class StickyHeadersDemoFragment extends BaseFragment {
     private List<StickyDemoModel> generateInitialData() {
         List<StickyDemoModel> models = new ArrayList<>();
         for (Integer i = 1; i < 10; i++) {
-            models.add(new StickyDemoModel(true, "Header" + i, ""));
-            for (Integer j = 1; j < 8; j++) {
+            models.add(new StickyDemoModel(true, "Header " + i, ""));
+            for (Integer j = 1; j < 8; j++)
                 models.add(new StickyDemoModel(false, String.format("Demo title %s.%s", i, j), String.format("Demo subtitle %s.%s", i, j)));
-            }
         }
         return models;
     }

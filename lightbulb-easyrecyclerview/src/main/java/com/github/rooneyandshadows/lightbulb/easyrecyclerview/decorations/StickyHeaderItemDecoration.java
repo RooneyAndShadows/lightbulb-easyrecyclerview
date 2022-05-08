@@ -1,6 +1,7 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations;
 
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +11,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class StickyHeaderItemDecoration extends RecyclerView.ItemDecoration {
-
-    private StickyHeaderInterface mListener;
+    private final int verticalSpacing;
+    private final int horizontalSpacing;
+    private final StickyHeaderInterface mListener;
     private Integer mHeaderHeight;
+
+    public StickyHeaderItemDecoration(StickyHeaderInterface listener, int spacing) {
+        this.mListener = listener;
+        this.verticalSpacing = spacing;
+        this.horizontalSpacing = spacing;
+    }
 
     public StickyHeaderItemDecoration(StickyHeaderInterface listener) {
         this.mListener = listener;
+        this.verticalSpacing = 0;
+        this.horizontalSpacing = 0;
     }
 
     @Override
@@ -54,20 +64,21 @@ public class StickyHeaderItemDecoration extends RecyclerView.ItemDecoration {
 
     private void drawHeader(Canvas c, View header) {
         c.save();
-        c.translate(0, 0);
+        c.translate(horizontalSpacing, 0);
         header.draw(c);
         c.restore();
     }
 
     private void moveHeader(Canvas c, View currentHeader, View nextHeader) {
         c.save();
-        c.translate(0, nextHeader.getTop() - currentHeader.getHeight());
+        c.translate(horizontalSpacing, nextHeader.getTop() - currentHeader.getHeight() - verticalSpacing);
         currentHeader.draw(c);
         c.restore();
     }
 
     private View getChildInContact(RecyclerView parent, int contactPoint, int currentHeaderPos) {
         View childInContact = null;
+        contactPoint += verticalSpacing;
         for (int i = 0; i < parent.getChildCount(); i++) {
             int heightTolerance = 0;
             View child = parent.getChildAt(i);
@@ -79,7 +90,7 @@ public class StickyHeaderItemDecoration extends RecyclerView.ItemDecoration {
                     heightTolerance = mHeaderHeight - child.getHeight();
                 }
             }
-
+            heightTolerance += verticalSpacing;
             //add heightTolerance if child top be in display area
             int childBottomPosition;
             if (child.getTop() > 0) {
@@ -117,7 +128,16 @@ public class StickyHeaderItemDecoration extends RecyclerView.ItemDecoration {
 
         view.measure(childWidthSpec, childHeightSpec);
 
-        view.layout(0, 0, view.getMeasuredWidth(), mHeaderHeight = view.getMeasuredHeight());
+        view.layout(0, 0, view.getMeasuredWidth() - horizontalSpacing * 2, mHeaderHeight = view.getMeasuredHeight());
+    }
+
+    @Override
+    public void getItemOffsets(Rect outRect, @NonNull View view, RecyclerView parent, @NonNull RecyclerView.State state) {
+        outRect.left = horizontalSpacing;
+        outRect.right = horizontalSpacing;
+        outRect.top = verticalSpacing;
+        if (parent.getChildAdapterPosition(view) == parent.getAdapter().getItemCount() - 1)
+            outRect.bottom = verticalSpacing;
     }
 
     public interface StickyHeaderInterface {
