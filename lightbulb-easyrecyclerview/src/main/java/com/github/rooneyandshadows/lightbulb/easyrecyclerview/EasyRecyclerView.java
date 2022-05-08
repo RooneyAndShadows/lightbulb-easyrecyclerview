@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.factor.bouncy.BouncyRecyclerView;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewSwipeHandler;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewTouchHandler;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.FlowLayoutManager;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalLinearLayoutManager;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager;
@@ -69,7 +69,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     private LayoutAnimationController animationController;
     private LoadMoreCallback<IType, AType> loadMoreCallback;
     private RefreshCallback<IType, AType> refreshCallback;
-    private EasyRecyclerViewSwipeHandler<IType, AType> swipeToDeleteCallbacks;
+    private EasyRecyclerViewTouchHandler<IType, AType> swipeToDeleteCallbacks;
     private EasyRecyclerItemsReadyListener renderedCallback = null;
     private EasyRecyclerEmptyLayoutListener emptyLayoutListeners = null;
     private final Runnable showRefreshLayoutDelayedRunnable = () -> refreshLayout.setRefreshing(true);
@@ -203,10 +203,10 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
      * @param adapter        - recyclerview adapter.
      * @param swipeCallbacks - swipe callbacks.
      */
-    public void setAdapter(AType adapter, EasyRecyclerViewSwipeHandler.SwipeCallbacks<IType> swipeCallbacks) {
+    public void setAdapter(AType adapter, EasyRecyclerViewTouchHandler.TouchCallbacks<IType> swipeCallbacks) {
         setAdapter(adapter);
         if (swipeCallbacks != null) {
-            swipeToDeleteCallbacks = new EasyRecyclerViewSwipeHandler<>(this, swipeCallbacks);
+            swipeToDeleteCallbacks = new EasyRecyclerViewTouchHandler<>(this, swipeCallbacks);
             ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeToDeleteCallbacks);
             itemTouchHelper.attachToRecyclerView(recyclerView);
         }
@@ -545,7 +545,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     /**
      * Executed any pending swipe operation for item.
      *
-     * @see EasyRecyclerViewSwipeHandler#executePendingAction()
+     * @see EasyRecyclerViewTouchHandler#executePendingAction()
      */
     public void executePendingAction() {
         if (swipeToDeleteCallbacks != null)
@@ -555,7 +555,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     /**
      * Cancels any pending swipe operation for item.
      *
-     * @see EasyRecyclerViewSwipeHandler#executePendingAction()
+     * @see EasyRecyclerViewTouchHandler#executePendingAction()
      */
     public void cancelPendingAction() {
         if (swipeToDeleteCallbacks != null)

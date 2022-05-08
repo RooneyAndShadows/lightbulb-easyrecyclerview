@@ -14,8 +14,8 @@ import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.B
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewSwipeHandler;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewSwipeHandler.Directions;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewTouchHandler;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewTouchHandler.Directions;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel;
@@ -65,15 +65,17 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
     }
 
     private void setupRecycler(Bundle savedState) {
+        View headerView = getLayoutInflater().inflate(R.layout.demo_header_item_swipe_to_delete, null);
         recyclerView.setAdapter(new SimpleAdapter(), configureSwipeHandler(recyclerView));
+        recyclerView.addHeaderView(headerView);
         recyclerView.setEmptyLayout(generateEmptyLayout());
         recyclerView.addItemDecoration(new VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)));
         if (savedState == null)
-            recyclerView.getAdapter().setCollection(generateData(10));
+            recyclerView.getAdapter().setCollection(generateData(20));
     }
 
-    private EasyRecyclerViewSwipeHandler.SwipeCallbacks<DemoModel> configureSwipeHandler(EasyRecyclerView<DemoModel, SimpleAdapter> recyclerView) {
-        return new EasyRecyclerViewSwipeHandler.SwipeCallbacks<DemoModel>() {
+    private EasyRecyclerViewTouchHandler.TouchCallbacks<DemoModel> configureSwipeHandler(EasyRecyclerView<DemoModel, SimpleAdapter> recyclerView) {
+        return new EasyRecyclerViewTouchHandler.TouchCallbacks<DemoModel>() {
             @Override
             public Directions getAllowedSwipeDirections(DemoModel item) {
                 return Directions.LEFT_RIGHT;
@@ -91,8 +93,10 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
 
             @Override
             public void onSwipeActionApplied(DemoModel item, int position, EasyRecyclerAdapter<DemoModel> adapter, Directions direction) {
-                int actualPosition = recyclerView.getAdapter().getPosition(item);
-                adapter.removeItem(actualPosition);
+                recyclerView.post(() -> {
+                    int actualPosition = recyclerView.getAdapter().getPosition(item);
+                    adapter.removeItem(actualPosition);
+                });
             }
 
             @Override
@@ -106,7 +110,7 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
 
             @Override
             public Drawable getSwipeIcon(Directions direction) {
-                return ResourceUtils.getDrawable(recyclerView.getContext(), com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.drawable.icon_delete);
+                return ResourceUtils.getDrawable(recyclerView.getContext(), R.drawable.icon_delete);
             }
 
             @Override
@@ -115,8 +119,8 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
             }
 
             @Override
-            public EasyRecyclerViewSwipeHandler.SwipeConfiguration getConfiguration(Context context) {
-                return new EasyRecyclerViewSwipeHandler.SwipeConfiguration(getContext());
+            public EasyRecyclerViewTouchHandler.SwipeConfiguration getConfiguration(Context context) {
+                return new EasyRecyclerViewTouchHandler.SwipeConfiguration(getContext());
             }
         };
     }
@@ -128,7 +132,7 @@ public class SwipeToDeleteDemoFragment extends BaseFragment {
             ProgressBar progressBar = emptyLayout.findViewById(R.id.progressBar);
             emptyLayoutImage.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
-            emptyLayout.postDelayed(() -> recyclerView.getAdapter().appendCollection(generateData(10)), 2000);
+            emptyLayout.postDelayed(() -> recyclerView.getAdapter().appendCollection(generateData(20)), 2000);
         });
         return emptyLayout;
     }

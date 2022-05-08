@@ -24,21 +24,20 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
-public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> extends ItemTouchHelper.SimpleCallback {
+public class EasyRecyclerViewTouchHandler<IType extends EasyAdapterDataModel, AType extends EasyRecyclerAdapter<IType>> extends ItemTouchHelper.SimpleCallback {
     private Boolean undoClicked = false;
     private Snackbar snackbar;
     private Runnable pendingAction;
-    private SwipeCallbacks<IType> swipeCallbacks;
+    private final TouchCallbacks<IType> swipeCallbacks;
     private final AType adapter;
     private final SwipeConfiguration configuration;
     private final SwipeToDeleteDrawerHelper drawer;
     private final EasyRecyclerView<IType, AType> easyRecyclerView;
     private final Handler actionsHandler = new Handler(Looper.getMainLooper(), null);
     private final boolean isVerticalLayoutManager;
-    private Directions allowedSwipeDirections;
     private Directions allowedDragDirections;
 
-    public EasyRecyclerViewSwipeHandler(EasyRecyclerView<IType, AType> easyRecyclerView, SwipeCallbacks<IType> swipeCallbacks) {
+    public EasyRecyclerViewTouchHandler(EasyRecyclerView<IType, AType> easyRecyclerView, TouchCallbacks<IType> swipeCallbacks) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         this.swipeCallbacks = swipeCallbacks;
         this.configuration = swipeCallbacks.getConfiguration(easyRecyclerView.getContext());
@@ -50,7 +49,12 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
 
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-        allowedSwipeDirections = Directions.NONE;
+        int position = viewHolder.getAbsoluteAdapterPosition();
+        if (adapter.getHeadersCount() > 0 && position < adapter.getHeadersCount())
+            return 0;
+        if (adapter.getFootersCount() > 0 && position >= adapter.getItemCount())
+            return 0;
+        Directions allowedSwipeDirections = Directions.NONE;
         allowedDragDirections = Directions.NONE;
         IType item = getItem(viewHolder);
         if (swipeCallbacks != null) {
@@ -69,6 +73,8 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
         int fromPosition = viewHolder.getAbsoluteAdapterPosition() - adapter.getHeadersCount();
         int toPosition = target.getAbsoluteAdapterPosition() - adapter.getHeadersCount();
+        if (toPosition < 0 || toPosition > adapter.getItemCount())
+            return false;
         adapter.moveItem(fromPosition, toPosition);
         return true;
     }
@@ -174,6 +180,7 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
             int position = adapter.getPosition(item);
             if (swipeCallbacks != null) {
                 if (undoClicked) {
+                    System.out.println(position);
                     easyRecyclerView.itemChanged(position);
                     swipeCallbacks.onActionCancelled(item, adapter, position);
                 } else {
@@ -310,17 +317,17 @@ public class EasyRecyclerViewSwipeHandler<IType extends EasyAdapterDataModel, AT
         }
     }
 
-    public interface SwipeCallbacks<ItemType extends EasyAdapterDataModel> {
+    public interface TouchCallbacks<ItemType extends EasyAdapterDataModel> {
 
         Directions getAllowedSwipeDirections(ItemType item);
 
         Directions getAllowedDragDirections(ItemType item);
 
-        String getActionBackgroundText(ItemType item);
-
         void onSwipeActionApplied(ItemType item, int position, EasyRecyclerAdapter<ItemType> adapter, Directions direction);
 
         void onActionCancelled(ItemType item, EasyRecyclerAdapter<ItemType> adapter, Integer position);
+
+        String getActionBackgroundText(ItemType item);
 
         int getSwipeBackgroundColor(Directions direction);
 
