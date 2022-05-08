@@ -1,5 +1,7 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity;
 
+import android.view.View;
+
 import com.github.rooneyandshadows.lightbulb.application.activity.BaseActivity;
 import com.github.rooneyandshadows.lightbulb.application.activity.routing.BaseApplicationRouter;
 import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.config.SliderMenuConfiguration;
@@ -15,7 +17,9 @@ import kotlin.jvm.functions.Function1;
 public class MenuConfigurations {
 
     public static SliderMenuConfiguration getConfiguration(BaseActivity activity) {
+        View headingView = activity.getLayoutInflater().inflate(R.layout.demo_drawer_header_view, null);
         SliderMenuConfiguration configuration = new SliderMenuConfiguration();
+        configuration.withHeaderView(headingView);
         configuration.addMenuItem(new PrimaryMenuItem(
                 -1,
                 ResourceUtils.getPhrase(activity, R.string.regular_demo),
