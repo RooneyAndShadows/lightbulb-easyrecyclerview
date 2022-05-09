@@ -16,7 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 public class SimpleAdapter extends EasyRecyclerAdapter<DemoModel> {
 
     public SimpleAdapter() {
-        super(new EasyAdapterConfiguration<>());
+        super(new EasyAdapterConfiguration<DemoModel>().withStableIds(true));
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @NonNull

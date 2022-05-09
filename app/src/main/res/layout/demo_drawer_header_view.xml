@@ -4,17 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?colorDelimiter"
     android:paddingStart="15dp"
     android:paddingTop="39dp"
     android:paddingEnd="15dp"
-    android:background="?colorBackgroundSelected"
     android:paddingBottom="15dp">
 
     <ImageView
         android:id="@+id/lightbulb_icon"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:src="@drawable/ic_lightbulb"
+        android:padding="3dp"
+        android:src="@drawable/ic_lightbulb_logo"
         app:layout_constraintBottom_toBottomOf="@id/heading"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,7 +36,6 @@
         android:id="@+id/subheading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="5dp"
         android:paddingTop="5dp"
         android:text="EasyRecyclerView"
         android:textAppearance="@android:style/TextAppearance.Medium"

@@ -7,10 +7,8 @@ import android.widget.TextView;
 
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoItemLayoutBinding;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoStickyItemLayoutBinding;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickyDemoModel;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoStickySimpleItemLayoutBinding;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterConfiguration;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
 
@@ -18,9 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class StickyAdapter extends EasyRecyclerAdapter<StickyDemoModel> implements StickyHeaderItemDecoration.StickyHeaderInterface {
+public class StickyAdapterSimple extends EasyRecyclerAdapter<StickySimpleDemoModel> implements StickyHeaderItemDecoration.StickyHeaderInterface {
 
-    public StickyAdapter() {
+    public StickyAdapterSimple() {
         super(new EasyAdapterConfiguration<>());
     }
 
@@ -29,10 +27,10 @@ public class StickyAdapter extends EasyRecyclerAdapter<StickyDemoModel> implemen
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
         if (viewType == 0) {
-            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.demo_sticky_header_item, parent, false);
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.demo_sticky_header_simple_item, parent, false);
             return new HeaderViewHolder(itemView);
         } else {
-            DemoStickyItemLayoutBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.demo_sticky_item_layout, parent, false);
+            DemoStickySimpleItemLayoutBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.demo_sticky_simple_item_layout, parent, false);
             return new ViewHolder(binding);
         }
     }
@@ -48,8 +46,7 @@ public class StickyAdapter extends EasyRecyclerAdapter<StickyDemoModel> implemen
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ViewHolder) {
             ViewHolder vh = (ViewHolder) holder;
-            StickyDemoModel model = getItem(position);
-            vh.getBinding().setIsHeader(model.isHeader());
+            StickySimpleDemoModel model = getItem(position);
             vh.getBinding().setTitle(model.getTitle());
             vh.getBinding().setSubtitle(model.getSubtitle());
         } else if (holder instanceof HeaderViewHolder) {
@@ -72,7 +69,7 @@ public class StickyAdapter extends EasyRecyclerAdapter<StickyDemoModel> implemen
 
     @Override
     public int getHeaderLayout(int headerPosition) {
-        return R.layout.demo_sticky_header_item;
+        return R.layout.demo_sticky_header_simple_item;
     }
 
     @Override
@@ -94,20 +91,20 @@ public class StickyAdapter extends EasyRecyclerAdapter<StickyDemoModel> implemen
             title = (TextView) itemView.findViewById(R.id.header_title);
         }
 
-        public void bind(StickyDemoModel model) {
+        public void bind(StickySimpleDemoModel model) {
             title.setText(model.getTitle());
         }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final DemoStickyItemLayoutBinding binding;
+        private final DemoStickySimpleItemLayoutBinding binding;
 
-        public ViewHolder(DemoStickyItemLayoutBinding binding) {
+        public ViewHolder(DemoStickySimpleItemLayoutBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public DemoStickyItemLayoutBinding getBinding() {
+        public DemoStickySimpleItemLayoutBinding getBinding() {
             return binding;
         }
     }

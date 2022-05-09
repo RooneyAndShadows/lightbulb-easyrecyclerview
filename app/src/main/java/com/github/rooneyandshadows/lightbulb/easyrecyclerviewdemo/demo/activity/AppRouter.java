@@ -10,7 +10,8 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.PullToRefreshDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.RegularDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.SelectionDemoFragment;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.StickyHeadersDemoFragment;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.StickyHeadersAdvancedDemoFragment;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.StickyHeadersSimpleDemoFragment;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.SwipeToDeleteDemoFragment;
 
 import androidx.annotation.NonNull;
@@ -67,8 +68,13 @@ public class AppRouter extends BaseApplicationRouter {
         navigate(command, screen);
     }
 
-    public void toStickyHeaders(NavigationCommands command) {
-        Screen screen = new Screens.StickyHeaders();
+    public void toStickyHeadersSimple(NavigationCommands command) {
+        Screen screen = new Screens.StickyHeadersSimple();
+        navigate(command, screen);
+    }
+
+    public void toStickyHeadersAdvanced(NavigationCommands command) {
+        Screen screen = new Screens.StickyHeadersAdvanced();
         navigate(command, screen);
     }
 
@@ -147,11 +153,19 @@ public class AppRouter extends BaseApplicationRouter {
             }
         }
 
-        public static final class StickyHeaders extends Screen {
+        public static final class StickyHeadersSimple extends Screen {
             @NonNull
             @Override
             public Fragment getFragment() {
-                return StickyHeadersDemoFragment.getNewInstance();
+                return StickyHeadersSimpleDemoFragment.getNewInstance();
+            }
+        }
+
+        public static final class StickyHeadersAdvanced extends Screen {
+            @NonNull
+            @Override
+            public Fragment getFragment() {
+                return StickyHeadersAdvancedDemoFragment.getNewInstance();
             }
         }
     }

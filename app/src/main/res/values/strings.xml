@@ -9,5 +9,6 @@
     <string name="lazy_loading_demo">Lazy loading demo</string>
     <string name="swipe_to_delete_demo">Swipe to delete demo</string>
     <string name="drag_to_reorder_demo">Drag to reorder demo</string>
-    <string name="sticky_headers_demo">Sticky headers demo</string>
+    <string name="sticky_headers_simple_demo">Sticky headers simple demo</string>
+    <string name="sticky_headers_advanced_demo">Sticky headers advanced demo</string>
 </resources>

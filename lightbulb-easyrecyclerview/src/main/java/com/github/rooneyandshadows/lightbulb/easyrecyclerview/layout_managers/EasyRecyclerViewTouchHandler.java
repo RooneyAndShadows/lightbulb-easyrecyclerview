@@ -180,8 +180,7 @@ public class EasyRecyclerViewTouchHandler<IType extends EasyAdapterDataModel, AT
             int position = adapter.getPosition(item);
             if (swipeCallbacks != null) {
                 if (undoClicked) {
-                    System.out.println(position);
-                    easyRecyclerView.itemChanged(position);
+                    adapter.notifyItemChanged(position+adapter.getHeadersCount());
                     swipeCallbacks.onActionCancelled(item, adapter, position);
                 } else {
                     swipeCallbacks.onSwipeActionApplied(item, position, adapter, direction);

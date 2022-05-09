@@ -110,18 +110,27 @@ public class MenuConfigurations {
                     Router.getInstance().getRouter().toDragToReorder(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO);
                     slider.closeSlider();
                 })
-        ))
-                .addMenuItem(new PrimaryMenuItem(
-                        -1,
-                        ResourceUtils.getPhrase(activity, R.string.sticky_headers_demo),
-                        null,
-                        null,
-                        1,
-                        action((slider) -> {
-                            Router.getInstance().getRouter().toStickyHeaders(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO);
-                            slider.closeSlider();
-                        })
-                ));
+        )).addMenuItem(new PrimaryMenuItem(
+                -1,
+                ResourceUtils.getPhrase(activity, R.string.sticky_headers_simple_demo),
+                null,
+                null,
+                1,
+                action((slider) -> {
+                    Router.getInstance().getRouter().toStickyHeadersSimple(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO);
+                    slider.closeSlider();
+                })
+        )).addMenuItem(new PrimaryMenuItem(
+                -1,
+                ResourceUtils.getPhrase(activity, R.string.sticky_headers_advanced_demo),
+                null,
+                null,
+                1,
+                action((slider) -> {
+                    Router.getInstance().getRouter().toStickyHeadersAdvanced(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO);
+                    slider.closeSlider();
+                })
+        ));
         return configuration;
     }
 

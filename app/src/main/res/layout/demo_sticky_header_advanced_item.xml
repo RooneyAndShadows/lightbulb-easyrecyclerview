@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="dayString"
+            type="String" />
+
+        <variable
+            name="isVisible"
+            type="Boolean" />
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="70dp"
+        android:layout_height="match_parent"
+        android:background="?colorDelimiter">
+
+        <TextView
+            android:id="@+id/header_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text="@{dayString}"
+            android:textAppearance="@android:style/TextAppearance"
+            android:visibility="@{isVisible ? View.VISIBLE : View.GONE}"
+            tools:text="10 Apr" />
+    </RelativeLayout>
+</layout>

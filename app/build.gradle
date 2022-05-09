@@ -43,8 +43,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'com.github.rooneyandshadows:lightbulb-commons:1.0.5'
+    implementation 'com.github.rooneyandshadows:java-commons:1.0.6'
+    implementation 'com.github.rooneyandshadows:lightbulb-commons:1.0.6'
     implementation 'com.github.rooneyandshadows:lightbulb-application:1.0.36'
-    implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:1.0.3'
+    implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:1.0.4'
     implementation project(":lightbulb-easyrecyclerview")
 }

@@ -6,372 +6,295 @@ All-in-one easy to use RecyclerView for your android project
 
 ### 📋 Features
 
-- **Lifecycle aware adapter state**
+- **Lifecycle aware adapter state** - Items loaded in the list outlive configuration changes (
+  orientation change etc.)
 - Selection support
+- Drag to reorder support
 - Pull to refresh support
 - Swipe to delete support
 - Lazy loading support
 - Empty layout support
-- Diff utill support
+- Diff util support
 - Header and footer list items support
 - Sticky headers decoration
 - Bounce effect on overscroll
 
 -------
 
-## 🎨 🌄 Screenshots
+## 🎨 Screenshots
 
 ![Image](DEV/github/screenshots_combined.jpg)
-
-# Setup
 
 ## Latest releases 🛠
 
 - Java & AndroidX
-  | [v1.0.9](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/1.0.9)
+  | [v1.0.10](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/1.0.10)
 
-### 1. Provide the gradle dependency
+# Setup
+
+### 1. Add Jitpack repository to your project
+
+```
+repositories {
+    ...
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+```
+
+### 2. Provide the gradle dependency
 
 ```gradle
-implementation "com.mikepenz:materialdrawer:${lastestMaterialDrawerRelease}"
-//required support lib modules
-implementation "androidx.appcompat:appcompat:${versions.appcompat}"
-implementation "androidx.recyclerview:recyclerview:${versions.recyclerView}"
-implementation "androidx.annotation:annotation:${versions.annotation}"
-implementation "com.google.android.material:material:1.5.0-alpha05" // requires at least 1.5.0-x
-implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
-// Add for NavController support
-implementation "com.mikepenz:materialdrawer-nav:${lastestMaterialDrawerRelease}"
-// Add for Android-Iconics support
-implementation "com.mikepenz:materialdrawer-iconics:${lastestMaterialDrawerRelease}"
+implementation 'com.github.rooneyandshadows:lightbulb-easyrecyclerview:1.0.10'
+// Add recycler adapters support
+implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:1.0.4'
 ```
-
-You can find dependency versions and all library releases
-on [MVN Repository](https://mvnrepository.com/artifact/com.mikepenz/materialdrawer).
-
-### 2. Add the `Drawer` into the XML
-
-The `MaterialDrawerSliderView` has to be provided as child of the `DrawerLayout` and will as such
-act as the slider
-
-```kotlin
-<androidx.drawerlayout.widget.DrawerLayout xmlns : android ="http://schemas.android.com/apk/res/android"
-xmlns:app = "http://schemas.android.com/apk/res-auto"
-android:id = "@+id/root"
-android:layout_width = "match_parent"
-android:layout_height = "match_parent"
-android:fitsSystemWindows = "true" >
-... your content ...
-<com.mikepenz.materialdrawer.widget.MaterialDrawerSliderView
-android:id = "@+id/slider"
-android:layout_width = "wrap_content"
-android:layout_height = "match_parent"
-android:layout_gravity = "start"
-android:fitsSystemWindows = "true" / >
-</androidx.drawerlayout.widget.DrawerLayout >
-```
-
-### 3. Add the `DrawerStyle` to your theme
-
-```xml
-
-<style name="SampleApp.DayNight" parent="Theme.Material3.DayNight.NoActionBar">
-    ...
-    <item name="materialDrawerStyle">@style/Widget.MaterialDrawerStyle</item>
-    <item name="materialDrawerHeaderStyle">@style/Widget.MaterialDrawerHeaderStyle</item>
-    ...
-</style>
-```
-
-Great. Your drawer is now ready to use.
 
 ### Note
 
-> Using v9.x with Material 3 theming requires a `Material3` theme as base for the activity.
+> EasyRecyclerView works with adapters of type EasyRecyclerAdapter.
+
+### 3. Describe the data model for the adapter
+
+```java
+public class DemoModel extends EasyAdapterDataModel {
+    private final String title;
+    private final String subtitle;
+
+
+    public DemoModel(String title, String subtitle) {
+        super(false);
+        this.title = title;
+        this.subtitle = subtitle;
+    }
+
+    // Parcelling part
+    public DemoModel(Parcel in) {
+        super(in);
+        this.title = ParcelableUtils.readString(in);
+        this.subtitle = ParcelableUtils.readString(in);
+    }
+
+    public static final Parcelable.Creator<DemoModel> CREATOR = new Parcelable.Creator<DemoModel>() {
+        public DemoModel createFromParcel(Parcel in) {
+            return new DemoModel(in);
+        }
+
+        public DemoModel[] newArray(int size) {
+            return new DemoModel[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        super.writeToParcel(parcel, i);
+        ParcelableUtils.writeString(parcel, title)
+                .writeString(parcel, subtitle);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public String getItemName() {
+        return title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+}
+```
+
+### 4. Prepare your data adapter
+
+```java
+public class SimpleAdapter extends EasyRecyclerAdapter<DemoModel> {
+    public SimpleAdapter() {
+        super(new EasyAdapterConfiguration<DemoModel>());
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ...
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+       ...
+    }
+}
+```
+
+### 3. Add the `EasyRecyclerView` into the XML
+
+```xml
+...
+<com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
+    android:id="@+id/easy_recycler_view" android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+...
+```
+
+### 4. Select the view in your activity/fragment and provide it with adapter
+
+```java
+@Override
+protected void onViewCreated(View fragmentView,Bundle savedInstanceState){
+    easyRecyclerView=getView().findViewById(R.id.recycler_view);
+    easyRecyclerView.setAdapter(new SimpleAdapter());
+    if(savedState==null)
+        recyclerView.getAdapter().setCollection(generateInitialData());
+}
+```
+
+And that's it. `EasyRecyclerView` is ready to use.
 
 # Additional Setup
 
-### Add items and adding some functionality
-
-```kotlin
-//if you want to update the items at a later time it is recommended to keep it in a variable
-val item1 = PrimaryDrawerItem().apply { nameRes = R.string.drawer_item_home; identifier = 1 }
-val item2 = SecondaryDrawerItem().apply { nameRes = R.string.drawer_item_settings; identifier = 2 }
-// get the reference to the slider and add the items
-slider.itemAdapter.add(
-    item1,
-    DividerDrawerItem(),
-    item2,
-    SecondaryDrawerItem().apply { nameRes = R.string.drawer_item_settings }
-)
-// specify a click listener
-slider.onDrawerItemClickListener = { v, drawerItem, position ->
-    // do something with the clicked item :D
-    false
-}
-```
-
-### Selecting an item
-
-```kotlin
-//set the selection to the item with the identifier 1
-slider.setSelection(1)
-//set the selection to the item with the identifier 2
-slider.setSelection(item2)
-//set the selection and also fire the `onItemClick`-listener
-slider.setSelection(1, true)
-```
-
-By default, when a drawer item is clicked, it becomes the new selected item. If this isn't the
-expected behavior, you can disable it for this item using `isSelectable = false`:
-
-```kotlin
-SecondaryDrawerItem().apply { nameRes = R.string.drawer_item_dialog; isSelectable = false }
-```
-
-### Modify items or the drawer
-
-```kotlin
-//modify an item of the drawer
-item1.apply {
-    nameText = "A new name for this drawerItem"; badge = StringHolder("19")
-    badgeStyle = BadgeStyle().apply {
-        textColor = ColorHolder.fromColor(Color.WHITE); color =
-        ColorHolder.fromColorRes(R.color.md_red_700)
-    }
-}
-//notify the drawer about the updated element. it will take care about everything else
-slider.updateItem(item1)
-//to update only the name, badge, icon you can also use one of the quick methods
-slider.updateName(1, "A new name")
-//the result object also allows you to add new items, remove items, add footer, sticky footer, ..
-slider.addItem(DividerDrawerItem())
-slider.addStickyFooterItem(PrimaryDrawerItem().apply { nameTest = "StickyFooter" })
-//remove items with an identifier
-slider.removeItem(2)
-//open / close the drawer
-slider.drawerLayout?.openDrawer(slider)
-slider.drawerLayout?.closeDrawer(slider)
-//get the reference to the `DrawerLayout` itself
-slider.drawerLayout
-```
-
-### Add profiles and an AccountHeader
-
-```kotlin
-// Create the AccountHeader
-headerView = AccountHeaderView(this).apply {
-    attachToSliderView(slider) // attach to the slider
-    addProfiles(
-        ProfileDrawerItem().apply {
-            nameText = "Mike Penz"; descriptionText = "mikepenz@gmail.com"; iconRes =
-            R.drawable.profile; identifier = 102
-        }
-    )
-    onAccountHeaderListener = { view, profile, current ->
-        // react to profile changes
-        false
-    }
-    withSavedInstance(savedInstanceState)
-}
-```
-
-### Android-Iconics support
-
-The MaterialDrawer provides an extension for
-the [Android-Iconics](https://github.com/mikepenz/Android-Iconics) library. This allows you to
-create your `DrawerItems` with an icon from any font.
-
-Choose the fonts you
-need. [Available Fonts](https://github.com/mikepenz/Android-Iconics#2-choose-your-desired-fonts)
-
-```gradle
-// Add for Android-Iconics support
-implementation "com.mikepenz:materialdrawer-iconics:${lastestMaterialDrawerRelease}"
-// fonts
-implementation 'com.mikepenz:google-material-typeface:x.y.z@aar' //Google Material Icons
-implementation 'com.mikepenz:fontawesome-typeface:x.y.z@aar'     //FontAwesome
-```
-
-```kotlin
-//now you can simply use any icon of the Google Material Icons font
-PrimaryDrawerItem().apply { iconicsIcon = GoogleMaterial.Icon.gmd_wb_sunny }
-//Or an icon from FontAwesome
-SecondaryDrawerItem().apply { iconicsIcon = FontAwesomeBrand.Icon.fab_github }
-```
-
-# Advanced Setup
-
-For advanced usecases. Please have a look at the provided sample activities.
-
-## Load images via url
-
-The MaterialDrawer supports fetching images from URLs and setting them for the Profile icons. As the
-MaterialDrawer does not contain an ImageLoading library the dev can choose his own implementation (
-Picasso, Glide, ...). This has to be done, before the first image should be loaded via URL. (Should
-be done in the Application, but any other spot before loading the first image is working too)
-
-* SAMPLE using [PICASSO](https://github.com/square/picasso)
-* [SAMPLE](https://github.com/mikepenz/MaterialDrawer/blob/develop/app/src/main/java/com/mikepenz/materialdrawer/app/CustomApplication.kt)
-  using [GLIDE](https://github.com/bumptech/glide)
-
-```kotlin
-//initialize and create the image loader logic
-DrawerImageLoader.init(object : AbstractDrawerImageLoader() {
-    override fun set(imageView: ImageView, uri: Uri, placeholder: Drawable) {
-        Picasso.get().load(uri).placeholder(placeholder).into(imageView)
-    }
-    override fun cancel(imageView: ImageView) {
-        Picasso.get().cancelRequest(imageView)
-    }
-
-    /*
-    override fun set(imageView: ImageView, uri: Uri, placeholder: Drawable, tag: String?) {
-        super.set(imageView, uri, placeholder, tag)
-    }
-    override fun placeholder(ctx: Context): Drawable {
-        return super.placeholder(ctx)
-    }
-    override fun placeholder(ctx: Context, tag: String?): Drawable {
-        return super.placeholder(ctx, tag)
-    }
-    */
-})
-```
-
-An implementation
-with [GLIDE v4](https://github.com/mikepenz/MaterialDrawer/blob/develop/app/src/main/java/com/mikepenz/materialdrawer/app/CustomApplication.kt) (
-See tag v6.1.1 for glide v3 sample) can be found in the sample application
-
-## JVM Target 1.8
-
-```
-// Since 8.1.0 the drawer includes core ktx 1.3.0 which requires jvm 1.8
-kotlinOptions {
-    jvmTarget = "1.8"
-}
-```
-
-## Style the drawer 🖌️
-
-### Custom style - styles.xml
-
-Create your custom style. If you don't need a custom theme see the next section, how you can set the
-colors just by overwriting the original colors.
-
-```xml
-// define a custom drawer style
-<style name="Widget.MaterialDrawerStyleCustom" parent="Widget.MaterialDrawerStyle">
-    <item name="materialDrawerInsetForeground">#4000</item>
-    <!-- MaterialDrawer specific values -->
-    <item name="materialDrawerBackground">?colorSurface</item>
-    <item name="materialDrawerPrimaryText">@color/color_drawer_item_text</item>
-    <item name="materialDrawerPrimaryIcon">@color/color_drawer_item_text</item>
-    <item name="materialDrawerSecondaryText">@color/color_drawer_item_text</item>
-    <item name="materialDrawerSecondaryIcon">@color/color_drawer_item_text</item>
-    <item name="materialDrawerDividerColor">?colorOutline</item>
-    <item name="materialDrawerSelectedBackgroundColor">?colorSecondaryContainer</item>
-</style>
-
-    // define a custom header style<style name="Widget.MaterialDrawerHeaderStyleCustom" parent="">
-<item name="materialDrawerCompactStyle">true</item>
-<item name="materialDrawerHeaderSelectionText">?colorOnSurface</item>
-<item name="materialDrawerHeaderSelectionSubtext">?colorOnSurface</item>
-</style>
-
-    // define the custom styles for the theme<style name="SampleApp"
-parent="Theme.Material3.Light.NoActionBar">
-...
-<item name="materialDrawerStyle">@style/Widget.MaterialDrawerStyleCustom</item>
-<item name="materialDrawerHeaderStyle">@style/Widget.MaterialDrawerHeaderStyleCustom</item>
-...
-</style>
-```
-
-### Adjust BezelImageView style
-
-Overwrite the Style of the BezelImageView for the whole MaterialDrawer
+## Available attributes
 
 ```xml
 
-<style name="BezelImageView">
-    <item name="biv_maskDrawable">@drawable/material_drawer_rectangle_mask</item>
-    <item name="biv_drawCircularShadow">false</item>
-    <item name="biv_selectorOnPress">@color/material_drawer_primary</item>
-    <item name="android:scaleType">centerInside</item>
-</style>
+<attr name="ERV_EmptyLayoutId" format="reference" /> //Layout to show when there is no data
+<attr name="ERV_SupportsPullToRefresh" format="boolean" /> //Whether pull to refresh is supported.[default:false]
+<attr name="ERV_SupportsLoadMore" format="boolean" /> //Whether lazy loading is supported.[default:false]
+<attr name="ERV_SupportsOverscrollBounce" format="boolean" /> //Whether bounce on overscroll is supported.[default:false]
+<attr name="ERV_LayoutManager" format="enum">//Type of the layout manager for the recyclerview[default:LAYOUT_LINEAR_VERTICAL]
+    <enum name="LAYOUT_LINEAR_VERTICAL" value="1" />
+    <enum name="LAYOUT_LINEAR_HORIZONTAL" value="2" />
+    <enum name="LAYOUT_FLOW" value="3" />
+</attr>
 ```
 
-# Used by
+## Enable pull to refresh
+### Note
+> To use this feature you must enable it trough XMl by adding ERV_SupportsPullToRefresh="true"
+```java
+@Override
+protected void onViewCreated(View fragmentView,Bundle savedInstanceState){
+    easyRecyclerView.setRefreshCallback(view -> {
+        ...
+        List<DemoModel> generatedData = new ArrayList<>();
+        easyRecyclerView.getAdapter().setCollection(generatedData);
+        easyRecyclerView.showRefreshLayout(false);
+    }
+}
+```
+## Enable lazy loading 
+### Note
+> To use this feature you must enable it trough XMl by adding ERV_SupportsLoadMore="true"
+```java
 
-(feel free to send me new projects)
+@Override
+protected void onViewCreated(View fragmentView,Bundle savedInstanceState){
+    easyRecyclerView.setRefreshCallback(view -> {
+        ...
+        List<DemoModel> generatedData = new ArrayList<>();
+        recyclerView.getAdapter().appendCollection(generatedData);
+        recyclerView.showLoadingFooter(false);
+    }
+}
+```
+## Enable swipe/drag of items
+```java
 
-* [Screener](https://play.google.com/store/apps/details?id=de.toastcode.screener)
-* [Meldmail](https://play.google.com/store/apps/details?id=com.meldmail)
-* [Academic Schedule](https://play.google.com/store/apps/details?id=com.auebcsschedule.ppt)
-* [Sprit Club](https://play.google.com/store/apps/details?id=at.idev.spritpreise)
-* [StickyNotes](https://play.google.com/store/apps/details?id=com.jsvmsoft.stickynotes)
-* [MLManager](https://github.com/javiersantos/MLManager)
-* [Fimpl](https://play.google.com/store/apps/details?id=com.danielZET.fimpl)
-* [Teacher Gradebook](https://play.google.com/store/apps/details?id=com.apolosoft.cuadernoprofesor)
-* [AS Sales Management](https://play.google.com/store/apps/details?id=com.armsoft.mtrade)
-* [Sporza Voetbal](http://play.google.com/store/apps/details?id=be.vrt.mobile.android.sporza.voetbal)
-* [Atmosphere](https://play.google.com/store/apps/details?id=com.peakpocketstudios.atmosphere)
-* [Fitness Challenge](https://play.google.com/store/apps/details?id=com.isidroid.fitchallenge)
-* [I'm Reading Quran - Kur'an Okuyorum](https://play.google.com/store/apps/details?id=com.homemade.kuranokuma)
-* [Makota Money Manager](https://play.google.com/store/apps/details?id=be.jatra.makota)
-* [Companion for Band](https://github.com/adithya321/Companion-for-Band)
-* [Recipedia](https://play.google.com/store/apps/details?id=com.md.recipedia)
-* [Right Сourse - ruble course](https://play.google.com/store/apps/details?id=com.currency.work.currencychecker)
-* [Gameru](https://play.google.com/store/apps/details?id=net.gameru)
-* [Boost for reddit](https://play.google.com/store/apps/details?id=com.rubenmayayo.reddit)
-* [Calendula](https://github.com/citiususc/calendula)
-* [MyTimes](https://github.com/debo1994/MyTimes)
-* [VoIP By Antisip](https://play.google.com/store/apps/details?id=com.antisip.vbyantisip)
-* [MBox - One Place for Entertainment](https://play.google.com/store/apps/details?id=com.paperwrrk.android.mbox)
-* [D Notes - Smart and Material Note Taking](https://play.google.com/store/apps/details?id=com.dvdb.bergnotes)
-* [Moviebase](https://play.google.com/store/apps/details?id=com.moviebase)
-* [MyFuelLog2](https://play.google.com/store/apps/details?id=com.acty.myfuellog2)
-* [MECSol](https://play.google.com/store/apps/details?id=tk.rlta.mecsol)
-* [3D Geeks: Thingiverse Browser for 3D Printing](https://play.google.com/store/apps/details?id=work.twob.threed)
-* [Tusky: Mastodon Client for Android](https://github.com/tuskyapp/Tusky)
-* [Tibia Live](https://tibia.space/)
-* [Walkaholic](https://play.google.com/store/apps/details?id=com.walkaholic.hikeapp)
+@Override
+protected void onViewCreated(View fragmentView,Bundle savedInstanceState){
+    ...
+    easyRecyclerView.setAdapter(new SimpleAdapter(), generateTouchCallback(easyRecyclerView));
+}
 
-# Articles about the MaterialDrawer
+private void generateTouchCallback(EasyRecyclerView<DemoModel, SimpleAdapter> recyclerView){
+      return new EasyRecyclerViewTouchHandler.TouchCallbacks<DemoModel>() {
+            @Override
+            public Directions getAllowedSwipeDirections(DemoModel item) {
+                return Directions.LEFT_RIGHT;
+            }
+        
+            @Override
+            public Directions getAllowedDragDirections(DemoModel item) {
+                return Directions.UP_DOWN;
+            }
+        
+            @Override
+            public String getActionBackgroundText(DemoModel item) {
+                return item.getItemName();
+            }
+        
+            @Override
+            public void onSwipeActionApplied(DemoModel item, int position, EasyRecyclerAdapter<DemoModel> adapter, Directions direction) {
+                recyclerView.post(() -> {
+                    int actualPosition = recyclerView.getAdapter().getPosition(item);
+                    adapter.removeItem(actualPosition);
+                });
+            }
+        
+            @Override
+            public void onActionCancelled(DemoModel item, EasyRecyclerAdapter<DemoModel> adapter, Integer position) {
+            }
+        
+            @Override
+            public int getSwipeBackgroundColor(Directions direction) {
+                return ResourceUtils.getColorByAttribute(getContextActivity(), R.attr.colorError);
+            }
+        
+            @Override
+            public Drawable getSwipeIcon(Directions direction) {
+                return ResourceUtils.getDrawable(recyclerView.getContext(), R.drawable.icon_delete);
+            }
+        
+            @Override
+            public String getPendingActionText(Directions direction) {
+                return "Delete";
+            }
+        
+            @Override
+            public EasyRecyclerViewTouchHandler.SwipeConfiguration getConfiguration(Context context) {
+                return new EasyRecyclerViewTouchHandler.SwipeConfiguration(getContext());
+            }
+    };
+}
+```
+## Enable swipe/drag of items
+### Trough xml
+```xml
+<com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
+        android:id="@+id/easy_recycler_view" 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        app:ERV_EmptyLayoutId="R.layout.yourlayout"/>
+```
 
-* [java-help.ru - MaterialDrawer tutorial](http://java-help.ru/material-navigationdrawer/)
-* [MaterialDrawer in multiple activities](https://android.jlelse.eu/android-using-navigation-drawer-across-multiple-activities-the-easiest-way-b011f152aebd)
-
-# Credits
-
-- Mirosław Stanek - [GitHub](https://github.com/frogermcs)
-    - For his InstaMaterial concept and the idea of inflating the
-      drawerLayout [InstaMaterial Concept](http://frogermcs.github.io/InstaMaterial-concept-part-7-navigation-drawer/)
-
-- Lunae Luman - [Behance](https://www.behance.net/gallery/18526001/Material-Wallpaper) for the
-  Header Image
-
-# Developed By
-
-- Mike Penz
-    - [mikepenz.dev](https://mikepenz.dev) - [blog.mikepenz.dev](https://blog.mikepenz.dev)
-        - <mikepenz@gmail.com>
-    - [paypal.me/mikepenz](http://paypal.me/mikepenz)
-    - [Automatic changelog generation action](https://github.com/marketplace/actions/release-changelog-builder)
-
-# License
-
-    Copyright 2021 Mike Penz
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+### Trough java
+```java
+@Override
+protected void viewStateRestored(@Nullable Bundle savedInstanceState) {
+    super.viewStateRestored(savedInstanceState);
+    View emptyLayout = //...inflate/create view 
+    recyclerView.setEmptyLayout(emptyLayout,new EasyRecyclerView.EasyRecyclerEmptyLayoutListener() {
+              @Override
+              public void onInflated(View view) {
+                  super.onInflated(view);
+              }
+              
+              @Override
+              public void onShow(View view) {
+                  super.onShow(view);
+              }
+              
+              @Override
+              public void onHide(View view) {
+                  super.onHide(view);
+              }
+        });
+}
+```

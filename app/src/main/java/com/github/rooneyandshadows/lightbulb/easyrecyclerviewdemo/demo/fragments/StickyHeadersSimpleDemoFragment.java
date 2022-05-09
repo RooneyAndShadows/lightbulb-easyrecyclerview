@@ -13,14 +13,11 @@ import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.B
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MainActivity;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MenuConfigurations;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.StickyAdapter;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickyDemoModel;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.StickyAdapterSimple;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -33,11 +30,11 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class StickyHeadersDemoFragment extends BaseFragment {
-    private EasyRecyclerView<StickyDemoModel, StickyAdapter> recyclerView;
+public class StickyHeadersSimpleDemoFragment extends BaseFragment {
+    private EasyRecyclerView<StickySimpleDemoModel, StickyAdapterSimple> recyclerView;
 
-    public static StickyHeadersDemoFragment getNewInstance() {
-        return new StickyHeadersDemoFragment();
+    public static StickyHeadersSimpleDemoFragment getNewInstance() {
+        return new StickyHeadersSimpleDemoFragment();
     }
 
     @NonNull
@@ -48,14 +45,14 @@ public class StickyHeadersDemoFragment extends BaseFragment {
                 .withActionBarConfiguration(new BaseFragmentConfiguration.ActionBarConfiguration(R.id.toolbar)
                         .withActionButtons(true)
                         .attachToDrawer(true)
-                        .withSubTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.sticky_headers_demo))
+                        .withSubTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.sticky_headers_simple_demo))
                         .withTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.app_name))
                 );
     }
 
     @Override
     public View createView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_demo_sticky_headers, container, false);
+        return inflater.inflate(R.layout.fragment_demo_sticky_headers_simple, container, false);
     }
 
     @Override
@@ -86,7 +83,7 @@ public class StickyHeadersDemoFragment extends BaseFragment {
     }
 
     private void setupRecycler(Bundle savedState) {
-        recyclerView.setAdapter(new StickyAdapter());
+        recyclerView.setAdapter(new StickyAdapterSimple());
         recyclerView.addItemDecoration(new DividerItemDecoration(getContextActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.addItemDecoration(new StickyHeaderItemDecoration(recyclerView.getAdapter()) {
             @Override
@@ -100,12 +97,12 @@ public class StickyHeadersDemoFragment extends BaseFragment {
             recyclerView.getAdapter().setCollection(generateInitialData());
     }
 
-    private List<StickyDemoModel> generateInitialData() {
-        List<StickyDemoModel> models = new ArrayList<>();
+    private List<StickySimpleDemoModel> generateInitialData() {
+        List<StickySimpleDemoModel> models = new ArrayList<>();
         for (Integer i = 1; i < 10; i++) {
-            models.add(new StickyDemoModel(true, "Header " + i, ""));
+            models.add(new StickySimpleDemoModel(true, "Header " + i, ""));
             for (Integer j = 1; j < 8; j++)
-                models.add(new StickyDemoModel(false, String.format("Demo title %s.%s", i, j), String.format("Demo subtitle %s.%s", i, j)));
+                models.add(new StickySimpleDemoModel(false, String.format("Demo title %s.%s", i, j), String.format("Demo subtitle %s.%s", i, j)));
         }
         return models;
     }
