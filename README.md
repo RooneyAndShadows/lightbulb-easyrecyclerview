@@ -22,14 +22,7 @@ All-in-one easy to use RecyclerView for your android project
 -------
 
 ## 🎨 Screenshots
-<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/1.png" width="30%">
-<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/2.png" width="30%">
-<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/3.png" width="30%">
-<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/4.png" width="30%">
-<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/5.png" width="30%">
-<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/6.png" width="30%">
-<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/7.png" width="30%">
-<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/8.png" width="30%">
+![Image](DEV/screenshots/screenshots_combined.png)
 
 ## Latest releases 🛠
 
