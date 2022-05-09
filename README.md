@@ -133,7 +133,7 @@ public class SimpleAdapter extends EasyRecyclerAdapter<DemoModel> {
 }
 ```
 
-### 3. Add the `EasyRecyclerView` into the XML
+### 5. Add the `EasyRecyclerView` into the XML
 
 ```xml
 ...
@@ -143,7 +143,7 @@ public class SimpleAdapter extends EasyRecyclerAdapter<DemoModel> {
 ...
 ```
 
-### 4. Select the view in your activity/fragment and provide it with adapter
+### 6. Select the view in your activity/fragment and provide it with adapter
 
 ```java
 @Override
