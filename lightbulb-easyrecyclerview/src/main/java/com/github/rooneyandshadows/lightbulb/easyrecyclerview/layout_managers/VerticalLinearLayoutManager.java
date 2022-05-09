@@ -42,7 +42,8 @@ public final class VerticalLinearLayoutManager<IType extends EasyAdapterDataMode
         }
         if (Math.abs(dy) > 20)
             easyRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
-        if (!easyRecyclerView.isShowingLoadingHeader())
+        System.out.println(dy);
+        if (!easyRecyclerView.isShowingLoadingHeader() && dy > 0)
             handleLoadMore();
         return scrollRange;
     }
@@ -54,7 +55,6 @@ public final class VerticalLinearLayoutManager<IType extends EasyAdapterDataMode
         int size = easyRecyclerView.getItems().size();
         int last = ((RecyclerView.LayoutParams) lastView.getLayoutParams()).getAbsoluteAdapterPosition() - easyRecyclerView.getAdapter().getHeadersCount();
         if (last == size - 1 && !easyRecyclerView.isShowingLoadingFooter()) {
-            easyRecyclerView.showLoadingFooter(true);
             easyRecyclerView.loadMoreData();
         }
     }

@@ -321,8 +321,10 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     public void loadMoreData() {
-        if (loadMoreCallback != null)
+        if (loadMoreCallback != null) {
+            showLoadingFooter(true);
             loadMoreCallback.loadMore(this);
+        }
     }
 
     /**
@@ -348,10 +350,10 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
      * @see EasyRecyclerView#setSupportsLazyLoading(boolean) (int)
      */
     public void showLoadingFooter(boolean isLoading) {
+        if (!supportsLazyLoading)
+            return;
+        this.showingLoadingFooter = isLoading;
         recyclerView.post(() -> {
-            if (!supportsLazyLoading)
-                return;
-            this.showingLoadingFooter = isLoading;
             if (isLoading) {
                 if (!wrapperAdapter.containsFooterView(loadingFooterView))
                     wrapperAdapter.addFooterView(loadingFooterView);
@@ -417,6 +419,15 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
      */
     public void setRenderedCallback(EasyRecyclerItemsReadyListener renderedCallback) {
         this.renderedCallback = renderedCallback;
+    }
+
+    /**
+     * Sets the {@link RecyclerView.ItemAnimator} to the recyclerview.
+     *
+     * @param RecyclerView.ItemAnimator - Animator to set.
+     */
+    public void setItemAnimator(RecyclerView.ItemAnimator animator) {
+        recyclerView.setItemAnimator(animator);
     }
 
     /**

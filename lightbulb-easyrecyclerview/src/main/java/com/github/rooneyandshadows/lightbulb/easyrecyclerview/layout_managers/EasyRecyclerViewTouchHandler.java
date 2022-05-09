@@ -180,7 +180,7 @@ public class EasyRecyclerViewTouchHandler<IType extends EasyAdapterDataModel, AT
             int position = adapter.getPosition(item);
             if (swipeCallbacks != null) {
                 if (undoClicked) {
-                    adapter.notifyItemChanged(position+adapter.getHeadersCount());
+                    adapter.notifyItemChanged(position + adapter.getHeadersCount());
                     swipeCallbacks.onActionCancelled(item, adapter, position);
                 } else {
                     swipeCallbacks.onSwipeActionApplied(item, position, adapter, direction);
@@ -231,9 +231,9 @@ public class EasyRecyclerViewTouchHandler<IType extends EasyAdapterDataModel, AT
 
     private Drawable getActionIcon(Directions directions) {
         Drawable icon = ResourceUtils.getDrawable(easyRecyclerView.getContext(), R.drawable.icon_delete);
-        icon.setTint(configuration.swipeTextAndIconColor);
         if (swipeCallbacks != null)
             icon = swipeCallbacks.getSwipeIcon(directions);
+        icon.setTint(configuration.swipeTextAndIconColor);
         return icon;
     }
 

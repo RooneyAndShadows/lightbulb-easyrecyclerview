@@ -18,7 +18,7 @@ public final class HorizontalLinearLayoutManager<IType extends EasyAdapterDataMo
     }
 
     @Override
-    public int scrollVerticallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
+    public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scrollRange = super.scrollVerticallyBy(dx, recycler, state);
         int overScroll = dx - scrollRange;
         if (overScroll > 0) {
@@ -40,7 +40,7 @@ public final class HorizontalLinearLayoutManager<IType extends EasyAdapterDataMo
         }
         if (Math.abs(dx) > 20)
             easyRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
-        if (!easyRecyclerView.isShowingLoadingHeader())
+        if (!easyRecyclerView.isShowingLoadingHeader() && dx > 0)
             handleLoadMore();
         return scrollRange;
     }
@@ -52,7 +52,6 @@ public final class HorizontalLinearLayoutManager<IType extends EasyAdapterDataMo
         int size = easyRecyclerView.getItems().size();
         int last = ((RecyclerView.LayoutParams) lastView.getLayoutParams()).getAbsoluteAdapterPosition() - easyRecyclerView.getAdapter().getHeadersCount();
         if (last == size - 1 && !easyRecyclerView.isShowingLoadingFooter()) {
-            easyRecyclerView.showLoadingFooter(true);
             easyRecyclerView.loadMoreData();
         }
     }

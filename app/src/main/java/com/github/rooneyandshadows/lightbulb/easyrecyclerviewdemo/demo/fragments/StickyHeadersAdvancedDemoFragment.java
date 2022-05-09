@@ -104,8 +104,13 @@ public class StickyHeadersAdvancedDemoFragment extends BaseFragment {
     private List<StickyAdvancedDemoModel> generateInitialData() {
         List<StickyAdvancedDemoModel> models = new ArrayList<>();
         OffsetDateTime date = DateUtilsOffsetDate.nowLocal();
-        for (int position = 1; position <= 60; position++)
-            models.add(new StickyAdvancedDemoModel(date, isPositionHeader(position), String.format("Demo title %s", position), String.format("Demo subtitle %s", position)));
+        for (int position = 1; position <= 60; position++) {
+            boolean isHeader = isPositionHeader(position);
+            models.add(new StickyAdvancedDemoModel(date, isHeader, String.format("Demo title %s", position), String.format("Demo subtitle %s", position)));
+            if (isHeader)
+                date = DateUtilsOffsetDate.addHours(date, 24);
+        }
+
         return models;
     }
 
