@@ -22,14 +22,14 @@ All-in-one easy to use RecyclerView for your android project
 -------
 
 ## 🎨 Screenshots
-![Image](DEV/screenshots/1.png)
-![Image](DEV/screenshots/2.png)
-![Image](DEV/screenshots/3.png)
-![Image](DEV/screenshots/4.png)
-![Image](DEV/screenshots/5.png)
-![Image](DEV/screenshots/6.png)
-![Image](DEV/screenshots/7.png)
-![Image](DEV/screenshots/8.png)
+<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/1.png" width="30%">
+<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/2.png" width="30%">
+<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/3.png" width="30%">
+<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/4.png" width="30%">
+<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/5.png" width="30%">
+<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/6.png" width="30%">
+<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/7.png" width="30%">
+<img src="https://raw.githubusercontent.com/RooneyAndShadows/lightbulb-easyrecyclerview/master/DEV/screenshots/8.png" width="30%">
 
 ## Latest releases 🛠
 
