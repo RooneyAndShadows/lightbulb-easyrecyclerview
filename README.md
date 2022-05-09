@@ -22,8 +22,14 @@ All-in-one easy to use RecyclerView for your android project
 -------
 
 ## 🎨 Screenshots
-
-![Image](DEV/github/screenshots_combined.jpg)
+![Image](DEV/screenshots/1.png)
+![Image](DEV/screenshots/2.png)
+![Image](DEV/screenshots/3.png)
+![Image](DEV/screenshots/4.png)
+![Image](DEV/screenshots/5.png)
+![Image](DEV/screenshots/6.png)
+![Image](DEV/screenshots/7.png)
+![Image](DEV/screenshots/8.png)
 
 ## Latest releases 🛠
 
@@ -264,7 +270,7 @@ private void generateTouchCallback(EasyRecyclerView<DemoModel, SimpleAdapter> re
     };
 }
 ```
-## Enable swipe/drag of items
+## Enable alternative empty layout
 ### Trough xml
 ```xml
 <com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
@@ -298,3 +304,4 @@ protected void viewStateRestored(@Nullable Bundle savedInstanceState) {
         });
 }
 ```
+**More detailed demonstrations you can find in the demo application.**

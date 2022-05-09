@@ -93,10 +93,6 @@ public class DragToReorderDemoFragment extends BaseFragment {
 
             @Override
             public void onSwipeActionApplied(DemoModel item, int position, EasyRecyclerAdapter<DemoModel> adapter, Directions direction) {
-                recyclerView.post(() -> {
-                    int actualPosition = recyclerView.getAdapter().getPosition(item);
-                    adapter.removeItem(actualPosition);
-                });
             }
 
             @Override
