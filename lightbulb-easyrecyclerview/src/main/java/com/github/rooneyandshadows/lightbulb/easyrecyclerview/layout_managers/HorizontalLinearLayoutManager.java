@@ -21,23 +21,8 @@ public final class HorizontalLinearLayoutManager<IType extends EasyAdapterDataMo
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scrollRange = super.scrollVerticallyBy(dx, recycler, state);
         int overScroll = dx - scrollRange;
-        if (overScroll > 0) {
-            //Bottom overscroll disable refreshLayout and enable bounce overscroll.
-            if (!easyRecyclerView.isShowingLoadingHeader()) {
-                if (easyRecyclerView.supportsPullToRefresh() && easyRecyclerView.supportsBounceOverscroll()) {
-                    easyRecyclerView.enableBounceOverscroll(true);
-                    easyRecyclerView.enablePullToRefreshLayout(false);
-                }
-            }
-        } else if (overScroll < 0) {
-            //top overscroll enable refreshLayout and disable bounce overscroll
-            if (!easyRecyclerView.isShowingLoadingHeader()) {
-                if (easyRecyclerView.supportsPullToRefresh() && easyRecyclerView.supportsBounceOverscroll()) {
-                    easyRecyclerView.enableBounceOverscroll(false);
-                    easyRecyclerView.enablePullToRefreshLayout(true);
-                }
-            }
-        }
+        if (easyRecyclerView.supportsPullToRefresh() && easyRecyclerView.supportsBounceOverscroll())
+            easyRecyclerView.enableBounceOverscroll(false);
         if (Math.abs(dx) > 20)
             easyRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
         if (!easyRecyclerView.isShowingLoadingHeader() && dx > 0)

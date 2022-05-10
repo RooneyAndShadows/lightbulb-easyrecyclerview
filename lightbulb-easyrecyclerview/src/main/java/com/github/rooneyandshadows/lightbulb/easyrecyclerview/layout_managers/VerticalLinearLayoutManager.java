@@ -23,23 +23,8 @@ public final class VerticalLinearLayoutManager<IType extends EasyAdapterDataMode
         int overScroll = dy - scrollRange;
         if (easyRecyclerView.isShowingLoadingHeader())
             return scrollRange;
-        if (overScroll > 0) {
-            //Bottom overscroll disable refreshLayout and enable bounce overscroll.
-            if (!easyRecyclerView.isShowingLoadingHeader()) {
-                if (easyRecyclerView.supportsPullToRefresh() && easyRecyclerView.supportsBounceOverscroll()) {
-                    easyRecyclerView.enableBounceOverscroll(true);
-                    easyRecyclerView.enablePullToRefreshLayout(false);
-                }
-            }
-        } else if (overScroll < 0) {
-            //top overscroll enable refreshLayout and disable bounce overscroll
-            if (!easyRecyclerView.isShowingLoadingHeader()) {
-                if (easyRecyclerView.supportsPullToRefresh() && easyRecyclerView.supportsBounceOverscroll()) {
-                    easyRecyclerView.enableBounceOverscroll(false);
-                    easyRecyclerView.enablePullToRefreshLayout(true);
-                }
-            }
-        }
+        if (easyRecyclerView.supportsPullToRefresh() && easyRecyclerView.supportsBounceOverscroll())
+            easyRecyclerView.enableBounceOverscroll(false);
         if (Math.abs(dy) > 20)
             easyRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
         if (!easyRecyclerView.isShowingLoadingHeader() && dy > 0)
