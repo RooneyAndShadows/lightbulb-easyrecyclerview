@@ -42,7 +42,6 @@ public final class VerticalLinearLayoutManager<IType extends EasyAdapterDataMode
         }
         if (Math.abs(dy) > 20)
             easyRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
-        System.out.println(dy);
         if (!easyRecyclerView.isShowingLoadingHeader() && dy > 0)
             handleLoadMore();
         return scrollRange;
