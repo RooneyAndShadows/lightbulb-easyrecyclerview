@@ -27,7 +27,7 @@ All-in-one easy to use RecyclerView for your android project
 ## Latest releases 🛠
 
 - Java & AndroidX
-  | [v1.0.10](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/1.0.10)
+  | [v1.0.11](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/1.0.11)
 
 # Setup
 

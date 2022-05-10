@@ -46,13 +46,14 @@ public final class HorizontalLinearLayoutManager<IType extends EasyAdapterDataMo
     }
 
     private void handleLoadMore() {
+        if (!easyRecyclerView.supportsLazyLoading())
+            return;
         View lastView = getChildAt(getChildCount() - 1);
         if (lastView == null)
             return;
         int size = easyRecyclerView.getItems().size();
         int last = ((RecyclerView.LayoutParams) lastView.getLayoutParams()).getAbsoluteAdapterPosition() - easyRecyclerView.getAdapter().getHeadersCount();
-        if (last == size - 1 && !easyRecyclerView.isShowingLoadingFooter()) {
-            easyRecyclerView.loadMoreData();
-        }
+        boolean needToLoadMoreData = !easyRecyclerView.isShowingLoadingFooter() && easyRecyclerView.hasMoreDataToLoad() && (last == size - 1);
+        if (needToLoadMoreData) easyRecyclerView.loadMoreData();
     }
 }

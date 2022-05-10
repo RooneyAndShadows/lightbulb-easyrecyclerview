@@ -48,6 +48,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     private final String EMPTY_LAYOUT_VIEW_TAG = "EMPTY_LAYOUT_TAG";
     private boolean supportsPullToRefresh = false;
     private boolean supportsLazyLoading = false;
+    private boolean hasMoreDataToLoad = true;
     private boolean supportsBounceOverscroll = false;
     private boolean showingEmptyLayout = false;
     private boolean showingLoadingFooter = false;
@@ -105,6 +106,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         SavedState myState = new SavedState(superState);
         if (dataAdapter != null)
             myState.adapterState = getAdapter().saveAdapterState();
+        myState.hasMoreDataToLoad = hasMoreDataToLoad;
         myState.supportsLoadMore = supportsLazyLoading;
         myState.supportsPullToRefresh = supportsPullToRefresh;
         myState.supportsBounceOverscroll = supportsBounceOverscroll;
@@ -132,6 +134,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         super.onRestoreInstanceState(savedState.getSuperState());
         if (dataAdapter != null)
             getAdapter().restoreAdapterState(savedState.adapterState);
+        hasMoreDataToLoad = savedState.hasMoreDataToLoad;
         supportsLazyLoading = savedState.supportsLoadMore;
         supportsPullToRefresh = savedState.supportsPullToRefresh;
         supportsBounceOverscroll = savedState.supportsBounceOverscroll;
@@ -231,6 +234,15 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     /**
+     * Indicates whether there is more data to load.
+     *
+     * @param hasMoreDataToLoad - Whether there is more data available
+     */
+    public void setHasMoreDataToLoad(boolean hasMoreDataToLoad) {
+        this.hasMoreDataToLoad = hasMoreDataToLoad;
+    }
+
+    /**
      * Sets alternative layout to show in case of empty list.
      *
      * @param emptyLayoutId - Resource identifier for layout to show.
@@ -321,7 +333,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     public void loadMoreData() {
-        if (loadMoreCallback != null) {
+        if (loadMoreCallback != null || hasMoreDataToLoad) {
             showLoadingFooter(true);
             loadMoreCallback.loadMore(this);
         }
@@ -451,6 +463,13 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         if (dataAdapter == null)
             return false;
         return dataAdapter.hasItems();
+    }
+
+    /**
+     * @return true if there is more data to be loaded trough lazy loading.
+     */
+    public boolean hasMoreDataToLoad() {
+        return hasMoreDataToLoad;
     }
 
     /**
@@ -709,6 +728,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
 
     private static class SavedState extends BaseSavedState {
         private Bundle adapterState;
+        private boolean hasMoreDataToLoad;
         private boolean overscrollBounceEnabled;
         private boolean supportsBounceOverscroll;
         private boolean swipeToRefreshLayoutEnabled;
@@ -731,6 +751,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         private SavedState(Parcel in) {
             super(in);
             adapterState = in.readBundle(EasyRecyclerView.class.getClassLoader());
+            hasMoreDataToLoad = in.readByte() != 0;
             overscrollBounceEnabled = in.readByte() != 0;
             swipeToRefreshLayoutEnabled = in.readByte() != 0;
             supportsPullToRefresh = in.readByte() != 0;
@@ -751,6 +772,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
             out.writeBundle(adapterState);
+            out.writeByte((byte) (hasMoreDataToLoad ? 1 : 0));
             out.writeByte((byte) (overscrollBounceEnabled ? 1 : 0));
             out.writeByte((byte) (swipeToRefreshLayoutEnabled ? 1 : 0));
             out.writeByte((byte) (supportsPullToRefresh ? 1 : 0));
