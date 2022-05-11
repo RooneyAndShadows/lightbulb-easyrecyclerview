@@ -34,6 +34,7 @@ import java.util.List;
 import androidx.dynamicanimation.animation.SpringForce;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 
 import static com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout.RefreshStyle.*;
 
@@ -54,7 +55,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     private boolean showingLoadingFooter = false;
     private boolean showingLoadingHeader = false;
     private boolean showingRefreshLayout = false;
-    private boolean pullToRefreshLayoutEnabled = false;
     private boolean overscrollBounceEnabled = false;
     private boolean pullToRefreshEnabled = false;
     private AType dataAdapter;
@@ -75,14 +75,15 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     private EasyRecyclerEmptyLayoutListener emptyLayoutListeners = null;
     private final Runnable showRefreshLayoutDelayedRunnable = () -> refreshLayout.setRefreshing(true);
     private final Runnable showLoadingDelayedRunnable = () -> {
-        if (supportsPullToRefresh)
-            if (showingLoadingHeader) {
-                enablePullToRefreshLayout(false);
-                loadingIndicator.setVisibility(VISIBLE);
-            } else {
-                enablePullToRefreshLayout(true);
-                loadingIndicator.setVisibility(GONE);
-            }
+        if (!supportsPullToRefresh)
+            return;
+        if (showingLoadingHeader) {
+            enablePullToRefreshLayout(false);
+            loadingIndicator.setVisibility(VISIBLE);
+        } else {
+            enablePullToRefreshLayout(true);
+            loadingIndicator.setVisibility(GONE);
+        }
     };
 
     public EasyRecyclerView(Context context) {
@@ -112,7 +113,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         myState.supportsBounceOverscroll = supportsBounceOverscroll;
         myState.overscrollBounceEnabled = overscrollBounceEnabled;
         myState.pullToRefreshEnabled = pullToRefreshEnabled;
-        myState.swipeToRefreshLayoutEnabled = pullToRefreshLayoutEnabled;
         myState.showingRefreshLayout = showingRefreshLayout;
         myState.showingLoadingFooterLayout = showingLoadingFooter;
         myState.showingLoadingIndicator = showingLoadingHeader;
@@ -141,10 +141,9 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         overscrollBounceEnabled = savedState.overscrollBounceEnabled;
         pullToRefreshEnabled = savedState.pullToRefreshEnabled;
         layoutManagerType = LayoutManagerTypes.valueOf(savedState.layoutManagerType);
-        pullToRefreshLayoutEnabled = savedState.swipeToRefreshLayoutEnabled;
         emptyLayoutId = savedState.emptyLayoutId;
         enableBounceOverscroll(overscrollBounceEnabled);
-        enablePullToRefreshLayout(pullToRefreshLayoutEnabled);
+        enablePullToRefreshLayout(pullToRefreshEnabled);
         showLoadingIndicator(savedState.showingLoadingIndicator);
         showRefreshLayout(savedState.showingRefreshLayout);
         showLoadingFooter(savedState.showingLoadingFooterLayout);
@@ -163,18 +162,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             swipeToDeleteCallbacks.cancelPendingAction();
     }
 
-    public void enableBounceOverscroll(boolean enabled) {
-        overscrollBounceEnabled = enabled;
-        recyclerView.setFlingAnimationSize(enabled ? bouncyFlingAnimationSize : 0f);
-        recyclerView.setOverscrollAnimationSize(enabled ? bouncyOverscrollAnimationSize : 0f);
-        recyclerView.setDampingRatio(enabled ? SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY : SpringForce.DAMPING_RATIO_NO_BOUNCY);
-    }
-
-    public void enablePullToRefreshLayout(boolean enabled) {
-        pullToRefreshEnabled = enabled;
-        pullToRefreshLayoutEnabled = enabled;
-        refreshLayout.setEnabled(enabled);
-    }
 
     protected LayoutManagerTypes getLayoutManagerType() {
         return LayoutManagerTypes.UNDEFINED;
@@ -216,26 +203,45 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     /**
-     * Indicates whether swipe to refresh is enabled.
-     *
-     * @param supportsPullToRefresh - Whether refresh is enabled.
+     * @param supportsPullToRefresh - Whether pull to refresh is supported.
      */
     public void setSupportsPullToRefresh(boolean supportsPullToRefresh) {
         this.supportsPullToRefresh = supportsPullToRefresh;
     }
 
     /**
-     * Indicates whether lazy loading is enabled.
-     *
-     * @param supportsLazyLoading - Whether lazy loading is enabled.
+     * @param supportsBounceOverscroll - Whether overscroll bounce effect is supported.
+     */
+    public void setSupportsBounceOverscroll(boolean supportsBounceOverscroll) {
+        this.supportsBounceOverscroll = supportsBounceOverscroll;
+    }
+
+    /**
+     * @param enabled - Whether overscroll bounce is enabled.
+     */
+    public void enableBounceOverscroll(boolean enabled) {
+        if (!supportsBounceOverscroll)
+            return;
+        enableBounceOverscrollInternally(enabled);
+    }
+
+    /**
+     * @param enabled - Whether pull to refresh is enabled.
+     */
+    public void enablePullToRefreshLayout(boolean enabled) {
+        if (!supportsPullToRefresh)
+            return;
+        enablePullToRefreshLayoutInternally(enabled);
+    }
+
+    /**
+     * @param supportsLazyLoading - Whether lazy loading is supported.
      */
     public void setSupportsLazyLoading(boolean supportsLazyLoading) {
         this.supportsLazyLoading = supportsLazyLoading;
     }
 
     /**
-     * Indicates whether there is more data to load.
-     *
      * @param hasMoreDataToLoad - Whether there is more data available
      */
     public void setHasMoreDataToLoad(boolean hasMoreDataToLoad) {
@@ -434,11 +440,11 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     /**
-     * Sets the {@link RecyclerView.ItemAnimator} to the recyclerview.
+     * Sets the {@link ItemAnimator} to the recyclerview.
      *
-     * @param RecyclerView.ItemAnimator - Animator to set.
+     * @param ItemAnimator - Animator to set.
      */
-    public void setItemAnimator(RecyclerView.ItemAnimator animator) {
+    public void setItemAnimator(ItemAnimator animator) {
         recyclerView.setItemAnimator(animator);
     }
 
@@ -519,20 +525,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
      */
     public boolean supportsBounceOverscroll() {
         return supportsBounceOverscroll;
-    }
-
-    /**
-     * @return whether overscroll bounce is enabled
-     */
-    public boolean isOverscrollBounceEnabled() {
-        return overscrollBounceEnabled;
-    }
-
-    /**
-     * @return whether pull to refresh feature is enabled
-     */
-    public boolean isPullToRefreshEnabled() {
-        return pullToRefreshEnabled;
     }
 
     /**
@@ -646,6 +638,8 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         configureRefreshLayout();
         configureEmptyLayout();
         setNestedScrollingEnabled(isNestedScrollingEnabled());
+        enableBounceOverscrollInternally(supportsBounceOverscroll);
+        enablePullToRefreshLayoutInternally(supportsPullToRefresh);
     }
 
     private void initLoadingIndicator() {
@@ -681,13 +675,11 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                if (renderedCallback != null) {
+                if (renderedCallback != null)
                     renderedCallback.execute();
-                }
                 recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
-        enableBounceOverscroll(supportsBounceOverscroll);
     }
 
     private void configureRefreshLayout() {
@@ -700,7 +692,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         refreshView.setBackgroundColor(refreshBackgroundColor);
         refreshLayout.setRefreshView(refreshView, layoutParams);
         refreshLayout.setRefreshStyle(NORMAL);
-        enablePullToRefreshLayout(supportsPullToRefresh);
     }
 
     private void configureEmptyLayout() {
@@ -726,12 +717,25 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         }
     }
 
+    private void enableBounceOverscrollInternally(boolean enabled) {
+        overscrollBounceEnabled = enabled;
+        recyclerView.setFlingAnimationSize(enabled ? bouncyFlingAnimationSize : 0f);
+        recyclerView.setOverscrollAnimationSize(enabled ? bouncyOverscrollAnimationSize : 0f);
+        recyclerView.setDampingRatio(enabled ? SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY : SpringForce.DAMPING_RATIO_NO_BOUNCY);
+    }
+
+    private void enablePullToRefreshLayoutInternally(boolean enabled) {
+        pullToRefreshEnabled = enabled;
+        if (enabled)
+            enableBounceOverscrollInternally(false);
+        refreshLayout.setEnabled(enabled);
+    }
+
     private static class SavedState extends BaseSavedState {
         private Bundle adapterState;
         private boolean hasMoreDataToLoad;
         private boolean overscrollBounceEnabled;
         private boolean supportsBounceOverscroll;
-        private boolean swipeToRefreshLayoutEnabled;
         private boolean supportsPullToRefresh;
         private boolean supportsLoadMore;
         private boolean pullToRefreshEnabled;
@@ -753,7 +757,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             adapterState = in.readBundle(EasyRecyclerView.class.getClassLoader());
             hasMoreDataToLoad = in.readByte() != 0;
             overscrollBounceEnabled = in.readByte() != 0;
-            swipeToRefreshLayoutEnabled = in.readByte() != 0;
             supportsPullToRefresh = in.readByte() != 0;
             pullToRefreshEnabled = in.readByte() != 0;
             supportsBounceOverscroll = in.readByte() != 0;
@@ -774,7 +777,6 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             out.writeBundle(adapterState);
             out.writeByte((byte) (hasMoreDataToLoad ? 1 : 0));
             out.writeByte((byte) (overscrollBounceEnabled ? 1 : 0));
-            out.writeByte((byte) (swipeToRefreshLayoutEnabled ? 1 : 0));
             out.writeByte((byte) (supportsPullToRefresh ? 1 : 0));
             out.writeByte((byte) (pullToRefreshEnabled ? 1 : 0));
             out.writeByte((byte) (supportsBounceOverscroll ? 1 : 0));

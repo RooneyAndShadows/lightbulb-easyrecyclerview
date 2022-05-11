@@ -96,8 +96,7 @@ public class EasyRecyclerViewTouchHandler<IType extends EasyAdapterDataModel, AT
     public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
         viewHolder.itemView.setAlpha(1F);
-        if (easyRecyclerView.supportsPullToRefresh())
-            easyRecyclerView.enablePullToRefreshLayout(true);
+        easyRecyclerView.enablePullToRefreshLayout(true);
         if (isItemVisible(viewHolder))
             executePendingAction();
     }
@@ -116,8 +115,7 @@ public class EasyRecyclerViewTouchHandler<IType extends EasyAdapterDataModel, AT
 
     private void handleSwipeDraw(RecyclerView.ViewHolder viewHolder, Canvas canvas, float dx, float dy) {
         View itemView = viewHolder.itemView;
-        if (easyRecyclerView.supportsPullToRefresh())
-            easyRecyclerView.enablePullToRefreshLayout(false);
+        easyRecyclerView.enablePullToRefreshLayout(false);
         int itemPosition = viewHolder.getAbsoluteAdapterPosition() - adapter.getHeadersCount();
         if (itemPosition != -1) {
             IType item = getItem(viewHolder);
