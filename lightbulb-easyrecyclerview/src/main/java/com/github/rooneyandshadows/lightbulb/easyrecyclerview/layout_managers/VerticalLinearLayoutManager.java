@@ -39,6 +39,7 @@ public final class VerticalLinearLayoutManager<IType extends EasyAdapterDataMode
         int size = easyRecyclerView.getItems().size();
         int last = ((RecyclerView.LayoutParams) lastView.getLayoutParams()).getAbsoluteAdapterPosition() - easyRecyclerView.getAdapter().getHeadersCount();
         boolean needToLoadMoreData = !easyRecyclerView.isShowingLoadingFooter() && easyRecyclerView.hasMoreDataToLoad() && (last == size - 1);
-        if (needToLoadMoreData) easyRecyclerView.loadMoreData();
+        if (needToLoadMoreData)
+            easyRecyclerView.loadMoreData();
     }
 }
