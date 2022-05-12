@@ -174,7 +174,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
      */
     public void setAdapter(AType adapter) {
         if (adapter != null) {
-            wrapperAdapter = new HeaderViewRecyclerAdapter();
+            wrapperAdapter = new HeaderViewRecyclerAdapter(recyclerView);
             dataAdapter = adapter;
             dataAdapter.setWrapperAdapter(wrapperAdapter);
             dataAdapter.addOnCollectionChangedListener(() -> setEmptyLayoutVisibility(!dataAdapter.hasItems()));

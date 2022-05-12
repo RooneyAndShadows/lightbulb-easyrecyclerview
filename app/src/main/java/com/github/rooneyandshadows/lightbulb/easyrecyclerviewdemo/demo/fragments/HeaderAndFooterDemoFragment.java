@@ -81,7 +81,7 @@ public class HeaderAndFooterDemoFragment extends BaseFragment {
 
     private List<DemoModel> generateInitialData() {
         List<DemoModel> models = new ArrayList<>();
-        for (int i = 1; i <= 5; i++)
+        for (int i = 1; i <= 10; i++)
             models.add(new DemoModel("Demo title " + i, "Demo subtitle " + i));
         return models;
     }

@@ -14,7 +14,7 @@ buildscript {
                 flowlayoutmanager   : "1.8.0",
                 lightbulb           : [
                         commons         : "1.0.6",
-                        recycleradapters: "1.0.4"
+                        recycleradapters: "1.0.5"
                 ],
                 java                : [
                         commons: "1.0.6"
