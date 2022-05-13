@@ -18,7 +18,9 @@ import android.widget.TextView;
 import com.factor.bouncy.BouncyRecyclerView;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewTouchHandler;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalFlowLayoutManager;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalLinearLayoutManager;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalFlowLayoutManager;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RefreshView;
@@ -654,25 +656,18 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         switch (layoutManagerType) {
             case LAYOUT_LINEAR_VERTICAL:
             case UNDEFINED:
-                manager = new VerticalLinearLayoutManager<>(this);
-                recyclerView.setLayoutManager(manager);
+                recyclerView.setLayoutManager(new VerticalLinearLayoutManager<>(this));
                 break;
             case LAYOUT_LINEAR_HORIZONTAL:
-                manager = new HorizontalLinearLayoutManager<>(this);
-                recyclerView.setLayoutManager(manager);
+                recyclerView.setLayoutManager(new HorizontalLinearLayoutManager<>(this));
                 break;
             case LAYOUT_FLOW_VERTICAL:
-                manager = new FlexboxLayoutManager(getContext(), FlexDirection.ROW);
-                ((FlexboxLayoutManager) manager).setJustifyContent(JustifyContent.FLEX_START);
-                recyclerView.setLayoutManager(manager);
+                recyclerView.setLayoutManager(new VerticalFlowLayoutManager<>(this));
                 break;
             case LAYOUT_FLOW_HORIZONTAL:
-                manager = new FlexboxLayoutManager(getContext(), FlexDirection.COLUMN);
-                ((FlexboxLayoutManager) manager).setJustifyContent(JustifyContent.FLEX_START);
-                recyclerView.setLayoutManager(manager);
+                recyclerView.setLayoutManager(new HorizontalFlowLayoutManager<>(this));
                 break;
         }
-
     }
 
     private void configureRecycler() {

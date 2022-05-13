@@ -41,10 +41,10 @@ public class StickyHeadersSimpleDemoFragment extends BaseFragment {
     @Override
     protected BaseFragmentConfiguration configureFragment() {
         return new BaseFragmentConfiguration()
-                .withLeftDrawer(true)
+                .withLeftDrawer(false)
                 .withActionBarConfiguration(new BaseFragmentConfiguration.ActionBarConfiguration(R.id.toolbar)
                         .withActionButtons(true)
-                        .attachToDrawer(true)
+                        .attachToDrawer(false)
                         .withSubTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.sticky_headers_simple_demo))
                         .withTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.app_name))
                 );
@@ -65,7 +65,6 @@ public class StickyHeadersSimpleDemoFragment extends BaseFragment {
                     MenuConfigurations::getConfiguration
             );
         }
-        setupDrawerButton();
         setupRecycler(savedInstanceState);
     }
 
@@ -73,13 +72,6 @@ public class StickyHeadersSimpleDemoFragment extends BaseFragment {
     protected void selectViews() {
         super.selectViews();
         recyclerView = getView().findViewById(R.id.recycler_view);
-    }
-
-    private void setupDrawerButton() {
-        ShowMenuDrawable actionBarDrawable = new ShowMenuDrawable(getContextActivity());
-        actionBarDrawable.setEnabled(false);
-        actionBarDrawable.setBackgroundColor(ResourceUtils.getColorByAttribute(getContextActivity(), R.attr.colorError));
-        getActionBarManager().setHomeIcon(actionBarDrawable);
     }
 
     private void setupRecycler(Bundle savedState) {

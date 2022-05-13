@@ -22,10 +22,7 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:ERV_SupportsOverscrollBounce="false"
-        app:ERV_SupportsPullToRefresh="false"
-        android:nestedScrollingEnabled="false"
-        app:ERV_SupportsLoadMore="false"
         android:layout_below="@id/app_bar_layout"
+        android:nestedScrollingEnabled="false"
         app:ERV_LayoutManager="LAYOUT_FLOW_VERTICAL" />
 </RelativeLayout>
