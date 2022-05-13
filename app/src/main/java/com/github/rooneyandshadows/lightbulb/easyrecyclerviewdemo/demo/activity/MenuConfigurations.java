@@ -42,6 +42,16 @@ public class MenuConfigurations {
                 })
         )).addMenuItem(new PrimaryMenuItem(
                 -1,
+                ResourceUtils.getPhrase(activity, R.string.flow_layout_manager_demo),
+                null,
+                null,
+                1,
+                action((slider) -> {
+                    Router.getInstance().getRouter().toFlowLayoutManager(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO);
+                    slider.closeSlider();
+                })
+        )).addMenuItem(new PrimaryMenuItem(
+                -1,
                 ResourceUtils.getPhrase(activity, R.string.header_and_footer_demo),
                 null,
                 null,

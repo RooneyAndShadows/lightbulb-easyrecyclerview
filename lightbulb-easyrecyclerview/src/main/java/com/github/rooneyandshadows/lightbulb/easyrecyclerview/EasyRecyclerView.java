@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.factor.bouncy.BouncyRecyclerView;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewTouchHandler;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.FlowLayoutManager;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalLinearLayoutManager;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout;
@@ -26,8 +25,10 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.Refre
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.HeaderViewRecyclerAdapter;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
-import com.xiaofeng.flowlayoutmanager.Alignment;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 
-import static com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout.RefreshStyle.*;
+import static com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout.RefreshStyle.NORMAL;
 
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
@@ -657,9 +658,14 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             case LAYOUT_LINEAR_HORIZONTAL:
                 manager = new HorizontalLinearLayoutManager<>(this);
                 break;
-            case LAYOUT_FLOW:
-                manager = new FlowLayoutManager();
-                ((FlowLayoutManager) manager).setAlignment(Alignment.LEFT);
+            case LAYOUT_FLOW_VERTICAL:
+                manager = new FlexboxLayoutManager(getContext(), FlexDirection.ROW);
+                ((FlexboxLayoutManager) manager).setJustifyContent(JustifyContent.FLEX_START);
+                recyclerView.setLayoutManager(manager);
+                break;
+            case LAYOUT_FLOW_HORIZONTAL:
+                manager = new FlexboxLayoutManager(getContext(), FlexDirection.COLUMN);
+                ((FlexboxLayoutManager) manager).setJustifyContent(JustifyContent.FLEX_START);
                 recyclerView.setLayoutManager(manager);
                 break;
         }
@@ -806,8 +812,9 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     public enum LayoutManagerTypes {
         LAYOUT_LINEAR_VERTICAL(1),
         LAYOUT_LINEAR_HORIZONTAL(2),
-        LAYOUT_FLOW(3),
-        UNDEFINED(4);
+        LAYOUT_FLOW_VERTICAL(3),
+        LAYOUT_FLOW_HORIZONTAL(4),
+        UNDEFINED(5);
 
         private final int value;
         private static final SparseArray<LayoutManagerTypes> values = new SparseArray<>();

@@ -4,7 +4,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoItemLayoutBinding;
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoListItemLayoutBinding;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterConfiguration;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
@@ -22,7 +22,7 @@ public class SimpleAdapter extends EasyRecyclerAdapter<DemoModel> {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        DemoItemLayoutBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.demo_item_layout, parent, false);
+        DemoListItemLayoutBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.demo_list_item_layout, parent, false);
         return new ViewHolder(binding);
     }
 
@@ -35,14 +35,14 @@ public class SimpleAdapter extends EasyRecyclerAdapter<DemoModel> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final DemoItemLayoutBinding binding;
+        private final DemoListItemLayoutBinding binding;
 
-        public ViewHolder(DemoItemLayoutBinding binding) {
+        public ViewHolder(DemoListItemLayoutBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public DemoItemLayoutBinding getBinding() {
+        public DemoListItemLayoutBinding getBinding() {
             return binding;
         }
     }

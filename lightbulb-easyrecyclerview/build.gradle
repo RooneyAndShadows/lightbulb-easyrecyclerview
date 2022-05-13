@@ -60,6 +60,7 @@ dependencies {
     implementation 'org.jetbrains:annotations:15.0'
     implementation "com.google.android.material:material:$versions.material"
     implementation "com.github.valkriaine:Bouncy:$versions.bouncy"
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation "com.github.simonebortolin:FlowLayoutManager:$versions.flowlayoutmanager"
     implementation "com.github.rooneyandshadows:java-commons:$versions.java.commons"
     implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycleradapters"

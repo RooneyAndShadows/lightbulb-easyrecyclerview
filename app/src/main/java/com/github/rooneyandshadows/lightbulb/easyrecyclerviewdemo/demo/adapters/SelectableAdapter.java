@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R;
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoItemLayoutBinding;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoSelectableItemLayoutBinding;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel;
 import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterConfiguration;

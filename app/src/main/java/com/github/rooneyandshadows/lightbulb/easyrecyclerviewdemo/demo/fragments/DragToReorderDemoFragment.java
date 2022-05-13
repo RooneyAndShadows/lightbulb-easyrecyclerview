@@ -42,7 +42,7 @@ public class DragToReorderDemoFragment extends BaseFragment {
                 .withActionBarConfiguration(new BaseFragmentConfiguration.ActionBarConfiguration(R.id.toolbar)
                         .withActionButtons(true)
                         .attachToDrawer(false)
-                        .withSubTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.swipe_to_delete_demo))
+                        .withSubTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.drag_to_reorder_demo))
                         .withTitle(ResourceUtils.getPhrase(getContextActivity(), R.string.app_name))
                 );
     }
