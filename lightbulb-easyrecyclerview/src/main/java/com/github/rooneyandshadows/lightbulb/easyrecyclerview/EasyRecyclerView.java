@@ -342,7 +342,8 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     public void loadMoreData() {
         if (loadMoreCallback != null || hasMoreDataToLoad) {
             showLoadingFooter(true);
-            loadMoreCallback.loadMore(this);
+            if (loadMoreCallback != null)
+                loadMoreCallback.loadMore(this);
         }
     }
 
@@ -654,9 +655,11 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             case LAYOUT_LINEAR_VERTICAL:
             case UNDEFINED:
                 manager = new VerticalLinearLayoutManager<>(this);
+                recyclerView.setLayoutManager(manager);
                 break;
             case LAYOUT_LINEAR_HORIZONTAL:
                 manager = new HorizontalLinearLayoutManager<>(this);
+                recyclerView.setLayoutManager(manager);
                 break;
             case LAYOUT_FLOW_VERTICAL:
                 manager = new FlexboxLayoutManager(getContext(), FlexDirection.ROW);
@@ -669,7 +672,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
                 recyclerView.setLayoutManager(manager);
                 break;
         }
-        recyclerView.setLayoutManager(manager);
+
     }
 
     private void configureRecycler() {
