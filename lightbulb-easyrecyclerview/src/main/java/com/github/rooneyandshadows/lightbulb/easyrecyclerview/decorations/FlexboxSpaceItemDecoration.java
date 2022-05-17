@@ -21,13 +21,13 @@ public class FlexboxSpaceItemDecoration extends RecyclerView.ItemDecoration {
     public FlexboxSpaceItemDecoration(int spacing, EasyRecyclerView recyclerView) {
         this.verticalSpacing = spacing / 2;
         this.horizontalSpacing = spacing / 2;
-        recyclerView.findViewById(R.id.recyclerView).setPadding(horizontalSpacing, spacing, horizontalSpacing, verticalSpacing);
+        recyclerView.findViewById(R.id.recyclerView).setPadding(horizontalSpacing, spacing, horizontalSpacing, 0);
     }
 
     public FlexboxSpaceItemDecoration(int verticalSpacing, int horizontalSpacing, EasyRecyclerView recyclerView) {
         this.verticalSpacing = verticalSpacing / 2;
         this.horizontalSpacing = horizontalSpacing / 2;
-        recyclerView.findViewById(R.id.recyclerView).setPadding(this.verticalSpacing, verticalSpacing, this.verticalSpacing, this.horizontalSpacing);
+        recyclerView.findViewById(R.id.recyclerView).setPadding(this.verticalSpacing,verticalSpacing, this.verticalSpacing, 0);
     }
 
     @Override
