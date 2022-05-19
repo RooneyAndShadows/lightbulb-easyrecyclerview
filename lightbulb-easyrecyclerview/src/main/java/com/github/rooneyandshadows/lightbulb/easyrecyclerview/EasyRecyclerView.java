@@ -34,7 +34,9 @@ import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.dynamicanimation.animation.SpringForce;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
@@ -60,6 +62,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     private boolean showingRefreshLayout = false;
     private boolean overscrollBounceEnabled = false;
     private boolean pullToRefreshEnabled = false;
+    private boolean animating = false;
     private AType dataAdapter;
     private View emptyLayoutView;
     private View loadingFooterView;
@@ -313,23 +316,31 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     public void addHeaderView(View view) {
-        if (!wrapperAdapter.containsHeaderView(view))
-            wrapperAdapter.addHeaderView(view);
+        post(() -> {
+            if (!wrapperAdapter.containsHeaderView(view))
+                wrapperAdapter.addHeaderView(view);
+        });
     }
 
     public void removeHeaderView(View view) {
-        if (wrapperAdapter.containsHeaderView(view))
-            wrapperAdapter.removeHeaderView(view);
+        post(() -> {
+            if (wrapperAdapter.containsHeaderView(view))
+                wrapperAdapter.removeHeaderView(view);
+        });
     }
 
     public void addFooterView(View view) {
-        if (!wrapperAdapter.containsFooterView(view))
-            wrapperAdapter.addFooterView(view);
+        post(() -> {
+            if (!wrapperAdapter.containsFooterView(view))
+                wrapperAdapter.addFooterView(view);
+        });
     }
 
     public void removeFooterView(View view) {
-        if (wrapperAdapter.containsFooterView(view))
-            wrapperAdapter.removeFooterView(view);
+        post(() -> {
+            if (wrapperAdapter.containsFooterView(view))
+                wrapperAdapter.removeFooterView(view);
+        });
     }
 
     public void refreshData() {
@@ -396,9 +407,11 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         if (!pullToRefreshEnabled || isRefreshing == isShowingRefreshLayout())
             return;
         this.showingRefreshLayout = isRefreshing;
-        if (!showingRefreshLayout)
-            this.removeCallbacks(showRefreshLayoutDelayedRunnable);
-        refreshLayout.setRefreshing(isRefreshing);
+        recyclerView.post(() -> {
+            if (!showingRefreshLayout)
+                this.removeCallbacks(showRefreshLayoutDelayedRunnable);
+            refreshLayout.setRefreshing(isRefreshing);
+        });
     }
 
     /**
@@ -668,6 +681,10 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
                 recyclerView.setLayoutManager(new HorizontalFlowLayoutManager<>(this));
                 break;
         }
+    }
+
+    public boolean isAnimating() {
+        return recyclerView.getItemAnimator() != null && recyclerView.getItemAnimator().isRunning();
     }
 
     private void configureRecycler() {

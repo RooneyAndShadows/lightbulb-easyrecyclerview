@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 31
-        versionCode 1014
-        versionName "1.0.14"
+        versionCode 1015
+        versionName "1.0.15"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -60,8 +60,7 @@ dependencies {
     implementation 'org.jetbrains:annotations:15.0'
     implementation "com.google.android.material:material:$versions.material"
     implementation "com.github.valkriaine:Bouncy:$versions.bouncy"
-    implementation 'com.google.android.flexbox:flexbox:3.0.0'
-    implementation "com.github.simonebortolin:FlowLayoutManager:$versions.flowlayoutmanager"
+    implementation "com.google.android.flexbox:flexbox:$versions.flexbox"
     implementation "com.github.rooneyandshadows:java-commons:$versions.java.commons"
     implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycleradapters"
     implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"

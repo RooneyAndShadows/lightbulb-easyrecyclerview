@@ -21,12 +21,13 @@ public final class VerticalLinearLayoutManager<IType extends EasyAdapterDataMode
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scrollRange = super.scrollVerticallyBy(dy, recycler, state);
         int overScroll = dy - scrollRange;
-        if (easyRecyclerView.isShowingLoadingHeader())
+        if (easyRecyclerView.isShowingLoadingHeader() || easyRecyclerView.isAnimating())
             return scrollRange;
         if (Math.abs(dy) > 20)
             easyRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
-        if (!easyRecyclerView.isShowingLoadingHeader() && dy > 0)
+        if (!easyRecyclerView.isShowingRefreshLayout() && !easyRecyclerView.isShowingLoadingFooter() && dy > 0) {
             handleLoadMore();
+        }
         return scrollRange;
     }
 

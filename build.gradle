@@ -11,10 +11,10 @@ buildscript {
                 android_recyclerview: "1.2.1",
                 material            : "1.4.0",
                 bouncy              : "2.1",
-                flowlayoutmanager   : "1.8.0",
+                flexbox   : "3.0.0",
                 lightbulb           : [
                         commons         : "1.0.6",
-                        recycleradapters: "1.0.5"
+                        recycleradapters: "1.0.6"
                 ],
                 java                : [
                         commons: "1.0.6"

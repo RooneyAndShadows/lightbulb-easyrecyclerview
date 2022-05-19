@@ -56,7 +56,7 @@ public final class HorizontalFlowLayoutManager<IType extends EasyAdapterDataMode
         int overScroll = dx - scrollRange;
         if (Math.abs(dx) > 20)
             easyRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
-        if (!easyRecyclerView.isShowingLoadingHeader() && dx > 0)
+        if (!easyRecyclerView.isShowingRefreshLayout() && !easyRecyclerView.isShowingLoadingHeader() &&  dx > 0)
             handleLoadMore();
         return scrollRange;
     }
