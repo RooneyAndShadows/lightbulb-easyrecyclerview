@@ -316,31 +316,23 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     public void addHeaderView(View view) {
-        post(() -> {
-            if (!wrapperAdapter.containsHeaderView(view))
-                wrapperAdapter.addHeaderView(view);
-        });
+        if (!wrapperAdapter.containsHeaderView(view))
+            wrapperAdapter.addHeaderView(view);
     }
 
     public void removeHeaderView(View view) {
-        post(() -> {
-            if (wrapperAdapter.containsHeaderView(view))
-                wrapperAdapter.removeHeaderView(view);
-        });
+        if (wrapperAdapter.containsHeaderView(view))
+            wrapperAdapter.removeHeaderView(view);
     }
 
     public void addFooterView(View view) {
-        post(() -> {
-            if (!wrapperAdapter.containsFooterView(view))
-                wrapperAdapter.addFooterView(view);
-        });
+        if (!wrapperAdapter.containsFooterView(view))
+            wrapperAdapter.addFooterView(view);
     }
 
     public void removeFooterView(View view) {
-        post(() -> {
-            if (wrapperAdapter.containsFooterView(view))
-                wrapperAdapter.removeFooterView(view);
-        });
+        if (wrapperAdapter.containsFooterView(view))
+            wrapperAdapter.removeFooterView(view);
     }
 
     public void refreshData() {
