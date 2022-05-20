@@ -56,9 +56,18 @@ public final class HorizontalFlowLayoutManager<IType extends EasyAdapterDataMode
         int overScroll = dx - scrollRange;
         if (Math.abs(dx) > 20)
             easyRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
-        if (!easyRecyclerView.isShowingRefreshLayout() && !easyRecyclerView.isShowingLoadingHeader() &&  dx > 0)
+        if (needToLoadMoreData(dx))
             handleLoadMore();
         return scrollRange;
+    }
+
+    private boolean needToLoadMoreData(int dx) {
+        return (easyRecyclerView.hasMoreDataToLoad() &&
+                !easyRecyclerView.isShowingLoadingHeader() &&
+                !easyRecyclerView.isAnimating() &&
+                !easyRecyclerView.isShowingRefreshLayout() &&
+                !easyRecyclerView.isShowingLoadingFooter() &&
+                dx > 0);
     }
 
     private void handleLoadMore() {
@@ -69,9 +78,7 @@ public final class HorizontalFlowLayoutManager<IType extends EasyAdapterDataMode
             return;
         int size = easyRecyclerView.getItems().size();
         int last = ((RecyclerView.LayoutParams) lastView.getLayoutParams()).getAbsoluteAdapterPosition() - easyRecyclerView.getAdapter().getHeadersCount();
-        boolean needToLoadMoreData = !easyRecyclerView.isShowingLoadingFooter() && easyRecyclerView.hasMoreDataToLoad() && (last == size - 1);
-        if (needToLoadMoreData)
+        if (last == size - 1)
             easyRecyclerView.loadMoreData();
     }
-
 }

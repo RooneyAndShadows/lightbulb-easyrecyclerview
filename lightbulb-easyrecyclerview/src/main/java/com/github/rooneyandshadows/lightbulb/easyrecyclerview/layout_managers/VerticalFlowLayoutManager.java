@@ -25,13 +25,20 @@ public final class VerticalFlowLayoutManager<IType extends EasyAdapterDataModel,
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scrollRange = super.scrollVerticallyBy(dy, recycler, state);
         int overScroll = dy - scrollRange;
-        if (easyRecyclerView.isShowingLoadingHeader())
-            return scrollRange;
         if (Math.abs(dy) > 20)
             easyRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
-        if (!easyRecyclerView.isShowingRefreshLayout() && !easyRecyclerView.isShowingLoadingHeader() && dy > 0)
+        if (needToLoadMoreData(dy))
             handleLoadMore();
         return scrollRange;
+    }
+
+    private boolean needToLoadMoreData(int dy) {
+        return (easyRecyclerView.hasMoreDataToLoad() &&
+                !easyRecyclerView.isShowingLoadingHeader() &&
+                !easyRecyclerView.isAnimating() &&
+                !easyRecyclerView.isShowingRefreshLayout() &&
+                !easyRecyclerView.isShowingLoadingFooter() &&
+                dy > 0);
     }
 
     private void handleLoadMore() {
@@ -42,8 +49,7 @@ public final class VerticalFlowLayoutManager<IType extends EasyAdapterDataModel,
             return;
         int size = easyRecyclerView.getItems().size();
         int last = ((RecyclerView.LayoutParams) lastView.getLayoutParams()).getAbsoluteAdapterPosition() - easyRecyclerView.getAdapter().getHeadersCount();
-        boolean needToLoadMoreData = !easyRecyclerView.isShowingLoadingFooter() && easyRecyclerView.hasMoreDataToLoad() && (last == size - 1);
-        if (needToLoadMoreData)
+        if (last == size - 1)
             easyRecyclerView.loadMoreData();
     }
 }
