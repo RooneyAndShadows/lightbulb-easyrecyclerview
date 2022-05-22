@@ -462,13 +462,11 @@ public class RecyclerRefreshLayout extends ViewGroup {
         final int targetLeft = getPaddingLeft();
         final int targetRight = targetLeft + width - getPaddingLeft() - getPaddingRight();
         final int targetBottom = targetTop + height - getPaddingTop() - getPaddingBottom();
-
-        try {
-            mTarget.layout(targetLeft, targetTop, targetRight, targetBottom);
-        } catch (Exception ignored) {
-            RefreshLogger.e("error: ignored=" + ignored.toString() + " " + ignored.getStackTrace().toString());
-        }
-
+        //try {
+        mTarget.layout(targetLeft, targetTop, targetRight, targetBottom);
+        //} catch (Exception ignored) {
+        //    RefreshLogger.e("error: ignored=" + ignored.toString() + " " + ignored.getStackTrace().toString());
+        //}
         int refreshViewLeft = (width - mRefreshView.getMeasuredWidth()) / 2;
         int refreshViewTop = reviseRefreshViewLayoutTop((int) mRefreshInitialOffset);
         int refreshViewRight = (width + mRefreshView.getMeasuredWidth()) / 2;
