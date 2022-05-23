@@ -46,6 +46,6 @@ dependencies {
     implementation 'com.github.rooneyandshadows:java-commons:1.0.6'
     implementation 'com.github.rooneyandshadows:lightbulb-commons:1.0.6'
     implementation 'com.github.rooneyandshadows:lightbulb-application:1.0.36'
-    implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:1.0.7'
+    implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:1.0.8'
     implementation project(":lightbulb-easyrecyclerview")
 }
