@@ -45,8 +45,7 @@ public class StickyHeaderItemDecoration extends RecyclerView.ItemDecoration {
         View currentHeader = getHeaderViewForItem(headerPos, parent);
         fixLayoutSize(parent, currentHeader);
         int contactPoint = currentHeader.getBottom();
-        View childInContact = getChildInContact(parent, contactPoint, headerPos);
-
+        View childInContact = getChildInContact(parent, contactPoint, currentHeader);
         if (childInContact != null && mListener.isHeader(parent.getChildAdapterPosition(childInContact))) {
             moveHeader(c, currentHeader, childInContact);
             return;
@@ -76,21 +75,21 @@ public class StickyHeaderItemDecoration extends RecyclerView.ItemDecoration {
         c.restore();
     }
 
-    private View getChildInContact(RecyclerView parent, int contactPoint, int currentHeaderPos) {
+    private View getChildInContact(RecyclerView parent, int contactPoint, View currentHeader) {
         View childInContact = null;
         contactPoint += verticalSpacing;
         for (int i = 0; i < parent.getChildCount(); i++) {
             int heightTolerance = 0;
             View child = parent.getChildAt(i);
-
+            if (currentHeader.hashCode() == child.hashCode())
+                continue;
             //measure height tolerance with child if child is another header
-            if (currentHeaderPos != i) {
-                boolean isChildHeader = mListener.isHeader(parent.getChildAdapterPosition(child));
-                if (isChildHeader) {
-                    heightTolerance = mHeaderHeight - child.getHeight();
-                }
+            boolean isChildHeader = mListener.isHeader(parent.getChildAdapterPosition(child));
+            if (isChildHeader) {
+                heightTolerance = mHeaderHeight - child.getHeight();
             }
             heightTolerance += verticalSpacing;
+
             //add heightTolerance if child top be in display area
             int childBottomPosition;
             if (child.getTop() > 0) {
@@ -143,7 +142,7 @@ public class StickyHeaderItemDecoration extends RecyclerView.ItemDecoration {
     public interface StickyHeaderInterface {
 
         /**
-         * This method gets called by {@link StickyHeaderItemDecoration} to fetch the position of the header item in the adapter
+         * This method gets called by {@link com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration} to fetch the position of the header item in the adapter
          * that is used for (represents) item at specified position.
          *
          * @param itemPosition int. Adapter's position of the item for which to do the search of the position of the header item.
@@ -152,7 +151,7 @@ public class StickyHeaderItemDecoration extends RecyclerView.ItemDecoration {
         int getHeaderPositionForItem(int itemPosition);
 
         /**
-         * This method gets called by {@link StickyHeaderItemDecoration} to get layout resource id for the header item at specified adapter's position.
+         * This method gets called by {@link com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration} to get layout resource id for the header item at specified adapter's position.
          *
          * @param headerPosition int. Position of the header item in the adapter.
          * @return int. Layout resource id.
@@ -160,7 +159,7 @@ public class StickyHeaderItemDecoration extends RecyclerView.ItemDecoration {
         int getHeaderLayout(int headerPosition);
 
         /**
-         * This method gets called by {@link StickyHeaderItemDecoration} to setup the header View.
+         * This method gets called by {@link com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration} to setup the header View.
          *
          * @param header         View. Header to set the data on.
          * @param headerPosition int. Position of the header item in the adapter.
@@ -168,7 +167,7 @@ public class StickyHeaderItemDecoration extends RecyclerView.ItemDecoration {
         void bindHeaderData(View header, int headerPosition);
 
         /**
-         * This method gets called by {@link StickyHeaderItemDecoration} to verify whether the item represents a header.
+         * This method gets called by {@link com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration} to verify whether the item represents a header.
          *
          * @param itemPosition int.
          * @return true, if item at the specified adapter's position represents a header.
