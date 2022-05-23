@@ -728,6 +728,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             recyclerEmptyLayoutContainer.setVisibility(INVISIBLE);
             recyclerView.setVisibility(VISIBLE);
         }
+        
     }
 
     private void enableBounceOverscrollInternally(boolean enabled) {
