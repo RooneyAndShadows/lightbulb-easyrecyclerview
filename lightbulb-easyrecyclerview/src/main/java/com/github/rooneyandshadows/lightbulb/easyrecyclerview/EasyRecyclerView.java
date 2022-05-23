@@ -719,13 +719,13 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
         showingEmptyLayout = visibility;
         if (visibility) {
             recyclerEmptyLayoutContainer.setVisibility(VISIBLE);
-            recyclerView.setVisibility(GONE);
+            recyclerView.setVisibility(INVISIBLE);
             if (emptyLayoutListeners != null)
                 emptyLayoutListeners.onShow(emptyLayoutView);
         } else {
             if (emptyLayoutListeners != null)
                 emptyLayoutListeners.onHide(emptyLayoutView);
-            recyclerEmptyLayoutContainer.setVisibility(GONE);
+            recyclerEmptyLayoutContainer.setVisibility(INVISIBLE);
             recyclerView.setVisibility(VISIBLE);
         }
     }
