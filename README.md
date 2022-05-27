@@ -46,9 +46,9 @@ repositories {
 ### 2. Provide the gradle dependency
 
 ```gradle
-implementation 'com.github.rooneyandshadows:lightbulb-easyrecyclerview:1.0.17'
+implementation 'com.github.rooneyandshadows:lightbulb-easyrecyclerview:1.0.18'
 // Add recycler adapters support
-implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:1.0.7'
+implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:1.0.8'
 ```
 
 ### Note
