@@ -4,7 +4,7 @@ import android.os.Parcel;
 
 import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelableUtils;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel;
 
 import java.time.OffsetDateTime;
 

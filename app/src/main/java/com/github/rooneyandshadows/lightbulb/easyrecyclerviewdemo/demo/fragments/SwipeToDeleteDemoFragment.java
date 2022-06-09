@@ -19,7 +19,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.Ea
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

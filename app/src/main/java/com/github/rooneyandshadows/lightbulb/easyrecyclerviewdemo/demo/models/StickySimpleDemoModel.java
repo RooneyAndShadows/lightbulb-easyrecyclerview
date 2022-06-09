@@ -3,7 +3,7 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models;
 import android.os.Parcel;
 
 import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelableUtils;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel;
 
 public class StickySimpleDemoModel extends EasyAdapterDataModel {
     private final boolean isHeader;

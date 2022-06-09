@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoListItemLayoutBinding;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterConfiguration;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterConfiguration;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;

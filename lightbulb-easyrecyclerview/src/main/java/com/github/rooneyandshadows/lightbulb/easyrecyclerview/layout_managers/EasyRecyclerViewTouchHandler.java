@@ -13,8 +13,8 @@ import android.view.View;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 

@@ -3,8 +3,8 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers;
 import android.view.View;
 
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;

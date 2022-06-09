@@ -24,19 +24,14 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.Ve
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RefreshView;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.HeaderViewRecyclerAdapter;
-import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexboxLayoutManager;
-import com.google.android.flexbox.JustifyContent;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.HeaderViewRecyclerAdapter;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.dynamicanimation.animation.SpringForce;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;

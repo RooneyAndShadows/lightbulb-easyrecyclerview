@@ -12,8 +12,8 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.De
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoStickySimpleItemLayoutBinding;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickyAdvancedDemoModel;
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterConfiguration;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyRecyclerAdapter;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterConfiguration;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;

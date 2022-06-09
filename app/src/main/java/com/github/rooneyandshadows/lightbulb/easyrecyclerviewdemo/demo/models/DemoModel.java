@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelableUtils;
-import com.github.rooneyandshadows.lightbulb.recycleradapters.EasyAdapterDataModel;
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel;
 
 import java.util.List;
 
