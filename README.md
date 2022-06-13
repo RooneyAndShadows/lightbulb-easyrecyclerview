@@ -28,7 +28,7 @@ All-in-one easy to use RecyclerView for your android project
 ## Latest releases 🛠
 
 - Java & AndroidX
-  | [v1.0.20](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/1.0.20)
+  | [v1.0.21](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/1.0.21)
 
 # Setup
 
@@ -46,9 +46,9 @@ repositories {
 ### 2. Provide the gradle dependency
 
 ```gradle
-implementation 'com.github.rooneyandshadows:lightbulb-easyrecyclerview:1.0.20'
+implementation 'com.github.rooneyandshadows:lightbulb-easyrecyclerview:1.0.21'
 // Add recycler adapters support
-implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:1.0.10'
+implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:1.0.11'
 ```
 
 ### Note
