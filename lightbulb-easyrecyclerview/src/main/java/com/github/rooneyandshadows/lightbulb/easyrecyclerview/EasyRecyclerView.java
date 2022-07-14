@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 
 import static com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout.RefreshStyle.NORMAL;
+import static com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.HeaderViewRecyclerAdapter.*;
 
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
@@ -311,8 +312,12 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     }
 
     public void addHeaderView(View view) {
+        addHeaderView(view, null);
+    }
+
+    public void addHeaderView(View view, ViewListeners viewListeners) {
         if (!wrapperAdapter.containsHeaderView(view))
-            wrapperAdapter.addHeaderView(view);
+            wrapperAdapter.addHeaderView(view, viewListeners);
     }
 
     public void removeHeaderView(View view) {
@@ -323,6 +328,11 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
     public void addFooterView(View view) {
         if (!wrapperAdapter.containsFooterView(view))
             wrapperAdapter.addFooterView(view);
+    }
+
+    public void addFooterView(View view, ViewListeners viewListeners) {
+        if (!wrapperAdapter.containsFooterView(view))
+            wrapperAdapter.addFooterView(view, viewListeners);
     }
 
     public void removeFooterView(View view) {
@@ -723,7 +733,7 @@ public class EasyRecyclerView<IType extends EasyAdapterDataModel, AType extends 
             recyclerEmptyLayoutContainer.setVisibility(INVISIBLE);
             recyclerView.setVisibility(VISIBLE);
         }
-        
+
     }
 
     private void enableBounceOverscrollInternally(boolean enabled) {
