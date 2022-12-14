@@ -3,17 +3,17 @@
 buildscript {
     ext {
         versions = [
-                kotlin              : "1.6.21",
+                kotlin              : "1.7.10",
                 ktx                 : [
-                        core: "1.7.0"
+                        core: "1.9.0"
                 ],
-                android_appcompat   : "1.4.1",
+                android_appcompat   : "1.5.1",
                 android_recyclerview: "1.2.1",
-                material            : "1.4.0",
+                material            : "1.7.0",
                 bouncy              : "2.1",
                 flexbox             : "3.0.0",
                 lightbulb           : [
-                        commons         : "1.0.6",
+                        commons         : "1.0.18",
                         recycleradapters: "1.0.14"
                 ],
                 java                : [
