@@ -2,19 +2,22 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutParams
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
+import kotlin.math.abs
 
-class VerticalLinearLayoutManager<IType : EasyAdapterDataModel?, AType : EasyRecyclerAdapter<IType>?>(
+class VerticalLinearLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>>(
     private val easyRecyclerView: EasyRecyclerView<IType, AType>
-) : LinearLayoutManager(
-    easyRecyclerView.context, VERTICAL, false
-) {
+) : LinearLayoutManager(easyRecyclerView.context, VERTICAL, false) {
+    private val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter!!
+
+    @Override
     override fun scrollVerticallyBy(dy: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {
         val scrollRange = super.scrollVerticallyBy(dy, recycler, state)
-        val overScroll = dy - scrollRange
-        if (Math.abs(dy) > 20) easyRecyclerView.parent.requestDisallowInterceptTouchEvent(true)
+        //val overScroll = dy - scrollRange
+        if (abs(dy) > 20) easyRecyclerView.parent.requestDisallowInterceptTouchEvent(true)
         if (needToLoadMoreData(dy)) handleLoadMore()
         return scrollRange
     }
@@ -32,7 +35,7 @@ class VerticalLinearLayoutManager<IType : EasyAdapterDataModel?, AType : EasyRec
         val lastView = getChildAt(childCount - 1) ?: return
         val size = easyRecyclerView.items.size
         val last =
-            (lastView.layoutParams as RecyclerView.LayoutParams).absoluteAdapterPosition - easyRecyclerView.adapter.getHeadersCount()
+            (lastView.layoutParams as LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
         if (last == size - 1) easyRecyclerView.loadMoreData()
     }
 }

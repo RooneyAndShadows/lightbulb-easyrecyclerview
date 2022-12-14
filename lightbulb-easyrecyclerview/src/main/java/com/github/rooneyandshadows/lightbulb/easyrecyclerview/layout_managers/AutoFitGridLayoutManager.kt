@@ -4,16 +4,16 @@ import android.content.Context
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+@Suppress("unused")
 class AutoFitGridLayoutManager(context: Context?, columnWidth: Int) : GridLayoutManager(context, 1) {
     private var columnWidth = 0
     private var columnWidthChanged = true
-    fun setColumnWidth(newColumnWidth: Int) {
-        if (newColumnWidth > 0 && newColumnWidth != columnWidth) {
-            columnWidth = newColumnWidth
-            columnWidthChanged = true
-        }
+
+    init {
+        setColumnWidth(columnWidth)
     }
 
+    @Override
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         if (columnWidthChanged && columnWidth > 0) {
             val totalSpace: Int = if (orientation == VERTICAL)
@@ -27,7 +27,10 @@ class AutoFitGridLayoutManager(context: Context?, columnWidth: Int) : GridLayout
         super.onLayoutChildren(recycler, state)
     }
 
-    init {
-        setColumnWidth(columnWidth)
+    private fun setColumnWidth(newColumnWidth: Int) {
+        if (newColumnWidth > 0 && newColumnWidth != columnWidth) {
+            columnWidth = newColumnWidth
+            columnWidthChanged = true
+        }
     }
 }

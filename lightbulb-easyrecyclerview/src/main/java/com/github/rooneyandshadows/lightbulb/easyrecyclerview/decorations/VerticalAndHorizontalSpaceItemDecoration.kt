@@ -18,6 +18,7 @@ class VerticalAndHorizontalSpaceItemDecoration : RecyclerView.ItemDecoration {
         this.horizontalSpacing = horizontalSpacing
     }
 
+    @Override
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         outRect.left = horizontalSpacing
         outRect.right = horizontalSpacing

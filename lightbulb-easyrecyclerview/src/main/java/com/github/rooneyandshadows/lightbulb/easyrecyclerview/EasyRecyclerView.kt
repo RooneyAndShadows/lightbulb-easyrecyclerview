@@ -28,7 +28,7 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.Hea
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.HeaderViewRecyclerAdapter.ViewListeners
 import com.google.android.material.progressindicator.LinearProgressIndicator
 
-class EasyRecyclerView<IType : EasyAdapterDataModel?, AType : EasyRecyclerAdapter<IType>?> @JvmOverloads constructor(
+class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>> @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : RelativeLayout(context, attrs) {
@@ -103,7 +103,8 @@ class EasyRecyclerView<IType : EasyAdapterDataModel?, AType : EasyRecyclerAdapte
         myState.showingLoadingIndicator = isShowingLoadingHeader
         myState.emptyLayoutShowing = showingEmptyLayout
         myState.layoutManagerType = layoutManagerType!!.value
-        if (emptyLayoutId != null) myState.emptyLayoutId = emptyLayoutId
+        if (emptyLayoutId != null)
+            myState.emptyLayoutId = emptyLayoutId!!
         if (recyclerView.layoutManager != null) {
             val layoutManagerBundle = Bundle()
             layoutManagerBundle.putParcelable(LAYOUT_MANAGER_STATE_TAG, recyclerView.layoutManager!!.onSaveInstanceState())
@@ -116,7 +117,8 @@ class EasyRecyclerView<IType : EasyAdapterDataModel?, AType : EasyRecyclerAdapte
     public override fun onRestoreInstanceState(state: Parcelable) {
         val savedState = state as SavedState
         super.onRestoreInstanceState(savedState.superState)
-        if (dataAdapter != null) adapter!!.restoreAdapterState(savedState.adapterState)
+        if (dataAdapter != null)
+            adapter!!.restoreAdapterState(savedState.adapterState!!)
         hasMoreDataToLoad = savedState.hasMoreDataToLoad
         supportsLazyLoading = savedState.supportsLoadMore
         supportsPullToRefresh = savedState.supportsPullToRefresh
@@ -154,15 +156,13 @@ class EasyRecyclerView<IType : EasyAdapterDataModel?, AType : EasyRecyclerAdapte
      * @param adapter        - recyclerview adapter.
      * @param swipeCallbacks - swipe callbacks.
      */
-    fun setAdapter(adapter: AType, swipeCallbacks: TouchCallbacks<IType>?) {
+    fun setAdapter(adapter: AType, swipeCallbacks: EasyRecyclerViewTouchHandler<IType, AType>.TouchCallbacks<IType>) {
         this.adapter = adapter
-        if (swipeCallbacks != null) {
-            swipeToDeleteCallbacks = EasyRecyclerViewTouchHandler(this, swipeCallbacks)
-            val itemTouchHelper = ItemTouchHelper(
-                swipeToDeleteCallbacks!!
-            )
-            itemTouchHelper.attachToRecyclerView(recyclerView)
-        }
+        swipeToDeleteCallbacks = EasyRecyclerViewTouchHandler(this, swipeCallbacks)
+        val itemTouchHelper = ItemTouchHelper(
+            swipeToDeleteCallbacks!!
+        )
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     /**
@@ -270,23 +270,23 @@ class EasyRecyclerView<IType : EasyAdapterDataModel?, AType : EasyRecyclerAdapte
     }
 
     @JvmOverloads
-    fun addHeaderView(view: View?, viewListeners: ViewListeners? = null) {
+    fun addHeaderView(view: View, viewListeners: ViewListeners? = null) {
         if (!wrapperAdapter!!.containsHeaderView(view)) wrapperAdapter!!.addHeaderView(view, viewListeners)
     }
 
-    fun removeHeaderView(view: View?) {
+    fun removeHeaderView(view: View) {
         if (wrapperAdapter!!.containsHeaderView(view)) wrapperAdapter!!.removeHeaderView(view)
     }
 
-    fun addFooterView(view: View?) {
+    fun addFooterView(view: View) {
         if (!wrapperAdapter!!.containsFooterView(view)) wrapperAdapter!!.addFooterView(view)
     }
 
-    fun addFooterView(view: View?, viewListeners: ViewListeners?) {
+    fun addFooterView(view: View, viewListeners: ViewListeners?) {
         if (!wrapperAdapter!!.containsFooterView(view)) wrapperAdapter!!.addFooterView(view, viewListeners)
     }
 
-    fun removeFooterView(view: View?) {
+    fun removeFooterView(view: View) {
         if (wrapperAdapter!!.containsFooterView(view)) wrapperAdapter!!.removeFooterView(view)
     }
 
@@ -329,11 +329,11 @@ class EasyRecyclerView<IType : EasyAdapterDataModel?, AType : EasyRecyclerAdapte
         isShowingLoadingFooter = isLoading
         recyclerView.post {
             if (isLoading) {
-                if (!wrapperAdapter!!.containsFooterView(loadingFooterView)) wrapperAdapter!!.addFooterView(loadingFooterView)
+                if (!wrapperAdapter!!.containsFooterView(loadingFooterView!!))
+                    wrapperAdapter!!.addFooterView(loadingFooterView)
             } else {
-                if (wrapperAdapter!!.containsFooterView(loadingFooterView)) wrapperAdapter!!.removeFooterView(
-                    loadingFooterView
-                )
+                if (wrapperAdapter!!.containsFooterView(loadingFooterView!!))
+                    wrapperAdapter!!.removeFooterView(loadingFooterView!!)
             }
         }
     }

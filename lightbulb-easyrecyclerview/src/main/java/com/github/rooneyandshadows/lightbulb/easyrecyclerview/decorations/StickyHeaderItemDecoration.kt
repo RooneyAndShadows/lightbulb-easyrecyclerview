@@ -25,6 +25,7 @@ open class StickyHeaderItemDecoration : RecyclerView.ItemDecoration {
         horizontalSpacing = 0
     }
 
+    @Override
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDrawOver(c, parent, state)
         val topChild = parent.getChildAt(0) ?: return
@@ -81,19 +82,14 @@ open class StickyHeaderItemDecoration : RecyclerView.ItemDecoration {
             heightTolerance += verticalSpacing
 
             //add heightTolerance if child top be in display area
-            var childBottomPosition: Int
-            childBottomPosition = if (child.top > 0) {
-                child.bottom + heightTolerance
-            } else {
-                child.bottom
-            }
-            if (childBottomPosition > contactPointCopy) {
+            val childBottomPosition: Int = if (child.top > 0) child.bottom + heightTolerance
+            else child.bottom
+            if (childBottomPosition > contactPointCopy)
                 if (child.top <= contactPointCopy) {
                     // This child overlaps the contactPoint
                     childInContact = child
                     break
                 }
-            }
         }
         return childInContact
     }
@@ -125,7 +121,7 @@ open class StickyHeaderItemDecoration : RecyclerView.ItemDecoration {
 
     interface StickyHeaderInterface {
         /**
-         * This method gets called by [com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration] to fetch the position of the header item in the adapter
+         * This method gets called by [StickyHeaderItemDecoration] to fetch the position of the header item in the adapter
          * that is used for (represents) item at specified position.
          *
          * @param itemPosition int. Adapter's position of the item for which to do the search of the position of the header item.
@@ -134,7 +130,7 @@ open class StickyHeaderItemDecoration : RecyclerView.ItemDecoration {
         fun getHeaderPositionForItem(itemPosition: Int): Int
 
         /**
-         * This method gets called by [com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration] to get layout resource id for the header item at specified adapter's position.
+         * This method gets called by [StickyHeaderItemDecoration] to get layout resource id for the header item at specified adapter's position.
          *
          * @param headerPosition int. Position of the header item in the adapter.
          * @return int. Layout resource id.
@@ -142,7 +138,7 @@ open class StickyHeaderItemDecoration : RecyclerView.ItemDecoration {
         fun getHeaderLayout(headerPosition: Int): Int
 
         /**
-         * This method gets called by [com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration] to setup the header View.
+         * This method gets called by [StickyHeaderItemDecoration] to setup the header View.
          *
          * @param header         View. Header to set the data on.
          * @param headerPosition int. Position of the header item in the adapter.
@@ -150,7 +146,7 @@ open class StickyHeaderItemDecoration : RecyclerView.ItemDecoration {
         fun bindHeaderData(header: View?, headerPosition: Int)
 
         /**
-         * This method gets called by [com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration] to verify whether the item represents a header.
+         * This method gets called by [StickyHeaderItemDecoration] to verify whether the item represents a header.
          *
          * @param itemPosition int.
          * @return true, if item at the specified adapter's position represents a header.

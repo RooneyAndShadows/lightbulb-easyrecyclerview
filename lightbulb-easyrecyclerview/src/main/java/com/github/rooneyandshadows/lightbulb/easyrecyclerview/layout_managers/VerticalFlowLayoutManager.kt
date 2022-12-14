@@ -7,14 +7,22 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRe
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import kotlin.math.abs
 
-class VerticalFlowLayoutManager<IType : EasyAdapterDataModel?, AType : EasyRecyclerAdapter<IType>?>(easyRecyclerView: EasyRecyclerView<IType, AType>) :
-    FlexboxLayoutManager(easyRecyclerView.context, FlexDirection.ROW) {
+class VerticalFlowLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>>(
     private val easyRecyclerView: EasyRecyclerView<IType, AType>
+) : FlexboxLayoutManager(easyRecyclerView.context, FlexDirection.ROW) {
+    private val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter!!
+
+    init {
+        justifyContent = JustifyContent.FLEX_START
+    }
+
+    @Override
     override fun scrollVerticallyBy(dy: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {
         val scrollRange = super.scrollVerticallyBy(dy, recycler, state)
-        val overScroll = dy - scrollRange
-        if (Math.abs(dy) > 20) easyRecyclerView.parent.requestDisallowInterceptTouchEvent(true)
+        //val overScroll = dy - scrollRange
+        if (abs(dy) > 20) easyRecyclerView.parent.requestDisallowInterceptTouchEvent(true)
         if (needToLoadMoreData(dy)) handleLoadMore()
         return scrollRange
     }
@@ -31,13 +39,9 @@ class VerticalFlowLayoutManager<IType : EasyAdapterDataModel?, AType : EasyRecyc
         if (!easyRecyclerView.supportsLazyLoading()) return
         val lastView = getChildAt(childCount - 1) ?: return
         val size = easyRecyclerView.items.size
-        val last =
-            (lastView.layoutParams as RecyclerView.LayoutParams).absoluteAdapterPosition - easyRecyclerView.adapter.getHeadersCount()
+        val last = (lastView.layoutParams as LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
         if (last == size - 1) easyRecyclerView.loadMoreData()
     }
 
-    init {
-        justifyContent = JustifyContent.FLEX_START
-        this.easyRecyclerView = easyRecyclerView
-    }
+
 }

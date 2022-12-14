@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R
 
+@Suppress("unused")
 class FlexboxSpaceItemDecoration : RecyclerView.ItemDecoration {
     private val verticalSpacing: Int
     private val horizontalSpacing: Int
@@ -23,6 +24,7 @@ class FlexboxSpaceItemDecoration : RecyclerView.ItemDecoration {
             .setPadding(this.verticalSpacing, verticalSpacing, this.verticalSpacing, 0)
     }
 
+    @Override
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         outRect.left = horizontalSpacing
         outRect.right = horizontalSpacing
