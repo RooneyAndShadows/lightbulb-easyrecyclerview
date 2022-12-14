@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="erv_swipe_undo_default_text" type="string">Undo</item>
+    <item name="erv_swipe_pending_action_default_text" type="string">Deleting item</item>
 </resources>
