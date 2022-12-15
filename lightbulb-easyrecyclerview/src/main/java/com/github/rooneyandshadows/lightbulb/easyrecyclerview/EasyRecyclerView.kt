@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.factor.bouncy.BouncyRecyclerView
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.TouchCallbacks
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.*
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout.RefreshStyle
@@ -199,7 +201,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      * @param adapter        - recyclerview adapter.
      * @param swipeCallbacks - swipe callbacks.
      */
-    fun setAdapter(adapter: AType, swipeCallbacks: EasyRecyclerViewTouchHandler<IType, AType>.TouchCallbacks<IType>) {
+    fun setAdapter(adapter: AType, swipeCallbacks: TouchCallbacks<IType>) {
         this.adapter = adapter
         swipeToDeleteCallbacks = EasyRecyclerViewTouchHandler(this, swipeCallbacks)
         val itemTouchHelper = ItemTouchHelper(

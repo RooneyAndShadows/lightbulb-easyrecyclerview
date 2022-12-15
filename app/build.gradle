@@ -1,25 +1,30 @@
-plugins {
-    id 'com.android.application'
-}
+apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 repositories {
     google()
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven {
+        url 'https://jitpack.io'
+    }
 }
-android {
-    compileSdk 31
 
+android {
+    compileSdk 33
     defaultConfig {
-        applicationId "com.github.rooneyandshadows.lightbulb.easyrecyclerview"
+        applicationId "com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo"
         minSdk 24
-        targetSdk 31
+        targetSdk 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                argument 'lightbulb.generate.root.package', applicationId
+            }
+        }
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -42,14 +47,16 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.github.rooneyandshadows:java-commons:1.0.6'
-    implementation 'com.github.rooneyandshadows:lightbulb-commons:1.0.6'
-    implementation 'com.github.rooneyandshadows:lightbulb-application:1.0.39'
+    implementation 'com.github.rooneyandshadows:lightbulb-commons:1.0.18'
+    implementation 'com.github.rooneyandshadows:lightbulb-application:1.2.8'
     implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:1.0.14'
+    implementation "androidx.core:core-ktx:$versions.ktx.core"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
+    implementation "com.github.rooneyandshadows:lightbulb-annotation-processors:1.0.6-RC2"
+    annotationProcessor "com.github.rooneyandshadows:lightbulb-annotation-processors:1.0.6-RC2"
     implementation project(":lightbulb-easyrecyclerview")
-    implementation "androidx.core:core-ktx:+"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

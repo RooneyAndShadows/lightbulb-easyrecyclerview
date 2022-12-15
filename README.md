@@ -72,8 +72,8 @@ public class DemoModel extends EasyAdapterDataModel {
     // Parcelling part
     public DemoModel(Parcel in) {
         super(in);
-        this.title = ParcelableUtils.readString(in);
-        this.subtitle = ParcelableUtils.readString(in);
+        this.title = ParcelUtils.readString(in);
+        this.subtitle = ParcelUtils.readString(in);
     }
 
     public static final Parcelable.Creator<DemoModel> CREATOR = new Parcelable.Creator<DemoModel>() {
@@ -89,7 +89,7 @@ public class DemoModel extends EasyAdapterDataModel {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         super.writeToParcel(parcel, i);
-        ParcelableUtils.writeString(parcel, title)
+        ParcelUtils.writeString(parcel, title)
                 .writeString(parcel, subtitle);
     }
 

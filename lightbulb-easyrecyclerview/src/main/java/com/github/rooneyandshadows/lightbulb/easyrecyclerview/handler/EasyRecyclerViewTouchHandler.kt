@@ -1,4 +1,4 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewTouchHandler.Directions.LEFT
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.EasyRecyclerViewTouchHandler.Directions.RIGHT
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler.Directions.LEFT
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler.Directions.RIGHT
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -24,7 +24,7 @@ import com.google.android.material.snackbar.Snackbar
 @Suppress("unused", "UNUSED_VARIABLE", "UNUSED_PARAMETER")
 class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>>(
     private val easyRecyclerView: EasyRecyclerView<IType, AType>,
-    private val touchCallbacks: EasyRecyclerViewTouchHandler<IType, AType>.TouchCallbacks<IType>
+    private val touchCallbacks: TouchCallbacks<IType>
 ) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
     private var undoClicked = false
     private var snackbar: Snackbar? = null
@@ -311,33 +311,6 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
             val itemCenter = itemHeight / 2
             val textHeight = (paint.descent() + paint.ascent()) / 2
             return itemView.top + (itemCenter - textHeight)
-        }
-    }
-
-    abstract inner class TouchCallbacks<ItemType : EasyAdapterDataModel> {
-        private val context = this@EasyRecyclerViewTouchHandler.easyRecyclerView.context
-        abstract fun onSwipeActionApplied(
-            item: ItemType,
-            position: Int,
-            adapter: EasyRecyclerAdapter<ItemType>,
-            direction: Directions
-        )
-
-        abstract fun getAllowedSwipeDirections(item: ItemType): Directions
-        abstract fun getAllowedDragDirections(item: ItemType): Directions
-        abstract fun onActionCancelled(item: ItemType, adapter: EasyRecyclerAdapter<ItemType>?, position: Int)
-        abstract fun getActionBackgroundText(item: ItemType): String
-        abstract fun getConfiguration(context: Context?): SwipeConfiguration
-        fun getSwipeBackgroundColor(direction: Directions?): Int {
-            return ResourceUtils.getColorByAttribute(context, R.attr.colorError)
-        }
-
-        fun getSwipeIcon(direction: Directions): Drawable {
-            return ResourceUtils.getDrawable(context, R.drawable.icon_delete)!!
-        }
-
-        fun getPendingActionText(direction: Directions): String {
-            return ResourceUtils.getPhrase(context, R.string.erv_swipe_pending_action_default_text)
         }
     }
 

@@ -3,13 +3,15 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
 
+repositories {
+    mavenCentral()
+}
+
 android {
     compileSdkVersion 33
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 1024
-        versionName "1.0.24"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -56,19 +58,16 @@ afterEvaluate {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "org.jetbrains:annotations:15.0"
+    implementation "androidx.core:core-ktx:$versions.ktx.core"
     implementation "androidx.appcompat:appcompat:$versions.android_appcompat"
     implementation "androidx.recyclerview:recyclerview:$versions.android_recyclerview"
     implementation "androidx.dynamicanimation:dynamicanimation:$versions.android_dynamication"
-    implementation 'org.jetbrains:annotations:15.0'
     implementation "com.google.android.material:material:$versions.material"
     implementation "com.github.valkriaine:Bouncy:$versions.bouncy"
     implementation "com.google.android.flexbox:flexbox:$versions.flexbox"
     implementation "com.github.rooneyandshadows:java-commons:$versions.java.commons"
     implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycleradapters"
     implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
-    implementation "androidx.core:core-ktx:+"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-}
-repositories {
-    mavenCentral()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
 }
