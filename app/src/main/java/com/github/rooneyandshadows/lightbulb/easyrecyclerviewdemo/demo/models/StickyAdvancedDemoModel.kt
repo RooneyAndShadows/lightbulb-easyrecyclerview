@@ -4,6 +4,7 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelUtils.Companion
 import android.os.Parcel
 import android.os.Parcelable.Creator
 import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate
+import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelUtils
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel
 import java.time.OffsetDateTime
 
@@ -23,12 +24,12 @@ class StickyAdvancedDemoModel : EasyAdapterDataModel {
     }
 
     // Parcelling part
-    constructor(`in`: Parcel?) {
-        date = readOffsetDateTime.readOffsetDateTime(`in`)
-        isHeader = readBoolean.readBoolean(`in`)
-        itemName = readString.readString(`in`)
-        subtitle = readString.readString(`in`)
-        dateString = readString.readString(`in`)
+    constructor(parcel: Parcel) {
+        date = ParcelUtils.readOffsetDateTime(parcel)!!
+        isHeader = ParcelUtils.readBoolean(parcel)!!
+        itemName = ParcelUtils.readString(parcel)!!
+        subtitle = ParcelUtils.readString(parcel)!!
+        dateString = ParcelUtils.readString(parcel)!!
     }
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
@@ -39,15 +40,13 @@ class StickyAdvancedDemoModel : EasyAdapterDataModel {
         return 0
     }
 
-    companion object {
-        val CREATOR: Creator<StickyAdvancedDemoModel> = object : Creator<StickyAdvancedDemoModel?> {
-            override fun createFromParcel(`in`: Parcel): StickyAdvancedDemoModel? {
-                return StickyAdvancedDemoModel(`in`)
-            }
+    companion object CREATOR : Creator<StickyAdvancedDemoModel> {
+        override fun createFromParcel(parcel: Parcel): StickyAdvancedDemoModel {
+            return StickyAdvancedDemoModel(parcel)
+        }
 
-            override fun newArray(size: Int): Array<StickyAdvancedDemoModel?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<StickyAdvancedDemoModel?> {
+            return arrayOfNulls(size)
         }
     }
 }

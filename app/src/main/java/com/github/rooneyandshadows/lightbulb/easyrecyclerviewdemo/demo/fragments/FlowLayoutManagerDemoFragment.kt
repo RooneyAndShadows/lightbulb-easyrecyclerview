@@ -39,7 +39,7 @@ class FlowLayoutManagerDemoFragment : BaseFragment() {
             BaseActivity.updateMenuConfiguration(
                 requireContext(),
                 MainActivity::class.java
-            ) { activity: BaseActivity? -> MenuConfigurations.getConfiguration(activity) }
+            ) { activity: BaseActivity -> MenuConfigurations.getConfiguration(activity) }
         }
         setupRecycler(savedInstanceState)
     }

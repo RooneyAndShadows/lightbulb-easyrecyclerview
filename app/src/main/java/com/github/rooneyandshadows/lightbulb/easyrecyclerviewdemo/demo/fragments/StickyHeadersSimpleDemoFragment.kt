@@ -23,7 +23,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.St
 import java.util.ArrayList
 
 @Suppress("SameParameterValue")
-@FragmentScreen(screenName = "SwipeToDelete", screenGroup = "Demo")
+@FragmentScreen(screenName = "StickyHeaders", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_sticky_headers_simple")
 class StickyHeadersSimpleDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
@@ -45,7 +45,7 @@ class StickyHeadersSimpleDemoFragment : BaseFragment() {
             BaseActivity.updateMenuConfiguration(
                 requireContext(),
                 MainActivity::class.java,
-            ) { activity: BaseActivity? -> MenuConfigurations.getConfiguration(activity) }
+            ) { activity: BaseActivity -> MenuConfigurations.getConfiguration(activity) }
         }
         setupRecycler(savedInstanceState)
     }

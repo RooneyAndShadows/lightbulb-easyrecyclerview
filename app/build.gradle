@@ -38,6 +38,7 @@ android {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/io.netty.versions.properties'
         exclude 'META-INF/INDEX.LIST'
+        merge 'META-INF/gradle/incremental.annotation.processors'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -57,6 +58,6 @@ dependencies {
     implementation "androidx.core:core-ktx:$versions.ktx.core"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
     implementation "com.github.rooneyandshadows:lightbulb-annotation-processors:1.0.6-RC2"
-    annotationProcessor "com.github.rooneyandshadows:lightbulb-annotation-processors:1.0.6-RC2"
+    kapt "com.github.rooneyandshadows:lightbulb-annotation-processors:1.0.6-RC2"
     implementation project(":lightbulb-easyrecyclerview")
 }

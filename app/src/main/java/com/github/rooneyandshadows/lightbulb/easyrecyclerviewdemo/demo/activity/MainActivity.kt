@@ -1,9 +1,11 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity
 
 import android.os.Bundle
+import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.ActivityConfiguration
 import com.github.rooneyandshadows.lightbulb.application.activity.BaseActivity
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 
+@ActivityConfiguration
 class MainActivity : BaseActivity() {
 
     @Override
@@ -11,8 +13,9 @@ class MainActivity : BaseActivity() {
         setTheme(R.style.DemoTheme)
     }
 
+    @Override
     override fun doOnCreate(savedInstanceState: Bundle?) {
-        //if (savedInstanceState == null)
-        //router!!.toDemoRegular(BaseApplicationRouter.NavigationCommands.NAVIGATE_TO_AND_CLEAR_BACKSTACK)
+        if (savedInstanceState == null)
+            MainActivityNavigator.route().toDemoRegular().newRootScreen()
     }
 }
