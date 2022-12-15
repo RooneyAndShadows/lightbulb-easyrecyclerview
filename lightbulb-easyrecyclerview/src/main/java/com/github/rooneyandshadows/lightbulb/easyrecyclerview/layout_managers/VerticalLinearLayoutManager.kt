@@ -11,8 +11,6 @@ import kotlin.math.abs
 class VerticalLinearLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>>(
     private val easyRecyclerView: EasyRecyclerView<IType, AType>
 ) : LinearLayoutManager(easyRecyclerView.context, VERTICAL, false) {
-    private val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter!!
-
     @Override
     override fun scrollVerticallyBy(dy: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {
         val scrollRange = super.scrollVerticallyBy(dy, recycler, state)
@@ -33,6 +31,7 @@ class VerticalLinearLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecy
     private fun handleLoadMore() {
         if (!easyRecyclerView.supportsLazyLoading()) return
         val lastView = getChildAt(childCount - 1) ?: return
+        val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter ?: return
         val size = easyRecyclerView.items.size
         val last =
             (lastView.layoutParams as LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount

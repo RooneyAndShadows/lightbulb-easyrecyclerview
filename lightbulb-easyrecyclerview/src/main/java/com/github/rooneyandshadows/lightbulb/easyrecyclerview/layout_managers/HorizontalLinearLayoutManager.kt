@@ -11,7 +11,6 @@ import kotlin.math.abs
 class HorizontalLinearLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>>(
     private val easyRecyclerView: EasyRecyclerView<IType, AType>
 ) : LinearLayoutManager(easyRecyclerView.context, HORIZONTAL, false) {
-    private val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter!!
     private var scrollingHorizontally = false
     private var scrollingVertically = false
 
@@ -60,6 +59,7 @@ class HorizontalLinearLayoutManager<IType : EasyAdapterDataModel, AType : EasyRe
     private fun handleLoadMore() {
         if (!easyRecyclerView.supportsLazyLoading()) return
         val lastView = getChildAt(childCount - 1) ?: return
+        val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter ?: return
         val size = easyRecyclerView.items.size
         val last = (lastView.layoutParams as LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
         if (last == size - 1) easyRecyclerView.loadMoreData()

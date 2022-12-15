@@ -27,7 +27,7 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRe
 @FragmentScreen(screenName = "SwipeToDelete", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_swipe_to_delete")
 class SwipeToDeleteDemoFragment : BaseFragment() {
-    @BindView(name = "demo_header_item_swipe_to_delete")
+    @BindView(name = "recycler_view")
     lateinit var recyclerView: EasyRecyclerView<DemoModel, SimpleAdapter>
 
     override fun configureActionBar(): ActionBarConfiguration {

@@ -12,7 +12,6 @@ import kotlin.math.abs
 class HorizontalFlowLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>>(
     private val easyRecyclerView: EasyRecyclerView<IType, AType>
 ) : FlexboxLayoutManager(easyRecyclerView.context, FlexDirection.COLUMN) {
-    private val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter!!
     private var scrollingHorizontally = false
     private var scrollingVertically = false
 
@@ -65,6 +64,7 @@ class HorizontalFlowLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecy
     private fun handleLoadMore() {
         if (!easyRecyclerView.supportsLazyLoading()) return
         val lastView = getChildAt(childCount - 1) ?: return
+        val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter ?: return
         val size = easyRecyclerView.items.size
         val last =
             (lastView.layoutParams as RecyclerView.LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
