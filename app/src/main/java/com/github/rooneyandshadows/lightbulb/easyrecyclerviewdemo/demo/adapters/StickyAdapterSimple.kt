@@ -10,10 +10,9 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.Sticky
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoStickySimpleItemLayoutBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterSelectableModes.SELECT_NONE
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 
-class StickyAdapterSimple : EasyRecyclerAdapter<StickySimpleDemoModel>(SELECT_NONE), StickyHeaderInterface {
+class StickyAdapterSimple : EasyRecyclerAdapter<StickySimpleDemoModel>(), StickyHeaderInterface {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView: View
         return if (viewType == 0) {

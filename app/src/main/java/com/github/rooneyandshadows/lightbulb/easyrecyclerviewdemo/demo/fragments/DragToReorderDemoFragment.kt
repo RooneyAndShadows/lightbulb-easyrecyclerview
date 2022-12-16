@@ -43,7 +43,6 @@ class DragToReorderDemoFragment : BaseFragment() {
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         super.doOnViewCreated(fragmentView, savedInstanceState)
         setupRecycler(savedInstanceState)
-
     }
 
     @SuppressLint("InflateParams")

@@ -11,9 +11,9 @@ import java.time.OffsetDateTime
 class StickyAdvancedDemoModel : EasyAdapterDataModel {
     private val date: OffsetDateTime
     val isHeader: Boolean
-    override val itemName: String
     val subtitle: String
     val dateString: String
+    override val itemName: String
 
     constructor(date: OffsetDateTime, isHeader: Boolean, title: String, subtitle: String) {
         this.date = date

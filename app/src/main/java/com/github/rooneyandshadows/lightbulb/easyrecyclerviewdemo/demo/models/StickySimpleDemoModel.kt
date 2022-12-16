@@ -8,8 +8,8 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAd
 
 class StickySimpleDemoModel : EasyAdapterDataModel {
     val isHeader: Boolean
-    override val itemName: String
     val subtitle: String
+    override val itemName: String
 
     constructor(isHeader: Boolean, title: String, subtitle: String) {
         this.isHeader = isHeader

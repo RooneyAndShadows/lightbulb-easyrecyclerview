@@ -5,8 +5,8 @@ import android.os.Parcelable.Creator
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel
 
 class DemoModel : EasyAdapterDataModel {
-    override val itemName: String
     val subtitle: String
+    override val itemName: String
 
     constructor(title: String, subtitle: String) {
         itemName = title

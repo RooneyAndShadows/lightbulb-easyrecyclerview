@@ -48,7 +48,6 @@ class LazyLoadingDemoFragment : BaseFragment() {
                     }, 2000
                 )
             }
-
         })
         if (savedState == null) recyclerView.adapter!!.setCollection(generateData(10, 0))
     }

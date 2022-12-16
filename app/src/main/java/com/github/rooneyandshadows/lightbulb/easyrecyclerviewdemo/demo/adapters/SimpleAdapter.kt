@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoListItemLayoutBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterSelectableModes
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 
-class SimpleAdapter : EasyRecyclerAdapter<DemoModel>(EasyAdapterSelectableModes.SELECT_NONE) {
+class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
+    @Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding: DemoListItemLayoutBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
@@ -21,6 +21,7 @@ class SimpleAdapter : EasyRecyclerAdapter<DemoModel>(EasyAdapterSelectableModes.
         return ViewHolder(binding)
     }
 
+    @Override
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
         val model: DemoModel = getItem(position)!!
