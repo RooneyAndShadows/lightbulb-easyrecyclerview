@@ -30,6 +30,7 @@ class DragToReorderDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
     lateinit var recyclerView: EasyRecyclerView<DemoModel, SimpleAdapter>
 
+    @Override
     override fun configureActionBar(): ActionBarConfiguration {
         return ActionBarConfiguration(R.id.toolbar)
             .withActionButtons(true)
@@ -57,6 +58,7 @@ class DragToReorderDemoFragment : BaseFragment() {
 
     private fun configureSwipeHandler(): TouchCallbacks<DemoModel> {
         return object : TouchCallbacks<DemoModel>(requireContext()) {
+            @Override
             override fun getAllowedSwipeDirections(item: DemoModel): Directions {
                 return Directions.NONE
             }

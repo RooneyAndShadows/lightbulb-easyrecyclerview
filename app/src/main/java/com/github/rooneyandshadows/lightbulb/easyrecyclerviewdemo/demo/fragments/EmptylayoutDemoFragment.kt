@@ -26,6 +26,7 @@ class EmptylayoutDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
     lateinit var recyclerView: EasyRecyclerView<DemoModel, SimpleAdapter>
 
+    @Override
     override fun configureActionBar(): ActionBarConfiguration {
         return ActionBarConfiguration(R.id.toolbar)
             .withActionButtons(true)
@@ -34,6 +35,7 @@ class EmptylayoutDemoFragment : BaseFragment() {
             .withTitle(ResourceUtils.getPhrase(requireContext(), R.string.app_name))
     }
 
+    @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         if (getFragmentState() === FragmentStates.CREATED) {
             BaseActivity.updateMenuConfiguration(
@@ -44,6 +46,7 @@ class EmptylayoutDemoFragment : BaseFragment() {
         setupRecycler()
     }
 
+    @Override
     override fun doOnViewStateRestored(savedInstanceState: Bundle?) {
         val emptyLayout = generateEmptyLayout()
         recyclerView.setEmptyLayout(emptyLayout)

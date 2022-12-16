@@ -30,6 +30,7 @@ class SwipeToDeleteDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
     lateinit var recyclerView: EasyRecyclerView<DemoModel, SimpleAdapter>
 
+    @Override
     override fun configureActionBar(): ActionBarConfiguration {
         return ActionBarConfiguration(R.id.toolbar)
             .withActionButtons(true)
@@ -38,6 +39,7 @@ class SwipeToDeleteDemoFragment : BaseFragment() {
             .withTitle(ResourceUtils.getPhrase(contextActivity, R.string.app_name))
     }
 
+    @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         setupRecycler(savedInstanceState)
     }
@@ -53,18 +55,22 @@ class SwipeToDeleteDemoFragment : BaseFragment() {
 
     private fun configureSwipeHandler(recyclerView: EasyRecyclerView<DemoModel, SimpleAdapter>?): TouchCallbacks<DemoModel> {
         return object : TouchCallbacks<DemoModel>(requireContext()) {
+            @Override
             override fun getAllowedSwipeDirections(item: DemoModel): EasyRecyclerViewTouchHandler.Directions {
                 return EasyRecyclerViewTouchHandler.Directions.LEFT_RIGHT
             }
 
+            @Override
             override fun getAllowedDragDirections(item: DemoModel): EasyRecyclerViewTouchHandler.Directions {
                 return EasyRecyclerViewTouchHandler.Directions.NONE
             }
 
+            @Override
             override fun getActionBackgroundText(item: DemoModel): String {
                 return item.itemName
             }
 
+            @Override
             override fun onSwipeActionApplied(
                 item: DemoModel,
                 position: Int,

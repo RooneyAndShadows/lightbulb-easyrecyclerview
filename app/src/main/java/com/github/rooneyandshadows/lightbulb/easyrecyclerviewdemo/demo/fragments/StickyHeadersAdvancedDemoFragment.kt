@@ -39,6 +39,7 @@ class StickyHeadersAdvancedDemoFragment : BaseFragment() {
             .withTitle(ResourceUtils.getPhrase(requireContext(), R.string.app_name))
     }
 
+    @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         if (getFragmentState() === FragmentStates.CREATED) {
             BaseActivity.updateMenuConfiguration(

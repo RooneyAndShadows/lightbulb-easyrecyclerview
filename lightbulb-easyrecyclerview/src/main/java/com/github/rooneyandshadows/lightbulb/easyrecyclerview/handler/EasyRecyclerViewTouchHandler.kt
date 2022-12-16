@@ -173,13 +173,13 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
     private fun showSwipedItemSnackBar(item: IType, direction: Directions) {
         executePendingAction()
         addPendingAction(item, direction)
-        val backgroundView = snackbar!!.view
         val pendingActionText = touchCallbacks.getPendingActionText(direction)
         val undoText = configuration.swipeCancelActionText
         snackbar = Snackbar.make(easyRecyclerView, pendingActionText, configuration.swipeActionDelay)
             .setAction(undoText) { cancelPendingAction() }
             .setActionTextColor(ResourceUtils.getColorByAttribute(easyRecyclerView.context, R.attr.colorError))
             .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
+        //val backgroundView = snackbar!!.view
         snackbar!!.show()
     }
 

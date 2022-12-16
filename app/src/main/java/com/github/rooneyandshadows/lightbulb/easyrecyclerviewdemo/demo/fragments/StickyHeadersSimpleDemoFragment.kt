@@ -38,7 +38,7 @@ class StickyHeadersSimpleDemoFragment : BaseFragment() {
             .withTitle(ResourceUtils.getPhrase(requireContext(), R.string.app_name))
     }
 
-
+    @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         super.doOnViewCreated(fragmentView, savedInstanceState)
         if (getFragmentState() === FragmentStates.CREATED) {
@@ -54,6 +54,7 @@ class StickyHeadersSimpleDemoFragment : BaseFragment() {
         recyclerView.adapter = StickyAdapterSimple()
         recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         recyclerView.addItemDecoration(object : StickyHeaderItemDecoration(recyclerView.adapter!!) {
+            @Override
             override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
                 val firstVisibleItemPosition =
                     (parent.layoutManager as LinearLayoutManager?)!!.findFirstCompletelyVisibleItemPosition()
