@@ -28,7 +28,7 @@ All-in-one easy to use RecyclerView for your android project
 ![Image](DEV/screenshots/combined.png)
 
 ## Latest releases 🛠
-- Kotlin | 
+- Kotlin | [v2.0.0-RC1](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/2.0.0-RC1)
 - Java & AndroidX | [v1.0.24](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/1.0.24)
 
 # Setup
