@@ -740,10 +740,10 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
         }
     }
 
-    class EasyRecyclerEmptyLayoutListener {
-        fun onInflated(view: View?) {}
-        fun onShow(view: View?) {}
-        fun onHide(view: View?) {}
+    abstract class EasyRecyclerEmptyLayoutListener {
+        open fun onInflated(view: View?) {}
+        open fun onShow(view: View?) {}
+        open fun onHide(view: View?) {}
     }
 
     interface EasyRecyclerItemsReadyListener {

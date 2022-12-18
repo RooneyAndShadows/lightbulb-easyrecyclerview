@@ -16,8 +16,8 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MainActivity
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MenuConfigurations
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
-import java.util.ArrayList
 
 @FragmentScreen(screenName = "Regular", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_regular", hasLeftDrawer = true)
@@ -56,12 +56,6 @@ class RegularDemoFragment : BaseFragment() {
     private fun setupRecycler(savedState: Bundle?) {
         recyclerView.adapter = SimpleAdapter()
         recyclerView.addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
-        if (savedState == null) recyclerView.adapter!!.setCollection(generateInitialData())
-    }
-
-    private fun generateInitialData(): List<DemoModel> {
-        val models: MutableList<DemoModel> = ArrayList<DemoModel>()
-        for (i in 1..20) models.add(DemoModel("Demo title $i", "Demo subtitle $i"))
-        return models
+        if (savedState == null) recyclerView.adapter!!.setCollection(generateData(20))
     }
 }

@@ -6,7 +6,6 @@ import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
@@ -20,9 +19,8 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MainActivity
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MenuConfigurations
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.StickyAdapterAdvanced
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateStickyHeadersAdvanceData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickyAdvancedDemoModel
-import java.time.OffsetDateTime
-import java.util.*
 
 @FragmentScreen(screenName = "StickyHeadersAdvanced", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_sticky_headers_advanced")
@@ -60,29 +58,6 @@ class StickyHeadersAdvancedDemoFragment : BaseFragment() {
                 if (firstVisibleItemPosition != 0) super.onDrawOver(c, parent, state)
             }
         })
-        if (savedState == null) recyclerView.adapter!!.setCollection(generateInitialData())
-    }
-
-    private fun generateInitialData(): List<StickyAdvancedDemoModel> {
-        val models: MutableList<StickyAdvancedDemoModel> = ArrayList<StickyAdvancedDemoModel>()
-        var date: OffsetDateTime = DateUtilsOffsetDate.nowLocal()
-        for (position in 1..60) {
-            val isHeader = isPositionHeader(position)
-            models.add(
-                StickyAdvancedDemoModel(
-                    date,
-                    isHeader,
-                    String.format("Demo title %s", position),
-                    String.format("Demo subtitle %s", position)
-                )
-            )
-            if (isHeader) date = DateUtilsOffsetDate.addHours(date, 24)
-        }
-        return models
-    }
-
-    private fun isPositionHeader(position: Int): Boolean {
-        val headerPositions = intArrayOf(1, 7, 12, 20, 25, 34, 40)
-        return Arrays.stream(headerPositions).anyMatch { value: Int -> position == value }
+        if (savedState == null) recyclerView.adapter!!.setCollection(generateStickyHeadersAdvanceData())
     }
 }

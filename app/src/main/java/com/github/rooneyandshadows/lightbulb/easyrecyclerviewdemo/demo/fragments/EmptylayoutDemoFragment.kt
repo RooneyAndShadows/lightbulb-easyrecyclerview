@@ -1,5 +1,6 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -17,8 +18,8 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MainActivity
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MenuConfigurations
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
-import java.util.ArrayList
 
 @FragmentScreen(screenName = "EmptyLayout", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_empty_layout")
@@ -57,21 +58,18 @@ class EmptylayoutDemoFragment : BaseFragment() {
         recyclerView.addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
     }
 
+    @SuppressLint("InflateParams")
     private fun generateEmptyLayout(): View {
         val emptyLayout: View = layoutInflater.inflate(R.layout.demo_empty_layout, null)
-        emptyLayout.findViewById<View>(R.id.emptyLayoutRefreshButton).setOnClickListener { v: View? ->
+        emptyLayout.findViewById<View>(R.id.emptyLayoutRefreshButton).setOnClickListener {
             val emptyLayoutImage = emptyLayout.findViewById<ImageView>(R.id.emptyImage)
             val progressBar: ProgressBar = emptyLayout.findViewById(R.id.progressBar)
             emptyLayoutImage.visibility = View.GONE
             progressBar.visibility = View.VISIBLE
-            emptyLayout.postDelayed({ recyclerView.adapter!!.appendCollection(generateData()) }, 2000)
+            emptyLayout.postDelayed({
+                recyclerView.adapter!!.appendCollection(generateData(20))
+            }, 2000)
         }
         return emptyLayout
-    }
-
-    private fun generateData(): List<DemoModel> {
-        val models: MutableList<DemoModel> = ArrayList<DemoModel>()
-        for (i in 1..20) models.add(DemoModel("Demo title $i", "Demo subtitle $i"))
-        return models
     }
 }

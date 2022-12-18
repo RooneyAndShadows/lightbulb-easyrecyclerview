@@ -12,8 +12,8 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
-import java.util.ArrayList
 
 @FragmentScreen(screenName = "Bouncy", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_bouncy")
@@ -39,12 +39,6 @@ class BounceEffectDemoFragment : BaseFragment() {
     private fun setupRecycler(savedState: Bundle?) {
         recyclerView.adapter = SimpleAdapter()
         recyclerView.addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
-        if (savedState == null) recyclerView.adapter!!.setCollection(generateInitialData())
-    }
-
-    private fun generateInitialData(): List<DemoModel> {
-        val models: MutableList<DemoModel> = ArrayList<DemoModel>()
-        for (i in 1..20) models.add(DemoModel("Demo title $i", "Demo subtitle $i"))
-        return models
+        if (savedState == null) recyclerView.adapter!!.setCollection(generateData(20))
     }
 }

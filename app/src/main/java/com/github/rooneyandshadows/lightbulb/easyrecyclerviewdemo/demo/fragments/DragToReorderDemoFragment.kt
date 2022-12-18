@@ -15,13 +15,14 @@ import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.A
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler.*
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler.Directions
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler.SwipeConfiguration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.TouchCallbacks
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
-import java.util.ArrayList
 
 @Suppress("SameParameterValue")
 @FragmentScreen(screenName = "Drag", screenGroup = "Demo")
@@ -52,7 +53,8 @@ class DragToReorderDemoFragment : BaseFragment() {
         recyclerView.addHeaderView(layoutInflater.inflate(R.layout.demo_header_item_drag_to_reorder, null))
         recyclerView.setEmptyLayout(generateEmptyLayout())
         recyclerView.addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
-        if (savedState == null) recyclerView.adapter!!.setCollection(generateData(20))
+        if (savedState == null)
+            recyclerView.adapter!!.setCollection(generateData(20))
     }
 
     private fun configureSwipeHandler(): TouchCallbacks<DemoModel> {
@@ -118,11 +120,5 @@ class DragToReorderDemoFragment : BaseFragment() {
             emptyLayout.postDelayed({ recyclerView.adapter!!.appendCollection(generateData(20)) }, 2000)
         }
         return emptyLayout
-    }
-
-    private fun generateData(count: Int): List<DemoModel> {
-        val models: MutableList<DemoModel> = ArrayList<DemoModel>()
-        for (i in 1..count) models.add(DemoModel("Demo title $i", "Demo subtitle $i"))
-        return models
     }
 }

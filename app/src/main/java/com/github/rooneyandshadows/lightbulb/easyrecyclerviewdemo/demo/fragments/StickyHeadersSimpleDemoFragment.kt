@@ -19,8 +19,8 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MainActivity
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MenuConfigurations
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.StickyAdapterSimple
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateStickyHeadersSimpleData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
-import java.util.ArrayList
 
 @Suppress("SameParameterValue")
 @FragmentScreen(screenName = "StickyHeaders", screenGroup = "Demo")
@@ -61,26 +61,6 @@ class StickyHeadersSimpleDemoFragment : BaseFragment() {
                 if (firstVisibleItemPosition != 0) super.onDrawOver(c, parent, state)
             }
         })
-        if (savedState == null) recyclerView.adapter!!.setCollection(generateInitialData())
-    }
-
-    private fun generateInitialData(): List<StickySimpleDemoModel> {
-        val models: MutableList<StickySimpleDemoModel> = ArrayList<StickySimpleDemoModel>()
-        for (i in 1..9) {
-            models.add(StickySimpleDemoModel(true, "Header $i", ""))
-            for (j in 1..7) models.add(
-                StickySimpleDemoModel(
-                    false,
-                    String.format("Demo title %s.%s", i, j),
-                    String.format("Demo subtitle %s.%s", i, j)
-                )
-            )
-        }
-        return models
-    }
-
-    companion object {
-        val newInstance: StickyHeadersSimpleDemoFragment
-            get() = StickyHeadersSimpleDemoFragment()
+        if (savedState == null) recyclerView.adapter!!.setCollection(generateStickyHeadersSimpleData())
     }
 }

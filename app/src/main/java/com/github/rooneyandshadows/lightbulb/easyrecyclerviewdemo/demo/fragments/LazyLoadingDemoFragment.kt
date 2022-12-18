@@ -12,8 +12,8 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
-import java.util.ArrayList
 
 @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE", "SameParameterValue")
 @FragmentScreen(screenName = "LazyLoading", screenGroup = "Demo")
@@ -43,21 +43,14 @@ class LazyLoadingDemoFragment : BaseFragment() {
             override fun loadMore(rv: EasyRecyclerView<DemoModel, SimpleAdapter>) {
                 rv.postDelayed(
                     {
-                        rv.adapter!!.appendCollection(generateData(10, rv.adapter!!.getItems().size))
+                        val offset = rv.adapter!!.getItems().size
+                        rv.adapter!!.appendCollection(generateData(10, offset))
                         rv.showLoadingFooter(false)
                     }, 2000
                 )
             }
         })
-        if (savedState == null) recyclerView.adapter!!.setCollection(generateData(10, 0))
-    }
-
-    private fun generateData(count: Int, offset: Int): List<DemoModel> {
-        val models: MutableList<DemoModel> = ArrayList<DemoModel>()
-        for (i in 1..count) {
-            val number = i + offset
-            models.add(DemoModel("Demo title $number", "Demo subtitle $number"))
-        }
-        return models
+        if (savedState == null)
+            recyclerView.adapter!!.setCollection(generateData(10))
     }
 }
