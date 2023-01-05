@@ -3,7 +3,7 @@
 buildscript {
     ext {
         versions = [
-                kotlin              : "1.7.10",
+                kotlin              : "1.7.20",
                 ktx                 : [
                         core: "1.9.0"
                 ],
@@ -14,7 +14,7 @@ buildscript {
                 flexbox             : "3.0.0",
                 lightbulb           : [
                         commons         : "1.0.18",
-                        recycleradapters: "2.0.0-RC3"
+                        recycleradapters: "2.0.0-RC4"
                 ],
                 java                : [
                         commons: "1.0.6"

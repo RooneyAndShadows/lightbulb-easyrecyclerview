@@ -33,7 +33,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 @Suppress("MemberVisibilityCanBePrivate", "unused", "UNUSED_PARAMETER")
 open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>> @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null
+    attrs: AttributeSet? = null,
 ) : RelativeLayout(context, attrs) {
     private val layoutManagerStateTag = "LAYOUT_MANAGER_STATE_TAG"
     private val emptyLayoutTag = "EMPTY_LAYOUT_TAG"
@@ -334,12 +334,8 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
             wrapperAdapter!!.removeHeaderView(view)
     }
 
-    fun addFooterView(view: View) {
-        if (!wrapperAdapter!!.containsFooterView(view))
-            wrapperAdapter!!.addFooterView(view)
-    }
-
-    fun addFooterView(view: View, viewListeners: ViewListeners?) {
+    @JvmOverloads
+    fun addFooterView(view: View, viewListeners: ViewListeners? = null) {
         if (!wrapperAdapter!!.containsFooterView(view))
             wrapperAdapter!!.addFooterView(view, viewListeners)
     }
