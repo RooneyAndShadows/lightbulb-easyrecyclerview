@@ -14,7 +14,7 @@ buildscript {
                 flexbox             : "3.0.0",
                 lightbulb           : [
                         commons         : "1.0.18",
-                        recycleradapters: "2.0.0-RC4"
+                        recycleradapters: "2.0.0-RC5"
                 ],
                 java                : [
                         commons: "1.0.6"
