@@ -3,7 +3,7 @@
 buildscript {
     ext {
         versions = [
-                kotlin              : "1.7.20",
+                kotlin              : "1.7.21",
                 ktx                 : [
                         core: "1.9.0"
                 ],
@@ -14,7 +14,7 @@ buildscript {
                 flexbox             : "3.0.0",
                 lightbulb           : [
                         commons         : "1.0.18",
-                        recycleradapters: "2.0.0-RC6"
+                        recycleradapters: "2.0.0-RC7"
                 ],
                 java                : [
                         commons: "1.0.6"
@@ -32,7 +32,7 @@ buildscript {
         maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
 
         // NOTE: Do not place your application dependencies here; they belong
