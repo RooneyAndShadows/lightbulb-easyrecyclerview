@@ -4,19 +4,13 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-class VerticalAndHorizontalSpaceItemDecoration : RecyclerView.ItemDecoration {
-    private val verticalSpacing: Int
-    private val horizontalSpacing: Int
 
-    constructor(spacing: Int) {
-        verticalSpacing = spacing
-        horizontalSpacing = spacing
-    }
+class VerticalAndHorizontalSpaceItemDecoration(
+    private val verticalSpacing: Int,
+    private val horizontalSpacing: Int,
+) : RecyclerView.ItemDecoration() {
 
-    constructor(verticalSpacing: Int, horizontalSpacing: Int) {
-        this.verticalSpacing = verticalSpacing
-        this.horizontalSpacing = horizontalSpacing
-    }
+    constructor(spacing: Int) : this(spacing, spacing)
 
     @Override
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {

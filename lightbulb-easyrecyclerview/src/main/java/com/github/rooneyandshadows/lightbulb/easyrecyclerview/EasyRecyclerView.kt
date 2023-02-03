@@ -31,6 +31,7 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.Hea
 import com.google.android.material.progressindicator.LinearProgressIndicator
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "UNUSED_PARAMETER")
+@JvmSuppressWildcards
 open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>> @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -532,8 +533,8 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      *
      * @param itemDecoration - Item decoration to add.
      */
-    fun addItemDecoration(itemDecoration: RecyclerView.ItemDecoration?) {
-        recyclerView.addItemDecoration(itemDecoration!!)
+    fun addItemDecoration(itemDecoration: RecyclerView.ItemDecoration) {
+        recyclerView.addItemDecoration(itemDecoration)
     }
 
     /**
@@ -541,8 +542,8 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      *
      * @param itemDecoration - Item decoration to remove.
      */
-    fun removeItemDecoration(itemDecoration: RecyclerView.ItemDecoration?) {
-        recyclerView.removeItemDecoration(itemDecoration!!)
+    fun removeItemDecoration(itemDecoration: RecyclerView.ItemDecoration) {
+        recyclerView.removeItemDecoration(itemDecoration)
     }
 
     /**
