@@ -5,9 +5,10 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
 
 @Suppress("unused")
-class FlexboxSpaceItemDecoration : RecyclerView.ItemDecoration {
+class FlexboxSpaceItemDecoration : EasyRecyclerItemDecoration {
     private val verticalSpacing: Int
     private val horizontalSpacing: Int
 

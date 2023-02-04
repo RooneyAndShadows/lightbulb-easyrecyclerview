@@ -18,10 +18,10 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
+    <com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/app_bar_layout"
-        app:ERV_SupportsLoadMore="true"/>
+        app:ERV_SupportsLoadMore="true" />
 </RelativeLayout>

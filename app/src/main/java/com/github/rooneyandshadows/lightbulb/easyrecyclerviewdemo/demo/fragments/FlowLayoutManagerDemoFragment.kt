@@ -5,24 +5,19 @@ import android.view.View
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
-import com.github.rooneyandshadows.lightbulb.application.activity.BaseActivity
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.FlexboxSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MainActivity
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MenuConfigurations
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.LabelsAdapter
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateLabelsData
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.LabelsRecyclerView
 
 @FragmentScreen(screenName = "FlowLayout", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_flow_layout_manager")
 class FlowLayoutManagerDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: EasyRecyclerView<DemoModel, LabelsAdapter>
+    lateinit var recyclerView: LabelsRecyclerView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -35,18 +30,11 @@ class FlowLayoutManagerDemoFragment : BaseFragment() {
 
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        if (getFragmentState() === FragmentStates.CREATED) {
-            BaseActivity.updateMenuConfiguration(
-                requireContext(),
-                MainActivity::class.java
-            ) { activity: BaseActivity -> MenuConfigurations.getConfiguration(activity) }
+        recyclerView.apply {
+            val itemDecoration = FlexboxSpaceItemDecoration(ResourceUtils.dpToPx(10), this)
+            addItemDecoration(itemDecoration)
+            if (savedInstanceState == null)
+                adapter.setCollection(generateLabelsData())
         }
-        setupRecycler(savedInstanceState)
-    }
-
-    private fun setupRecycler(savedState: Bundle?) {
-        recyclerView.adapter = LabelsAdapter()
-        recyclerView.addItemDecoration(FlexboxSpaceItemDecoration(ResourceUtils.dpToPx(10), recyclerView))
-        if (savedState == null) recyclerView.adapter!!.setCollection(generateLabelsData())
     }
 }

@@ -6,24 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
 
-open class StickyHeaderItemDecoration : RecyclerView.ItemDecoration {
-    private val verticalSpacing: Int
-    private val horizontalSpacing: Int
-    private val mListener: StickyHeaderInterface
+open class StickyHeaderItemDecoration(
+    private val verticalSpacing: Int,
+    private val horizontalSpacing: Int,
+    private val mListener: StickyHeaderInterface,
+) : EasyRecyclerItemDecoration() {
     private var mHeaderHeight: Int? = null
 
-    constructor(listener: StickyHeaderInterface, spacing: Int) {
-        mListener = listener
-        verticalSpacing = spacing
-        horizontalSpacing = spacing
-    }
-
-    constructor(listener: StickyHeaderInterface) {
-        mListener = listener
-        verticalSpacing = 0
-        horizontalSpacing = 0
-    }
+    constructor(listener: StickyHeaderInterface) : this(0, 0, listener)
 
     @Override
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {

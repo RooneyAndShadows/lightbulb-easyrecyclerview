@@ -8,18 +8,16 @@ import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.F
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 
 @FragmentScreen(screenName = "Bouncy", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_bouncy")
 class BounceEffectDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: EasyRecyclerView<DemoModel, SimpleAdapter>
+    lateinit var recyclerView: SimpleRecyclerView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -33,12 +31,10 @@ class BounceEffectDemoFragment : BaseFragment() {
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         super.doOnViewCreated(fragmentView, savedInstanceState)
-        setupRecycler(savedInstanceState)
-    }
-
-    private fun setupRecycler(savedState: Bundle?) {
-        recyclerView.adapter = SimpleAdapter()
-        recyclerView.addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
-        if (savedState == null) recyclerView.adapter!!.setCollection(generateData(20))
+        recyclerView.apply {
+            val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15))
+            recyclerView.addItemDecoration(itemDecoration)
+            if (savedInstanceState == null) recyclerView.adapter.setCollection(generateData(20))
+        }
     }
 }

@@ -1,11 +1,24 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo
 
+import android.content.Context
+import android.graphics.drawable.Drawable
 import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate
+import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.drawable.ShowMenuDrawable
+import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickyAdvancedDemoModel
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
 import java.time.OffsetDateTime
 import java.util.*
+
+fun getHomeIcon(context: Context): Drawable {
+    return ShowMenuDrawable(context).apply {
+        setEnabled(false)
+        backgroundColor = ResourceUtils.getColorByAttribute(context, R.attr.colorError)
+    }
+    //actionBarManager.setHomeIcon(actionBarDrawable)
+}
 
 fun generateData(count: Int): List<DemoModel> {
     val models: MutableList<DemoModel> = mutableListOf()

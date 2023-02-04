@@ -13,15 +13,14 @@ import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.F
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler.Directions
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler.SwipeConfiguration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.TouchCallbacks
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 
 @Suppress("SameParameterValue")
@@ -29,7 +28,7 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRe
 @FragmentConfiguration(layoutName = "fragment_demo_drag_to_reorder")
 class DragToReorderDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: EasyRecyclerView<DemoModel, SimpleAdapter>
+    lateinit var recyclerView: SimpleRecyclerView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -40,21 +39,21 @@ class DragToReorderDemoFragment : BaseFragment() {
             .withTitle(ResourceUtils.getPhrase(requireContext(), R.string.app_name))
     }
 
+    @SuppressLint("InflateParams")
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         super.doOnViewCreated(fragmentView, savedInstanceState)
-        setupRecycler(savedInstanceState)
-    }
-
-    @SuppressLint("InflateParams")
-    @Override
-    private fun setupRecycler(savedState: Bundle?) {
-        recyclerView.setAdapter(SimpleAdapter(), configureSwipeHandler())
-        recyclerView.addHeaderView(layoutInflater.inflate(R.layout.demo_header_item_drag_to_reorder, null))
-        recyclerView.setEmptyLayout(generateEmptyLayout())
-        recyclerView.addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
-        if (savedState == null)
-            recyclerView.adapter!!.setCollection(generateData(20))
+        recyclerView.apply {
+            val swipeHandler = configureSwipeHandler()
+            val emptyLayout = generateEmptyLayout()
+            val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15))
+            val headerView = layoutInflater.inflate(R.layout.demo_header_item_drag_to_reorder, null)
+            recyclerView.setSwipeCallbacks(swipeHandler)
+            addHeaderView(headerView)
+            setEmptyLayout(emptyLayout)
+            recyclerView.addItemDecoration(itemDecoration)
+            if (savedInstanceState == null) adapter.setCollection(generateData(20))
+        }
     }
 
     private fun configureSwipeHandler(): TouchCallbacks<DemoModel> {
@@ -79,7 +78,7 @@ class DragToReorderDemoFragment : BaseFragment() {
                 item: DemoModel,
                 position: Int,
                 adapter: EasyRecyclerAdapter<DemoModel>,
-                direction: Directions
+                direction: Directions,
             ) {
             }
 
@@ -117,7 +116,7 @@ class DragToReorderDemoFragment : BaseFragment() {
             val progressBar: ProgressBar = emptyLayout.findViewById(R.id.progressBar)
             emptyLayoutImage.visibility = View.GONE
             progressBar.visibility = View.VISIBLE
-            emptyLayout.postDelayed({ recyclerView.adapter!!.appendCollection(generateData(20)) }, 2000)
+            emptyLayout.postDelayed({ recyclerView.adapter.appendCollection(generateData(20)) }, 2000)
         }
         return emptyLayout
     }

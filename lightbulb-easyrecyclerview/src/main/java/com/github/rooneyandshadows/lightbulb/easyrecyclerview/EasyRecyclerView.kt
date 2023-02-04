@@ -13,13 +13,16 @@ import android.view.animation.LayoutAnimationController
 import android.widget.RelativeLayout
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.*
 import com.factor.bouncy.BouncyRecyclerView
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.TouchCallbacks
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.*
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalFlowLayoutManager
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalLinearLayoutManager
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalFlowLayoutManager
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout.RefreshStyle
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RefreshView
@@ -32,10 +35,16 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "UNUSED_PARAMETER")
 @JvmSuppressWildcards
-open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>> @JvmOverloads constructor(
+abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<ItemType>> @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-) : RelativeLayout(context, attrs) {
+    defStyleAttr: Int = 0,
+    defStyleRes: Int = 0,
+) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
+    private lateinit var loadingIndicator: LinearProgressIndicator
+    private lateinit var recyclerView: BouncyRecyclerView
+    private lateinit var dataAdapter: AType
+    private lateinit var wrapperAdapter: HeaderViewRecyclerAdapter
     private val layoutManagerStateTag = "LAYOUT_MANAGER_STATE_TAG"
     private val emptyLayoutTag = "EMPTY_LAYOUT_TAG"
     private val showRefreshManualDelay = 300
@@ -49,19 +58,15 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
     private var showingEmptyLayout = false
     private var overscrollBounceEnabled = false
     private var pullToRefreshEnabled = false
-    private var dataAdapter: AType? = null
     private var loadingFooterView: View? = null
     private var emptyLayoutId: Int? = null
     private var layoutManagerType: LayoutManagerTypes? = null
-    private lateinit var loadingIndicator: LinearProgressIndicator
-    private var wrapperAdapter: HeaderViewRecyclerAdapter? = null
-    private lateinit var recyclerView: BouncyRecyclerView
     private var recyclerEmptyLayoutContainer: RelativeLayout? = null
     private var refreshLayout: RecyclerRefreshLayout? = null
     private val animationController: LayoutAnimationController? = null
-    private var loadMoreCallback: LoadMoreCallback<IType, AType>? = null
-    private var refreshCallback: RefreshCallback<IType, AType>? = null
-    private var swipeToDeleteCallbacks: EasyRecyclerViewTouchHandler<IType, AType>? = null
+    private var loadMoreCallback: LoadMoreCallback<ItemType, AType>? = null
+    private var refreshCallback: RefreshCallback<ItemType, AType>? = null
+    private var touchHandler: EasyRecyclerViewTouchHandler<ItemType, AType>? = null
     private var renderedCallback: EasyRecyclerItemsReadyListener? = null
     private var emptyLayoutListeners: EasyRecyclerEmptyLayoutListener? = null
     private val showRefreshLayoutDelayedRunnable = Runnable { refreshLayout!!.setRefreshing(true) }
@@ -83,39 +88,21 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
         private set
     var emptyLayoutView: View? = null
         private set
-    var adapter: AType?
+    val adapter: AType
         get() = dataAdapter
-        set(adapter) {
-            if (adapter != null) {
-                wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
-                dataAdapter = adapter
-                dataAdapter!!.setWrapperAdapter(wrapperAdapter)
-                dataAdapter!!.addOnCollectionChangedListener(object : EasyAdapterCollectionChangedListener {
-                    override fun onChanged() {
-                        setEmptyLayoutVisibility(!dataAdapter!!.hasItems())
-                    }
-                })
-                wrapperAdapter!!.setDataAdapter(dataAdapter!!)
-                recyclerView.adapter = wrapperAdapter
-            } else {
-                dataAdapter = null
-                wrapperAdapter = null
-                recyclerView.adapter = null
-            }
-        }
     val isAnimating: Boolean
         get() = recyclerView.itemAnimator != null && recyclerView.itemAnimator!!.isRunning
 
     /**
      * @return recyclerview adapter items.
      */
-    val items: List<IType>
-        get() = dataAdapter!!.getItems()
+    val items: List<ItemType>
+        get() = dataAdapter.getItems()
 
     /**
      * @return Layout manager for the view
      */
-    val layoutManager: RecyclerView.LayoutManager?
+    val layoutManager: LayoutManager?
         get() = recyclerView.layoutManager
 
     /**
@@ -123,17 +110,33 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      */
     val itemDecorationCount: Int
         get() = recyclerView.itemDecorationCount
+    protected abstract val adapterCreator: AdapterCreator<AType>
 
     init {
         readAttributes(context, attrs)
         initView()
+        initializeAdapter()
+    }
+
+    private fun initializeAdapter() {
+        val adapter = adapterCreator.createAdapter()
+        wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
+        dataAdapter = adapter
+        dataAdapter.setWrapperAdapter(wrapperAdapter)
+        dataAdapter.addOnCollectionChangedListener(object : EasyAdapterCollectionChangedListener {
+            override fun onChanged() {
+                setEmptyLayoutVisibility(!dataAdapter.hasItems())
+            }
+        })
+        wrapperAdapter.setDataAdapter(dataAdapter)
+        recyclerView.adapter = wrapperAdapter
     }
 
     @Override
     public override fun onSaveInstanceState(): Parcelable {
         val superState = super.onSaveInstanceState()
         val myState = SavedState(superState)
-        if (dataAdapter != null) myState.adapterState = adapter!!.saveAdapterState()
+        myState.adapterState = adapter.saveAdapterState()
         myState.hasMoreDataToLoad = hasMoreDataToLoad
         myState.supportsLoadMore = supportsLazyLoading
         myState.supportsPullToRefresh = supportsPullToRefresh
@@ -159,8 +162,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
     public override fun onRestoreInstanceState(state: Parcelable) {
         val savedState = state as SavedState
         super.onRestoreInstanceState(savedState.superState)
-        if (dataAdapter != null)
-            adapter!!.restoreAdapterState(savedState.adapterState!!)
+        adapter.restoreAdapterState(savedState.adapterState!!)
         hasMoreDataToLoad = savedState.hasMoreDataToLoad
         supportsLazyLoading = savedState.supportsLoadMore
         supportsPullToRefresh = savedState.supportsPullToRefresh
@@ -189,26 +191,19 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
     @Override
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (swipeToDeleteCallbacks != null) swipeToDeleteCallbacks!!.cancelPendingAction()
+        if (touchHandler != null) touchHandler!!.cancelPendingAction()
     }
 
-    protected fun getLayoutManagerType(): LayoutManagerTypes {
+    protected open fun getLayoutManagerType(): LayoutManagerTypes {
         return LayoutManagerTypes.UNDEFINED
     }
 
-    /**
-     * Sets recyclerview data adapter and item swipe callbacks.
-     *
-     * @param adapter        - recyclerview adapter.
-     * @param swipeCallbacks - swipe callbacks.
-     */
-    fun setAdapter(adapter: AType, swipeCallbacks: TouchCallbacks<IType>) {
-        this.adapter = adapter
-        swipeToDeleteCallbacks = EasyRecyclerViewTouchHandler(this, swipeCallbacks)
-        val itemTouchHelper = ItemTouchHelper(
-            swipeToDeleteCallbacks!!
-        )
-        itemTouchHelper.attachToRecyclerView(recyclerView)
+    fun setSwipeCallbacks(swipeCallbacks: TouchCallbacks<ItemType>) {
+        touchHandler = EasyRecyclerViewTouchHandler(this, swipeCallbacks).apply {
+            ItemTouchHelper(this).apply {
+                attachToRecyclerView(recyclerView)
+            }
+        }
     }
 
     /**
@@ -216,7 +211,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      *
      * @param animator - Animator to set.
      */
-    fun setItemAnimator(animator: RecyclerView.ItemAnimator?) {
+    fun setItemAnimator(animator: ItemAnimator?) {
         recyclerView.itemAnimator = animator
     }
 
@@ -310,7 +305,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
         emptyLayoutView = emptyLayout
         emptyLayoutListeners = layoutListener
         emptyLayoutView!!.tag = emptyLayoutTag
-        val isListEmpty = adapter == null || !adapter!!.hasItems()
+        val isListEmpty = !adapter.hasItems()
         recyclerEmptyLayoutContainer!!.visibility = if (isListEmpty) VISIBLE else GONE
         recyclerView.visibility = if (isListEmpty) GONE else VISIBLE
         val layout = findViewWithTag<View>(emptyLayoutTag)
@@ -326,24 +321,24 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
 
     @JvmOverloads
     fun addHeaderView(view: View, viewListeners: ViewListeners? = null) {
-        if (!wrapperAdapter!!.containsHeaderView(view))
-            wrapperAdapter!!.addHeaderView(view, viewListeners)
+        if (!wrapperAdapter.containsHeaderView(view))
+            wrapperAdapter.addHeaderView(view, viewListeners)
     }
 
     fun removeHeaderView(view: View) {
-        if (wrapperAdapter!!.containsHeaderView(view))
-            wrapperAdapter!!.removeHeaderView(view)
+        if (wrapperAdapter.containsHeaderView(view))
+            wrapperAdapter.removeHeaderView(view)
     }
 
     @JvmOverloads
     fun addFooterView(view: View, viewListeners: ViewListeners? = null) {
-        if (!wrapperAdapter!!.containsFooterView(view))
-            wrapperAdapter!!.addFooterView(view, viewListeners)
+        if (!wrapperAdapter.containsFooterView(view))
+            wrapperAdapter.addFooterView(view, viewListeners)
     }
 
     fun removeFooterView(view: View) {
-        if (wrapperAdapter!!.containsFooterView(view))
-            wrapperAdapter!!.removeFooterView(view)
+        if (wrapperAdapter.containsFooterView(view))
+            wrapperAdapter.removeFooterView(view)
     }
 
     fun refreshData() {
@@ -385,11 +380,11 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
         isShowingLoadingFooter = isLoading
         recyclerView.post {
             if (isLoading) {
-                if (!wrapperAdapter!!.containsFooterView(loadingFooterView!!))
-                    wrapperAdapter!!.addFooterView(loadingFooterView)
+                if (!wrapperAdapter.containsFooterView(loadingFooterView!!))
+                    wrapperAdapter.addFooterView(loadingFooterView)
             } else {
-                if (wrapperAdapter!!.containsFooterView(loadingFooterView!!))
-                    wrapperAdapter!!.removeFooterView(loadingFooterView!!)
+                if (wrapperAdapter.containsFooterView(loadingFooterView!!))
+                    wrapperAdapter.removeFooterView(loadingFooterView!!)
             }
         }
     }
@@ -416,7 +411,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      * @param callback - The LoadMoreCallback  to be executed on lazy loading.
      * @see EasyRecyclerView.setSupportsLazyLoading
      */
-    fun setLoadMoreCallback(callback: LoadMoreCallback<IType, AType>?) {
+    fun setLoadMoreCallback(callback: LoadMoreCallback<ItemType, AType>?) {
         if (!supportsLazyLoading) return
         loadMoreCallback = callback
     }
@@ -428,7 +423,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      * @param callback - The RefreshCallback to be executed on refresh.
      * @see EasyRecyclerView.setSupportsPullToRefresh
      */
-    fun setRefreshCallback(callback: RefreshCallback<IType, AType>?) {
+    fun setRefreshCallback(callback: RefreshCallback<ItemType, AType>?) {
         if (!supportsPullToRefresh) return
         refreshCallback = callback
         refreshLayout!!.setOnRefreshListener(object : RecyclerRefreshLayout.OnRefreshListener {
@@ -456,7 +451,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      * @return true if adapter contains at least on item.
      */
     fun hasItems(): Boolean {
-        return if (dataAdapter == null) false else dataAdapter!!.hasItems()
+        return dataAdapter.hasItems()
     }
 
     /**
@@ -470,7 +465,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      * @return true if adapter has at least one item selected.
      */
     fun hasSelection(): Boolean {
-        return dataAdapter!!.hasSelection()
+        return dataAdapter.hasSelection()
     }
 
     /**
@@ -500,14 +495,14 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      * @param position - position of the changed item.
      */
     fun itemChanged(position: Int?) {
-        post { dataAdapter!!.notifyItemChanged(position!!) }
+        post { dataAdapter.notifyItemChanged(position!!) }
     }
 
     /**
      * Clears items from the adapter.
      */
     fun clearItems() {
-        dataAdapter!!.clearCollection()
+        dataAdapter.clearCollection()
     }
 
     /**
@@ -516,7 +511,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      * @see EasyRecyclerViewTouchHandler.executePendingAction
      */
     fun executePendingAction() {
-        if (swipeToDeleteCallbacks != null) swipeToDeleteCallbacks!!.executePendingAction()
+        if (touchHandler != null) touchHandler!!.executePendingAction()
     }
 
     /**
@@ -525,7 +520,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      * @see EasyRecyclerViewTouchHandler.executePendingAction
      */
     fun cancelPendingAction() {
-        if (swipeToDeleteCallbacks != null) swipeToDeleteCallbacks!!.cancelPendingAction()
+        if (touchHandler != null) touchHandler!!.cancelPendingAction()
     }
 
     /**
@@ -533,7 +528,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      *
      * @param itemDecoration - Item decoration to add.
      */
-    fun addItemDecoration(itemDecoration: RecyclerView.ItemDecoration) {
+    fun addItemDecoration(itemDecoration: ItemDecoration) {
         recyclerView.addItemDecoration(itemDecoration)
     }
 
@@ -542,7 +537,7 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
      *
      * @param itemDecoration - Item decoration to remove.
      */
-    fun removeItemDecoration(itemDecoration: RecyclerView.ItemDecoration) {
+    fun removeItemDecoration(itemDecoration: ItemDecoration) {
         recyclerView.removeItemDecoration(itemDecoration)
     }
 
@@ -757,5 +752,9 @@ open class EasyRecyclerView<IType : EasyAdapterDataModel, AType : EasyRecyclerAd
 
     interface LoadMoreCallback<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>> {
         fun loadMore(view: EasyRecyclerView<IType, AType>)
+    }
+
+    interface AdapterCreator<AType : EasyRecyclerAdapter<out EasyAdapterDataModel>> {
+        fun createAdapter(): AType
     }
 }

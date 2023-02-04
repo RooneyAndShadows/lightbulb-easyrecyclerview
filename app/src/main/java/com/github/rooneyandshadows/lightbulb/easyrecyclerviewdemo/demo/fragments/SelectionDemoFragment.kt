@@ -9,18 +9,16 @@ import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.F
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SelectableAdapter
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SelectableRecyclerView
 
 @FragmentScreen(screenName = "Selectable", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_selectable")
 class SelectionDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: EasyRecyclerView<DemoModel, SelectableAdapter>
+    lateinit var recyclerView: SelectableRecyclerView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -31,16 +29,16 @@ class SelectionDemoFragment : BaseFragment() {
             .withTitle(ResourceUtils.getPhrase(requireContext(), R.string.app_name))
     }
 
+    @SuppressLint("InflateParams")
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        setupRecycler(savedInstanceState)
-    }
-
-    @SuppressLint("InflateParams")
-    private fun setupRecycler(savedState: Bundle?) {
-        recyclerView.adapter = SelectableAdapter()
-        recyclerView.addHeaderView(layoutInflater.inflate(R.layout.demo_header_item_selectable_layout, null))
-        recyclerView.addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
-        if (savedState == null) recyclerView.adapter!!.setCollection(generateData(20))
+        recyclerView.apply {
+            val headerView = layoutInflater.inflate(R.layout.demo_header_item_selectable_layout, null)
+            val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15))
+            addHeaderView(headerView)
+            addItemDecoration(itemDecoration)
+            if (savedInstanceState == null)
+                adapter.setCollection(generateData(20))
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
@@ -12,15 +11,16 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.SimpleAdapter
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 
 @FragmentScreen(screenName = "PullToRefresh", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_pull_to_refresh")
 class PullToRefreshDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: EasyRecyclerView<DemoModel, SimpleAdapter>
+    lateinit var recyclerView: SimpleRecyclerView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -33,25 +33,22 @@ class PullToRefreshDemoFragment : BaseFragment() {
 
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        setupRecycler(savedInstanceState)
-    }
-
-    @SuppressLint("InflateParams")
-    private fun setupRecycler(savedState: Bundle?) {
-        recyclerView.adapter = SimpleAdapter()
-        recyclerView.addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
-        recyclerView.addHeaderView(layoutInflater.inflate(R.layout.demo_header_item_pull_to_refresh_layout, null))
-        recyclerView.setRefreshCallback(object : EasyRecyclerView.RefreshCallback<DemoModel, SimpleAdapter> {
-            override fun refresh(view: EasyRecyclerView<DemoModel, SimpleAdapter>) {
-                recyclerView.postDelayed(
-                    {
-                        recyclerView.adapter!!.setCollection(generateData(10))
-                        recyclerView.showRefreshLayout(false)
-                    }, 2000
-                )
+        recyclerView.apply {
+            addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
+            addHeaderView(layoutInflater.inflate(R.layout.demo_header_item_pull_to_refresh_layout, null))
+            setRefreshCallback(object : EasyRecyclerView.RefreshCallback<DemoModel, SimpleAdapter> {
+                override fun refresh(view: EasyRecyclerView<DemoModel, SimpleAdapter>) {
+                    postDelayed({
+                        val newCollection = generateData(10)
+                        view.adapter.setCollection(newCollection)
+                        view.showRefreshLayout(false)
+                    }, 2000)
+                }
+            })
+            if (savedInstanceState == null) {
+                val initialCollection = generateData(4)
+                adapter.setCollection(initialCollection)
             }
-
-        })
-        if (savedState == null) recyclerView.adapter!!.setCollection(generateData(4))
+        }
     }
 }

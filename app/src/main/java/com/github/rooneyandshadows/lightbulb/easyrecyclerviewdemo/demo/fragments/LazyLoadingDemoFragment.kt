@@ -11,16 +11,17 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters.SimpleAdapter
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.SimpleAdapter
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 
 @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE", "SameParameterValue")
 @FragmentScreen(screenName = "LazyLoading", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_lazy_loading")
 class LazyLoadingDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: EasyRecyclerView<DemoModel, SimpleAdapter>
+    lateinit var recyclerView: SimpleRecyclerView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -33,24 +34,20 @@ class LazyLoadingDemoFragment : BaseFragment() {
 
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        setupRecycler(savedInstanceState)
-    }
-
-    private fun setupRecycler(savedState: Bundle?) {
-        recyclerView.adapter = SimpleAdapter()
-        recyclerView.addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
-        recyclerView.setLoadMoreCallback(object : EasyRecyclerView.LoadMoreCallback<DemoModel, SimpleAdapter> {
-            override fun loadMore(rv: EasyRecyclerView<DemoModel, SimpleAdapter>) {
-                rv.postDelayed(
-                    {
-                        val offset = rv.adapter!!.getItems().size
-                        rv.adapter!!.appendCollection(generateData(10, offset))
+        recyclerView.apply {
+            addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
+            setLoadMoreCallback(object : EasyRecyclerView.LoadMoreCallback<DemoModel, SimpleAdapter> {
+                override fun loadMore(rv: EasyRecyclerView<DemoModel, SimpleAdapter>) {
+                    rv.postDelayed({
+                        val offset = rv.adapter.getItems().size
+                        val newItems = generateData(10, offset)
+                        rv.adapter.appendCollection(newItems)
                         rv.showLoadingFooter(false)
-                    }, 2000
-                )
-            }
-        })
-        if (savedState == null)
-            recyclerView.adapter!!.setCollection(generateData(10))
+                    }, 2000)
+                }
+            })
+            if (savedInstanceState == null)
+                adapter.setCollection(generateData(10))
+        }
     }
 }

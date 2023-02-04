@@ -1,4 +1,4 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.adapters
+package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
