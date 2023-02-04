@@ -2,11 +2,11 @@
 <resources>
     <integer name="view_list_transition_duration">250</integer>
     <declare-styleable name="EasyRecyclerView">
-        <attr name="ERV_EmptyLayoutId" format="reference" />
-        <attr name="ERV_SupportsPullToRefresh" format="boolean" />
-        <attr name="ERV_SupportsLoadMore" format="boolean" />
-        <attr name="ERV_SupportsOverscrollBounce" format="boolean" />
-        <attr name="ERV_LayoutManager" format="enum">
+        <attr name="erv_empty_layout_id" format="reference" />
+        <attr name="erv_supports_pull_to_refresh" format="boolean" />
+        <attr name="erv_supports_load_more" format="boolean" />
+        <attr name="erv_supports_overscroll_bounce" format="boolean" />
+        <attr name="erv_layout_manager" format="enum">
             <enum name="LAYOUT_LINEAR_VERTICAL" value="1" />
             <enum name="LAYOUT_LINEAR_HORIZONTAL" value="2" />
             <enum name="LAYOUT_FLOW_VERTICAL" value="3" />

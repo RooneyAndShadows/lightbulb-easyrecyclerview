@@ -24,7 +24,7 @@ import com.google.android.material.snackbar.Snackbar
 @Suppress("unused", "UNUSED_VARIABLE", "UNUSED_PARAMETER")
 class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>>(
     private val easyRecyclerView: EasyRecyclerView<IType, AType>,
-    private val touchCallbacks: TouchCallbacks<IType>
+    private val touchCallbacks: TouchCallbacks<IType>,
 ) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
     private var undoClicked = false
     private var snackbar: Snackbar? = null
@@ -57,7 +57,7 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
     override fun onMove(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
+        target: RecyclerView.ViewHolder,
     ): Boolean {
         val fromPosition = viewHolder.absoluteAdapterPosition - adapter.headersCount
         val toPosition = target.absoluteAdapterPosition - adapter.headersCount
@@ -94,7 +94,7 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
         dX: Float,
         dY: Float,
         actionState: Int,
-        isCurrentlyActive: Boolean
+        isCurrentlyActive: Boolean,
     ) {
         when (actionState) {
             ItemTouchHelper.ACTION_STATE_DRAG -> {}
@@ -173,7 +173,7 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
     private fun showSwipedItemSnackBar(item: IType, direction: Directions) {
         executePendingAction()
         addPendingAction(item, direction)
-        val pendingActionText = touchCallbacks.getPendingActionText(direction)
+        val pendingActionText = touchCallbacks.getPendingActionText(direction) ?: ""
         val undoText = configuration.swipeCancelActionText
         snackbar = Snackbar.make(easyRecyclerView, pendingActionText, configuration.swipeActionDelay)
             .setAction(undoText) { cancelPendingAction() }
@@ -191,20 +191,18 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
         ) else false
     }
 
-    private fun getActionText(item: IType?): String {
-        var actionText = ""
-        if (item != null) actionText = touchCallbacks.getActionBackgroundText(item)
-        return actionText
+    private fun getActionText(item: IType): String? {
+        return touchCallbacks.getActionBackgroundText(item)
     }
 
     private fun getActionBackgroundColor(directions: Directions): Int {
         return touchCallbacks.getSwipeBackgroundColor(directions)
     }
 
-    private fun getActionIcon(directions: Directions): Drawable {
-        val icon: Drawable = touchCallbacks.getSwipeIcon(directions)
-        icon.setTint(configuration.swipeTextAndIconColor)
-        return icon
+    private fun getActionIcon(directions: Directions): Drawable? {
+        return touchCallbacks.getSwipeIcon(directions)?.apply {
+            setTint(configuration.swipeTextAndIconColor)
+        }
     }
 
     private fun getItem(viewHolder: RecyclerView.ViewHolder): IType? {
@@ -227,7 +225,7 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
             canvas: Canvas,
             direction: Directions?,
             backgroundColor: Int,
-            icon: Drawable
+            icon: Drawable?,
         ) {
             backgroundDrawable = ColorDrawable(backgroundColor)
             backgroundDrawable!!.setBounds(itemView.left, itemView.top, itemView.right, itemView.bottom)
@@ -301,8 +299,8 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
                 }
                 else -> {}
             }
-            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-            icon.draw(canvas)
+            icon?.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+            icon?.draw(canvas)
             canvas.restore()
         }
 

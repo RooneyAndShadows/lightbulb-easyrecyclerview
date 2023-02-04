@@ -13,7 +13,6 @@ import android.view.animation.LayoutAnimationController
 import android.widget.RelativeLayout
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
 import com.factor.bouncy.BouncyRecyclerView
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
@@ -569,16 +568,16 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
         val attributes = context.theme.obtainStyledAttributes(attrs, R.styleable.EasyRecyclerView, 0, 0)
         try {
             //val textView = TextView(getContext())
-            val emptyLayoutId = attributes.getResourceId(R.styleable.EasyRecyclerView_ERV_EmptyLayoutId, -1)
+            val emptyLayoutId = attributes.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
             if (emptyLayoutId != -1) this.emptyLayoutId = emptyLayoutId
-            supportsPullToRefresh = attributes.getBoolean(R.styleable.EasyRecyclerView_ERV_SupportsPullToRefresh, false)
+            supportsPullToRefresh = attributes.getBoolean(R.styleable.EasyRecyclerView_erv_supports_pull_to_refresh, false)
             supportsBounceOverscroll =
-                attributes.getBoolean(R.styleable.EasyRecyclerView_ERV_SupportsOverscrollBounce, false)
-            supportsLazyLoading = attributes.getBoolean(R.styleable.EasyRecyclerView_ERV_SupportsLoadMore, false)
+                attributes.getBoolean(R.styleable.EasyRecyclerView_erv_supports_overscroll_bounce, false)
+            supportsLazyLoading = attributes.getBoolean(R.styleable.EasyRecyclerView_erv_supports_load_more, false)
             layoutManagerType =
                 if (getLayoutManagerType() == LayoutManagerTypes.UNDEFINED) LayoutManagerTypes.valueOf(
                     attributes.getInt(
-                        R.styleable.EasyRecyclerView_ERV_LayoutManager,
+                        R.styleable.EasyRecyclerView_erv_layout_manager,
                         1
                     )
                 ) else getLayoutManagerType()

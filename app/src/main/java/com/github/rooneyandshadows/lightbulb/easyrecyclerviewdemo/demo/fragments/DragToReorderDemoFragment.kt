@@ -92,7 +92,7 @@ class DragToReorderDemoFragment : BaseFragment() {
             }
 
             @Override
-            override fun getSwipeIcon(direction: Directions): Drawable {
+            override fun getSwipeIcon(direction: Directions): Drawable? {
                 return ResourceUtils.getDrawable(requireContext(), R.drawable.icon_delete)!!
             }
 
