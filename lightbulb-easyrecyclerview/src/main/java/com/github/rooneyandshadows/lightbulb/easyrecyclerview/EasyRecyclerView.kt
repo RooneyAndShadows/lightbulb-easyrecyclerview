@@ -13,10 +13,12 @@ import android.view.animation.LayoutAnimationController
 import android.widget.RelativeLayout
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
 import com.factor.bouncy.BouncyRecyclerView
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.TouchCallbacks
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalFlowLayoutManager
@@ -528,6 +530,15 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
      *
      * @param itemDecoration - Item decoration to add.
      */
+    fun addItemDecoration(itemDecoration: EasyRecyclerItemDecoration) {
+        recyclerView.addItemDecoration(itemDecoration)
+    }
+
+    /**
+     * Adds item decoration to the recycler view
+     *
+     * @param itemDecoration - Item decoration to add.
+     */
     fun addItemDecoration(itemDecoration: ItemDecoration) {
         recyclerView.addItemDecoration(itemDecoration)
     }
@@ -537,7 +548,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
      *
      * @param itemDecoration - Item decoration to remove.
      */
-    fun removeItemDecoration(itemDecoration: ItemDecoration) {
+    fun removeItemDecoration(itemDecoration: EasyRecyclerItemDecoration) {
         recyclerView.removeItemDecoration(itemDecoration)
     }
 
@@ -548,6 +559,10 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
      */
     fun removeItemDecorationAt(itemDecorationIndex: Int) {
         recyclerView.removeItemDecorationAt(itemDecorationIndex)
+    }
+
+    fun invalidateItemDecorations() {
+        recyclerView.invalidateItemDecorations()
     }
 
     private fun readAttributes(context: Context, attrs: AttributeSet?) {

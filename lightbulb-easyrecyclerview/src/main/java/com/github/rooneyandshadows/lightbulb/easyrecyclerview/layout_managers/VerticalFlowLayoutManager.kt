@@ -37,7 +37,7 @@ class VerticalFlowLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecycl
     private fun handleLoadMore() {
         if (!easyRecyclerView.supportsLazyLoading()) return
         val lastView = getChildAt(childCount - 1) ?: return
-        val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter ?: return
+        val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter
         val size = easyRecyclerView.items.size
         val last = (lastView.layoutParams as LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
         if (last == size - 1) easyRecyclerView.loadMoreData()

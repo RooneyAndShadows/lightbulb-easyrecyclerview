@@ -64,7 +64,7 @@ class HorizontalFlowLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecy
     private fun handleLoadMore() {
         if (!easyRecyclerView.supportsLazyLoading()) return
         val lastView = getChildAt(childCount - 1) ?: return
-        val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter ?: return
+        val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter
         val size = easyRecyclerView.items.size
         val last =
             (lastView.layoutParams as RecyclerView.LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount

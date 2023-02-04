@@ -29,7 +29,7 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
     private var undoClicked = false
     private var snackbar: Snackbar? = null
     private var pendingAction: Runnable? = null
-    private val adapter: AType = easyRecyclerView.adapter!!
+    private val adapter: AType = easyRecyclerView.adapter
     private val configuration: SwipeConfiguration = touchCallbacks.getConfiguration(easyRecyclerView.context)
     private val drawerHelper: SwipeToDeleteDrawerHelper = SwipeToDeleteDrawerHelper()
     private val actionsHandler = Handler(Looper.getMainLooper(), null)
