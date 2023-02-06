@@ -294,27 +294,29 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
      * @param layoutListener - Callbacks to be executed on show/hide.
      */
     fun setEmptyLayout(emptyLayout: View?, layoutListener: EasyRecyclerEmptyLayoutListener?) {
-        if (emptyLayout == null) {
-            emptyLayoutView = null
+        post {
+            if (emptyLayout == null) {
+                emptyLayoutView = null
+                recyclerEmptyLayoutContainer!!.removeAllViews()
+                return@post
+            }
             recyclerEmptyLayoutContainer!!.removeAllViews()
-            return
+            emptyLayoutView = emptyLayout
+            emptyLayoutListeners = layoutListener
+            emptyLayoutView!!.tag = emptyLayoutTag
+            val isListEmpty = !adapter.hasItems()
+            recyclerEmptyLayoutContainer!!.visibility = if (isListEmpty) VISIBLE else GONE
+            recyclerView.visibility = if (isListEmpty) GONE else VISIBLE
+            val layout = findViewWithTag<View>(emptyLayoutTag)
+            layout?.let { removeView(it) }
+            val params = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            params.addRule(ALIGN_PARENT_LEFT, TRUE)
+            params.addRule(ALIGN_PARENT_TOP, TRUE)
+            params.addRule(ALIGN_PARENT_BOTTOM, TRUE)
+            params.addRule(ALIGN_PARENT_RIGHT, TRUE)
+            if (emptyLayoutListeners != null) emptyLayoutListeners!!.onInflated(emptyLayoutView)
+            recyclerEmptyLayoutContainer!!.addView(emptyLayoutView, params)
         }
-        recyclerEmptyLayoutContainer!!.removeAllViews()
-        emptyLayoutView = emptyLayout
-        emptyLayoutListeners = layoutListener
-        emptyLayoutView!!.tag = emptyLayoutTag
-        val isListEmpty = !adapter.hasItems()
-        recyclerEmptyLayoutContainer!!.visibility = if (isListEmpty) VISIBLE else GONE
-        recyclerView.visibility = if (isListEmpty) GONE else VISIBLE
-        val layout = findViewWithTag<View>(emptyLayoutTag)
-        layout?.let { removeView(it) }
-        val params = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-        params.addRule(ALIGN_PARENT_LEFT, TRUE)
-        params.addRule(ALIGN_PARENT_TOP, TRUE)
-        params.addRule(ALIGN_PARENT_BOTTOM, TRUE)
-        params.addRule(ALIGN_PARENT_RIGHT, TRUE)
-        if (emptyLayoutListeners != null) emptyLayoutListeners!!.onInflated(emptyLayoutView)
-        recyclerEmptyLayoutContainer!!.addView(emptyLayoutView, params)
     }
 
     @JvmOverloads
