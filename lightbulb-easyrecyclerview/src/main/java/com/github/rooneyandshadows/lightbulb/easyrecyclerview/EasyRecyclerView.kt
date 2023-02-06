@@ -44,8 +44,20 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
 ) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
     private lateinit var loadingIndicator: LinearProgressIndicator
     private lateinit var recyclerView: BouncyRecyclerView
-    private lateinit var dataAdapter: AType
     private lateinit var wrapperAdapter: HeaderViewRecyclerAdapter
+    private val dataAdapter: AType by lazy {
+        val adapter = adapterCreator.createAdapter()
+        wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
+        adapter.setWrapperAdapter(wrapperAdapter)
+        adapter.addOnCollectionChangedListener(object : EasyAdapterCollectionChangedListener {
+            override fun onChanged() {
+                setEmptyLayoutVisibility(!adapter.hasItems())
+            }
+        })
+        wrapperAdapter.setDataAdapter(adapter)
+        recyclerView.adapter = wrapperAdapter
+        return@lazy adapter
+    }
     private val layoutManagerStateTag = "LAYOUT_MANAGER_STATE_TAG"
     private val emptyLayoutTag = "EMPTY_LAYOUT_TAG"
     private val showRefreshManualDelay = 300
@@ -116,21 +128,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     init {
         readAttributes(context, attrs)
         initView()
-        initializeAdapter()
-    }
-
-    private fun initializeAdapter() {
-        val adapter = adapterCreator.createAdapter()
-        wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
-        dataAdapter = adapter
-        dataAdapter.setWrapperAdapter(wrapperAdapter)
-        dataAdapter.addOnCollectionChangedListener(object : EasyAdapterCollectionChangedListener {
-            override fun onChanged() {
-                setEmptyLayoutVisibility(!dataAdapter.hasItems())
-            }
-        })
-        wrapperAdapter.setDataAdapter(dataAdapter)
-        recyclerView.adapter = wrapperAdapter
     }
 
     @Override
