@@ -14,7 +14,7 @@ android {
         targetSdkVersion 33
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-        versionName "2.0.0-RC14"
+        versionName "2.0.0-RC15"
     }
     buildFeatures {
         dataBinding true
@@ -63,12 +63,11 @@ dependencies {
     implementation "androidx.core:core-ktx:$versions.ktx.core"
     implementation "androidx.appcompat:appcompat:$versions.android_appcompat"
     implementation "androidx.recyclerview:recyclerview:$versions.android_recyclerview"
-    implementation "androidx.dynamicanimation:dynamicanimation:$versions.android_dynamication"
-    implementation "com.google.android.material:material:$versions.material"
+    implementation "androidx.dynamicanimation:dynamicanimation:$versions.android.dynamication"
+    implementation "com.google.android.material:material:$versions.android.material"
     implementation "com.github.valkriaine:Bouncy:$versions.bouncy"
-    implementation "com.google.android.flexbox:flexbox:$versions.flexbox"
-    implementation "com.github.rooneyandshadows:java-commons:$versions.java.commons"
-    implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycleradapters"
+    implementation "com.google.android.flexbox:flexbox:$versions.android.flexbox"
+    implementation "com.github.rooneyandshadows:java-commons:$versions.java_commons"
+    implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycler_adapters"
     implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
 }

@@ -45,19 +45,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     private lateinit var loadingIndicator: LinearProgressIndicator
     private lateinit var recyclerView: BouncyRecyclerView
     private lateinit var wrapperAdapter: HeaderViewRecyclerAdapter
-    private val dataAdapter: AType by lazy {
-        val adapter = adapterCreator.createAdapter()
-        wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
-        adapter.setWrapperAdapter(wrapperAdapter)
-        adapter.addOnCollectionChangedListener(object : EasyAdapterCollectionChangedListener {
-            override fun onChanged() {
-                setEmptyLayoutVisibility(!adapter.hasItems())
-            }
-        })
-        wrapperAdapter.setDataAdapter(adapter)
-        recyclerView.adapter = wrapperAdapter
-        return@lazy adapter
-    }
+    private lateinit var dataAdapter: AType
     private val layoutManagerStateTag = "LAYOUT_MANAGER_STATE_TAG"
     private val emptyLayoutTag = "EMPTY_LAYOUT_TAG"
     private val showRefreshManualDelay = 300
@@ -563,6 +551,19 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
         recyclerView.invalidateItemDecorations()
     }
 
+    private fun initializeAdapter() {
+        dataAdapter = adapterCreator.createAdapter()
+        wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
+        dataAdapter.setWrapperAdapter(wrapperAdapter)
+        dataAdapter.addOnCollectionChangedListener(object : EasyAdapterCollectionChangedListener {
+            override fun onChanged() {
+                setEmptyLayoutVisibility(!dataAdapter.hasItems())
+            }
+        })
+        wrapperAdapter.setDataAdapter(dataAdapter)
+        recyclerView.adapter = wrapperAdapter
+    }
+
     private fun readAttributes(context: Context, attrs: AttributeSet?) {
         val attributes = context.theme.obtainStyledAttributes(attrs, R.styleable.EasyRecyclerView, 0, 0)
         try {
@@ -588,6 +589,8 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     private fun initView() {
         inflate(context, R.layout.lv_layout, this)
         loadingFooterView = inflate(context, R.layout.lv_loading_footer, null)
+        selectViews()
+        initializeAdapter()
         initLoadingIndicator()
         configureRecycler()
         configureLayoutManager()
@@ -598,8 +601,14 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
         enablePullToRefreshLayoutInternally(supportsPullToRefresh)
     }
 
-    private fun initLoadingIndicator() {
+    private fun selectViews() {
         loadingIndicator = findViewById(R.id.loadingIndicator)
+        recyclerView = findViewById(R.id.recyclerView)
+        refreshLayout = findViewById(R.id.refreshLayout)
+        recyclerEmptyLayoutContainer = findViewById(R.id.recyclerEmptyLayoutContainer)
+    }
+
+    private fun initLoadingIndicator() {
         loadingIndicator.visibility = if (isShowingLoadingHeader) VISIBLE else GONE
     }
 
@@ -618,7 +627,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     }
 
     private fun configureRecycler() {
-        recyclerView = findViewById(R.id.recyclerView)
         recyclerView.stiffness = SpringForce.STIFFNESS_MEDIUM
         recyclerView.clearOnScrollListeners()
         //animationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
@@ -632,7 +640,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     }
 
     private fun configureRefreshLayout() {
-        refreshLayout = findViewById(R.id.refreshLayout)
         val indicatorSize: Int = ResourceUtils.getDimenPxById(context, R.dimen.erv_header_refresh_indicator_size)
         val refreshBackgroundColor: Int = ResourceUtils.getColorByAttribute(context, android.R.attr.colorBackground)
         //val refreshStrokeColor: Int = ResourceUtils.getColorByAttribute(context, android.R.attr.colorPrimary)
@@ -644,7 +651,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     }
 
     private fun configureEmptyLayout() {
-        recyclerEmptyLayoutContainer = findViewById(R.id.recyclerEmptyLayoutContainer)
         if (emptyLayoutId != null) setEmptyLayout(emptyLayoutId!!)
     }
 
