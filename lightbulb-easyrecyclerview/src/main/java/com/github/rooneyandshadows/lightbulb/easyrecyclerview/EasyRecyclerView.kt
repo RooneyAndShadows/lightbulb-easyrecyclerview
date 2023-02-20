@@ -91,6 +91,8 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
         private set
     val adapter: AType
         get() = dataAdapter
+    val currentFilterQuery: String
+        get() = adapter.currentFilterQuery
     val isAnimating: Boolean
         get() = recyclerView.itemAnimator != null && recyclerView.itemAnimator!!.isRunning
 
@@ -327,6 +329,10 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     fun removeFooterView(view: View) {
         if (wrapperAdapter.containsFooterView(view))
             wrapperAdapter.removeFooterView(view)
+    }
+
+    fun filter(filterQuery: String) {
+        adapter.filter.filter(filterQuery)
     }
 
     fun refreshData() {
