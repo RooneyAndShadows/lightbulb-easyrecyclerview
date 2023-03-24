@@ -29,7 +29,7 @@ class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
     @Override
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
-        val model: DemoModel = getItem(position)!!
+        val model: DemoModel = getFilteredItems()[position]
         vh.binding.title = model.itemName
         vh.binding.subtitle = model.subtitle
     }

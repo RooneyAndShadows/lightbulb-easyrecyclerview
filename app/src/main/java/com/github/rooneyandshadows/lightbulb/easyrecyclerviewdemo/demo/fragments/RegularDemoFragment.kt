@@ -37,14 +37,13 @@ class RegularDemoFragment : BaseFragment() {
 
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        testField.doOnTextChanged { text, start, before, count ->
+        testField.doOnTextChanged { text, start, before, count ->1
             recyclerView.filter(text.toString())
 
         }
         recyclerView.apply {
             val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15))
             addItemDecoration(itemDecoration)
-            setItemAnimator(null)
             if (savedInstanceState == null) {
                 val initialData = generateData(20)
                 adapter.setCollection(initialData)
