@@ -10,6 +10,11 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.De
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 
 class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
+
+    override fun filterItem(item: DemoModel, filterQuery: String): Boolean {
+        return item.itemName.contains(filterQuery)
+    }
+
     @Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding: DemoListItemLayoutBinding = DataBindingUtil.inflate(

@@ -2,6 +2,8 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
+import androidx.core.widget.doOnTextChanged
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
@@ -20,6 +22,9 @@ class RegularDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
     lateinit var recyclerView: SimpleRecyclerView
 
+    @BindView(name = "testFilter")
+    lateinit var testField: EditText
+
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
         return ActionBarConfiguration(R.id.toolbar)
@@ -32,9 +37,14 @@ class RegularDemoFragment : BaseFragment() {
 
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+        testField.doOnTextChanged { text, start, before, count ->
+            recyclerView.filter(text.toString())
+
+        }
         recyclerView.apply {
             val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15))
             addItemDecoration(itemDecoration)
+            setItemAnimator(null)
             if (savedInstanceState == null) {
                 val initialData = generateData(20)
                 adapter.setCollection(initialData)

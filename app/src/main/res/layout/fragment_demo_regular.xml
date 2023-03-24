@@ -18,9 +18,15 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <EditText
+        android:layout_below="@id/app_bar_layout"
+        android:id="@+id/testFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/app_bar_layout" />
+        android:layout_below="@id/testFilter" />
 </RelativeLayout>
