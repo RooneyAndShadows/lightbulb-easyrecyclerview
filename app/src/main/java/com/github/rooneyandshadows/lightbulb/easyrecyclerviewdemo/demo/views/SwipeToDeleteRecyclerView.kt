@@ -23,9 +23,7 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRe
 class SwipeToDeleteRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0,
-) : EasyRecyclerView<DemoModel, SimpleAdapter>(context, attrs, defStyleAttr, defStyleRes) {
+) : EasyRecyclerView<DemoModel, SimpleAdapter>(context, attrs) {
     override val adapterCreator: AdapterCreator<SimpleAdapter>
         get() = object : AdapterCreator<SimpleAdapter> {
             override fun createAdapter(): SimpleAdapter {

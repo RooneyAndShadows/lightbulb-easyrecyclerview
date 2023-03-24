@@ -14,9 +14,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.St
 class StickyRecyclerViewSimple @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0,
-) : EasyRecyclerView<StickySimpleDemoModel, StickyAdapterSimple>(context, attrs, defStyleAttr, defStyleRes) {
+) : EasyRecyclerView<StickySimpleDemoModel, StickyAdapterSimple>(context, attrs) {
     override val adapterCreator: AdapterCreator<StickyAdapterSimple>
         get() = object : AdapterCreator<StickyAdapterSimple> {
             override fun createAdapter(): StickyAdapterSimple {

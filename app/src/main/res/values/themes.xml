@@ -15,6 +15,7 @@
         <item name="android:overScrollMode">ifContentScrolls</item>
         <item name="colorDelimiter">@color/light_list_delimiter</item>
         <item name="materialDrawerStyle">@style/SliderStyle</item>
+        <item name="easyRecyclerViewStyle">@style/EasyRecyclerViewDefaultStyle</item>
     </style>
 
 </resources>

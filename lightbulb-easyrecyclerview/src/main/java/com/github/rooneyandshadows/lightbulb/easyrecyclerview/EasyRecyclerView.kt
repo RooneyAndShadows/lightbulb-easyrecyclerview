@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView.*
 import com.factor.bouncy.BouncyRecyclerView
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.*
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.TouchCallbacks
@@ -39,8 +40,8 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<ItemType>> @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0,
+    defStyleAttr: Int = R.attr.easyRecyclerViewStyle,
+    defStyleRes: Int = R.style.EasyRecyclerViewDefaultStyle,
 ) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
     private lateinit var loadingIndicator: LinearProgressIndicator
     private lateinit var recyclerView: BouncyRecyclerView
@@ -183,7 +184,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     }
 
     protected open fun getLayoutManagerType(): LayoutManagerTypes {
-        return LayoutManagerTypes.UNDEFINED
+        return UNDEFINED
     }
 
     fun setSwipeCallbacks(swipeCallbacks: TouchCallbacks<ItemType>) {
@@ -571,7 +572,12 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     }
 
     private fun readAttributes(context: Context, attrs: AttributeSet?) {
-        val attributes = context.theme.obtainStyledAttributes(attrs, R.styleable.EasyRecyclerView, 0, 0)
+        val attributes = context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.EasyRecyclerView,
+            R.attr.easyRecyclerViewStyle,
+            R.style.EasyRecyclerViewDefaultStyle
+        )
         try {
             //val textView = TextView(getContext())
             val emptyLayoutId = attributes.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
@@ -580,13 +586,9 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
             supportsBounceOverscroll =
                 attributes.getBoolean(R.styleable.EasyRecyclerView_erv_supports_overscroll_bounce, false)
             supportsLazyLoading = attributes.getBoolean(R.styleable.EasyRecyclerView_erv_supports_load_more, false)
-            layoutManagerType =
-                if (getLayoutManagerType() == LayoutManagerTypes.UNDEFINED) LayoutManagerTypes.valueOf(
-                    attributes.getInt(
-                        R.styleable.EasyRecyclerView_erv_layout_manager,
-                        1
-                    )
-                ) else getLayoutManagerType()
+            layoutManagerType = if (getLayoutManagerType() == UNDEFINED) LayoutManagerTypes.valueOf(
+                attributes.getInt(R.styleable.EasyRecyclerView_erv_layout_manager, 1)
+            ) else getLayoutManagerType()
         } finally {
             attributes.recycle()
         }
@@ -620,13 +622,13 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
 
     private fun configureLayoutManager() {
         when (layoutManagerType) {
-            LayoutManagerTypes.UNDEFINED, LayoutManagerTypes.LAYOUT_LINEAR_VERTICAL ->
+            UNDEFINED, LAYOUT_LINEAR_VERTICAL ->
                 recyclerView.layoutManager = VerticalLinearLayoutManager(this)
-            LayoutManagerTypes.LAYOUT_LINEAR_HORIZONTAL ->
+            LAYOUT_LINEAR_HORIZONTAL ->
                 recyclerView.layoutManager = HorizontalLinearLayoutManager(this)
-            LayoutManagerTypes.LAYOUT_FLOW_VERTICAL ->
+            LAYOUT_FLOW_VERTICAL ->
                 recyclerView.layoutManager = VerticalFlowLayoutManager(this)
-            LayoutManagerTypes.LAYOUT_FLOW_HORIZONTAL ->
+            LAYOUT_FLOW_HORIZONTAL ->
                 recyclerView.layoutManager = HorizontalFlowLayoutManager(this)
             else -> {}
         }

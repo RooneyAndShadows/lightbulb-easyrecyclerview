@@ -9,9 +9,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.De
 class SelectableRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0,
-) : EasyRecyclerView<DemoModel, SelectableAdapter>(context, attrs, defStyleAttr, defStyleRes) {
+) : EasyRecyclerView<DemoModel, SelectableAdapter>(context, attrs) {
     override val adapterCreator: AdapterCreator<SelectableAdapter>
         get() = object : AdapterCreator<SelectableAdapter> {
             override fun createAdapter(): SelectableAdapter {

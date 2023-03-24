@@ -9,9 +9,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.De
 class LabelsRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0,
-) : EasyRecyclerView<DemoModel, LabelsAdapter>(context, attrs, defStyleAttr, defStyleRes) {
+) : EasyRecyclerView<DemoModel, LabelsAdapter>(context, attrs) {
     override val adapterCreator: AdapterCreator<LabelsAdapter>
         get() = object : AdapterCreator<LabelsAdapter> {
             override fun createAdapter(): LabelsAdapter {
