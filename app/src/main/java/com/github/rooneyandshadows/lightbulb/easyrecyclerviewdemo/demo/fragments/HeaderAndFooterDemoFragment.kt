@@ -35,7 +35,7 @@ class HeaderAndFooterDemoFragment : BaseFragment() {
         recyclerView.apply {
             val headerView: View = layoutInflater.inflate(R.layout.demo_header_item_layout, null)
             val footerView: View = layoutInflater.inflate(R.layout.demo_footer_item_layout, null)
-            val itemDemoRecyclerView = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15))
+            val itemDemoRecyclerView = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
             addHeaderView(headerView)
             addFooterView(footerView)
             addItemDecoration(itemDemoRecyclerView)

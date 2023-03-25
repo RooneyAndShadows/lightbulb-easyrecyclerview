@@ -34,7 +34,7 @@ class PullToRefreshDemoFragment : BaseFragment() {
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         recyclerView.apply {
-            addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
+            addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
             addHeaderView(layoutInflater.inflate(R.layout.demo_header_item_pull_to_refresh_layout, null))
             setRefreshCallback(object : EasyRecyclerView.RefreshCallback<DemoModel, SimpleAdapter> {
                 override fun refresh(view: EasyRecyclerView<DemoModel, SimpleAdapter>) {

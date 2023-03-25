@@ -35,7 +35,7 @@ class EmptyLayoutDemoFragment : BaseFragment() {
     override fun doOnViewStateRestored(savedInstanceState: Bundle?) {
         recyclerView.apply {
             val emptyLayout = generateEmptyLayout()
-            val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15))
+            val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
             addItemDecoration(itemDecoration)
             setEmptyLayout(emptyLayout)
         }

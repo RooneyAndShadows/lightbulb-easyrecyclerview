@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">EasyRecyclerView</string>
     <string name="regular_demo">Regular demo</string>
+    <string name="filterable_demo">Filterable demo</string>
     <string name="selectable_demo">Selection demo</string>
     <string name="header_and_footer_demo">Header &amp; footer demo</string>
     <string name="empty_layout_demo">Empty layout demo</string>
@@ -12,4 +13,5 @@
     <string name="sticky_headers_simple_demo">Sticky headers simple demo</string>
     <string name="sticky_headers_advanced_demo">Sticky headers advanced demo</string>
     <string name="flow_layout_manager_demo">FlowLayoutManager demo</string>
+    <string name="filterable_demo_search_hint_text">Search</string>
 </resources>

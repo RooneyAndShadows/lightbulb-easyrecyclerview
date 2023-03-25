@@ -3,6 +3,7 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragment
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import androidx.appcompat.widget.SearchView
 import androidx.core.widget.doOnTextChanged
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
@@ -14,13 +15,17 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.Vertic
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.getHomeIcon
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.FilterableRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 
-@FragmentScreen(screenName = "Regular", screenGroup = "Demo")
-@FragmentConfiguration(layoutName = "fragment_demo_regular", hasLeftDrawer = true)
-class RegularDemoFragment : BaseFragment() {
+@FragmentScreen(screenName = "Filterable", screenGroup = "Demo")
+@FragmentConfiguration(layoutName = "fragment_demo_filterable", hasLeftDrawer = true)
+class FilterableDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: SimpleRecyclerView
+    lateinit var recyclerView: FilterableRecyclerView
+
+    @BindView(name = "search_view")
+    lateinit var searchView: SearchView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -28,7 +33,7 @@ class RegularDemoFragment : BaseFragment() {
             .withActionButtons(true)
             .withHomeIcon(getHomeIcon(requireContext()))
             .attachToDrawer(true)
-            .withSubTitle(ResourceUtils.getPhrase(requireContext(), R.string.regular_demo))
+            .withSubTitle(ResourceUtils.getPhrase(requireContext(), R.string.filterable_demo))
             .withTitle(ResourceUtils.getPhrase(requireContext(), R.string.app_name))
     }
 
@@ -42,5 +47,23 @@ class RegularDemoFragment : BaseFragment() {
                 adapter.setCollection(initialData)
             }
         }
+    }
+
+    @Override
+    override fun doOnViewStateRestored(savedInstanceState: Bundle?) {
+        super.doOnViewStateRestored(savedInstanceState)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            @Override
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                recyclerView.filter(query ?: "")
+                return true
+            }
+
+            @Override
+            override fun onQueryTextChange(newText: String?): Boolean {
+                recyclerView.filter(newText ?: "")
+                return true
+            }
+        })
     }
 }

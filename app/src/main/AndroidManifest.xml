@@ -12,6 +12,7 @@
         <activity
             android:name=".demo.activity.MainActivity"
             android:exported="true"
+            android:screenOrientation="fullSensor"
             android:theme="@style/SplashThemeLight">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

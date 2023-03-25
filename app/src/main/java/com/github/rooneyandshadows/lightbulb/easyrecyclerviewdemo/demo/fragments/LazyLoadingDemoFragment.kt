@@ -35,7 +35,7 @@ class LazyLoadingDemoFragment : BaseFragment() {
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         recyclerView.apply {
-            addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15)))
+            addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
             recyclerView.setItemAnimator(null)
             setLoadMoreCallback(object : EasyRecyclerView.LoadMoreCallback<DemoModel, SimpleAdapter> {
                 override fun loadMore(rv: EasyRecyclerView<DemoModel, SimpleAdapter>) {
@@ -44,7 +44,7 @@ class LazyLoadingDemoFragment : BaseFragment() {
                         val newItems = generateData(10, offset)
                         rv.adapter.appendCollection(newItems)
                         rv.showLoadingFooter(false)
-                    }, 0)
+                    }, 1500)
                 }
             })
             if (savedInstanceState == null)

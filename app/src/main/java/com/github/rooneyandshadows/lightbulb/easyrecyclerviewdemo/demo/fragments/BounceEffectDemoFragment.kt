@@ -32,7 +32,7 @@ class BounceEffectDemoFragment : BaseFragment() {
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         super.doOnViewCreated(fragmentView, savedInstanceState)
         recyclerView.apply {
-            val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15))
+            val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
             recyclerView.addItemDecoration(itemDecoration)
             if (savedInstanceState == null) recyclerView.adapter.setCollection(generateData(20))
         }

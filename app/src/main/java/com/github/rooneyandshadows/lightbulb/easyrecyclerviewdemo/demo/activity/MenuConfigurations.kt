@@ -30,6 +30,18 @@ object MenuConfigurations {
         ).addMenuItem(
             PrimaryMenuItem(
                 -1,
+                ResourceUtils.getPhrase(activity, R.string.filterable_demo),
+                null,
+                null,
+                1
+            ) { slider: SliderMenu ->
+                route().toDemoFilterable()
+                    .forward()
+                slider.closeSlider()
+            }
+        ).addMenuItem(
+            PrimaryMenuItem(
+                -1,
                 ResourceUtils.getPhrase(activity, R.string.selectable_demo),
                 null,
                 null,

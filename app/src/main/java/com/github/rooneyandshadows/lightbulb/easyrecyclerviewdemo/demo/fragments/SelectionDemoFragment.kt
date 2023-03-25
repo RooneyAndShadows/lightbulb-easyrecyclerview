@@ -34,7 +34,7 @@ class SelectionDemoFragment : BaseFragment() {
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         recyclerView.apply {
             val headerView = layoutInflater.inflate(R.layout.demo_header_item_selectable_layout, null)
-            val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15))
+            val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
             addHeaderView(headerView)
             addItemDecoration(itemDecoration)
             if (savedInstanceState == null)

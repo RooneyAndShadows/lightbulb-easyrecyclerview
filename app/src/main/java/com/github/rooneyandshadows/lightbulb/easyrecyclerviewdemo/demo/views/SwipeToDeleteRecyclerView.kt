@@ -35,7 +35,7 @@ class SwipeToDeleteRecyclerView @JvmOverloads constructor(
         val inflater = LayoutInflater.from(context)
         val header = inflater.inflate(R.layout.demo_header_item_swipe_to_delete, null)
         val emptyLayout = generateEmptyLayout()
-        val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(15))
+        val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
         val swipeCallbacks = getSwipeHandler()
         setSwipeCallbacks(swipeCallbacks)
         addHeaderView(header)
