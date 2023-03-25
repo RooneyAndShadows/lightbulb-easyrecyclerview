@@ -37,7 +37,7 @@ class RegularDemoFragment : BaseFragment() {
 
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        testField.doOnTextChanged { text, start, before, count ->1
+        testField.doOnTextChanged { text, start, before, count ->
             recyclerView.filter(text.toString())
 
         }

@@ -30,6 +30,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.Recyc
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RefreshView
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerFilterableAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.callbacks.EasyAdapterCollectionChangedListener
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.HeaderViewRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.HeaderViewRecyclerAdapter.ViewListeners
@@ -93,7 +94,10 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     val adapter: AType
         get() = dataAdapter
     val currentFilterQuery: String
-        get() = adapter.currentFilterQuery
+        get() {
+            return if (adapter !is EasyRecyclerFilterableAdapter<*>) ""
+            else (adapter as EasyRecyclerFilterableAdapter<*>).currentFilterQuery
+        }
     val isAnimating: Boolean
         get() = recyclerView.itemAnimator != null && recyclerView.itemAnimator!!.isRunning
 
@@ -333,7 +337,8 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     }
 
     fun filter(filterQuery: String) {
-        adapter.filter.filter(filterQuery)
+        if (adapter !is EasyRecyclerFilterableAdapter<*>) return
+        (adapter as EasyRecyclerFilterableAdapter<*>).filter.filter(filterQuery)
     }
 
     fun refreshData() {

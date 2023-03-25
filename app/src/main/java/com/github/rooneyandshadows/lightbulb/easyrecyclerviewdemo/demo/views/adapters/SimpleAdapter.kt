@@ -8,12 +8,9 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoListItemLayoutBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerFilterableAdapter
 
-class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
-
-    override fun filterItem(item: DemoModel, filterQuery: String): Boolean {
-        return item.itemName.contains(filterQuery)
-    }
+class SimpleAdapter : EasyRecyclerFilterableAdapter<DemoModel>() {
 
     @Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -32,6 +29,11 @@ class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
         val model: DemoModel = getFilteredItems()[position]
         vh.binding.title = model.itemName
         vh.binding.subtitle = model.subtitle
+    }
+
+    @Override
+    override fun filterItem(item: DemoModel, filterQuery: String): Boolean {
+        return item.itemName.contains(filterQuery)
     }
 
     class ViewHolder(val binding: DemoListItemLayoutBinding) : RecyclerView.ViewHolder(
