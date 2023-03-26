@@ -47,7 +47,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     private lateinit var loadingIndicator: LinearProgressIndicator
     private lateinit var recyclerView: BouncyRecyclerView
     private lateinit var wrapperAdapter: HeaderViewRecyclerAdapter
-    private lateinit var dataAdapter: AType
     private val layoutManagerStateTag = "LAYOUT_MANAGER_STATE_TAG"
     private val emptyLayoutTag = "EMPTY_LAYOUT_TAG"
     private val showRefreshManualDelay = 300
@@ -73,6 +72,19 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     private var renderedCallback: EasyRecyclerItemsReadyListener? = null
     private var emptyLayoutListeners: EasyRecyclerEmptyLayoutListener? = null
     private val showRefreshLayoutDelayedRunnable = Runnable { refreshLayout!!.setRefreshing(true) }
+    private val dataAdapter: AType by lazy {
+        return@lazy adapterCreator.createAdapter().apply {
+            wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
+            setWrapperAdapter(wrapperAdapter)
+            addOnCollectionChangedListener(object : EasyAdapterCollectionChangedListener {
+                override fun onChanged() {
+                    setEmptyLayoutVisibility(!hasItems())
+                }
+            })
+            wrapperAdapter.setDataAdapter(this)
+            recyclerView.adapter = wrapperAdapter
+        }
+    }
     private val showLoadingDelayedRunnable = Runnable {
         if (supportsPullToRefresh)
             if (isShowingLoadingHeader) {
@@ -563,19 +575,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
         recyclerView.invalidateItemDecorations()
     }
 
-    private fun initializeAdapter() {
-        dataAdapter = adapterCreator.createAdapter()
-        wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
-        dataAdapter.setWrapperAdapter(wrapperAdapter)
-        dataAdapter.addOnCollectionChangedListener(object : EasyAdapterCollectionChangedListener {
-            override fun onChanged() {
-                setEmptyLayoutVisibility(!dataAdapter.hasItems())
-            }
-        })
-        wrapperAdapter.setDataAdapter(dataAdapter)
-        recyclerView.adapter = wrapperAdapter
-    }
-
     private fun readAttributes(context: Context, attrs: AttributeSet?) {
         val attributes = context.theme.obtainStyledAttributes(
             attrs,
@@ -603,7 +602,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
         inflate(context, R.layout.lv_layout, this)
         loadingFooterView = inflate(context, R.layout.lv_loading_footer, null)
         selectViews()
-        initializeAdapter()
         initLoadingIndicator()
         configureRecycler()
         configureLayoutManager()
