@@ -46,7 +46,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
 ) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
     private lateinit var loadingIndicator: LinearProgressIndicator
     private lateinit var recyclerView: BouncyRecyclerView
-    private lateinit var wrapperAdapter: HeaderViewRecyclerAdapter
     private val layoutManagerStateTag = "LAYOUT_MANAGER_STATE_TAG"
     private val emptyLayoutTag = "EMPTY_LAYOUT_TAG"
     private val showRefreshManualDelay = 300
@@ -73,16 +72,16 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     private var emptyLayoutListeners: EasyRecyclerEmptyLayoutListener? = null
     private val showRefreshLayoutDelayedRunnable = Runnable { refreshLayout!!.setRefreshing(true) }
     private val dataAdapter: AType by lazy {
-        return@lazy adapterCreator.createAdapter().apply {
-            wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
-            setWrapperAdapter(wrapperAdapter)
+        return@lazy adapterCreator.createAdapter().apply dataAdapter@{
             addOnCollectionChangedListener(object : EasyAdapterCollectionChangedListener {
                 override fun onChanged() {
                     setEmptyLayoutVisibility(!hasItems())
                 }
             })
-            wrapperAdapter.setDataAdapter(this)
-            recyclerView.adapter = wrapperAdapter
+            wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView).apply {
+                setDataAdapter(this@dataAdapter)
+                recyclerView.adapter = this
+            }
         }
     }
     private val showLoadingDelayedRunnable = Runnable {
@@ -328,24 +327,32 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
 
     @JvmOverloads
     fun addHeaderView(view: View, viewListeners: ViewListeners? = null) {
-        if (!wrapperAdapter.containsHeaderView(view))
-            wrapperAdapter.addHeaderView(view, viewListeners)
+        dataAdapter.wrapperAdapter?.apply {
+            if (containsHeaderView(view)) return@apply
+            addHeaderView(view, viewListeners)
+        }
     }
 
     fun removeHeaderView(view: View) {
-        if (wrapperAdapter.containsHeaderView(view))
-            wrapperAdapter.removeHeaderView(view)
+        dataAdapter.wrapperAdapter?.apply {
+            if (!containsHeaderView(view)) return@apply
+            removeHeaderView(view)
+        }
     }
 
     @JvmOverloads
     fun addFooterView(view: View, viewListeners: ViewListeners? = null) {
-        if (!wrapperAdapter.containsFooterView(view))
-            wrapperAdapter.addFooterView(view, viewListeners)
+        dataAdapter.wrapperAdapter?.apply {
+            if (containsFooterView(view)) return@apply
+            addFooterView(view, viewListeners)
+        }
     }
 
     fun removeFooterView(view: View) {
-        if (wrapperAdapter.containsFooterView(view))
-            wrapperAdapter.removeFooterView(view)
+        dataAdapter.wrapperAdapter?.apply {
+            if (!containsFooterView(view)) return@apply
+            removeFooterView(view)
+        }
     }
 
     fun filter(filterQuery: String) {
@@ -391,13 +398,8 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
         if (!supportsLazyLoading) return
         isShowingLoadingFooter = isLoading
         recyclerView.post {
-            if (isLoading) {
-                if (!wrapperAdapter.containsFooterView(loadingFooterView!!))
-                    wrapperAdapter.addFooterView(loadingFooterView)
-            } else {
-                if (wrapperAdapter.containsFooterView(loadingFooterView!!))
-                    wrapperAdapter.removeFooterView(loadingFooterView!!)
-            }
+            if (isLoading) addFooterView(loadingFooterView!!)
+            else removeFooterView(loadingFooterView!!)
         }
     }
 

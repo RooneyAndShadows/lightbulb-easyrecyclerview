@@ -48,6 +48,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.core:core-splashscreen:1.0.0'
     implementation "androidx.core:core-ktx:$versions.ktx.core"
     implementation "androidx.appcompat:appcompat:$versions.android.appcompat"
     implementation "com.google.android.material:material:$versions.android.material"

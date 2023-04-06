@@ -3,25 +3,25 @@
 buildscript {
     ext {
         versions = [
-                kotlin      : "1.7.21",
+                kotlin      : "1.8.0",
                 ktx         : [
                         core: "1.9.0"
                 ],
                 android     : [
-                        appcompat        : "1.5.1",
+                        appcompat        : "1.6.1",
                         recyclerview     : "1.3.0",
                         constraint_layout: "2.1.4",
                         material         : "1.8.0",
-                        flexbox          : "3.0.0"
+                        flexbox          : "3.0.0",
+                        dynamication     : "1.1.0-alpha03",
                 ],
                 lightbulb   : [
-                        dynamication         : "1.1.0-alpha03",
-                        application          : "1.3.1",
-                        commons              : "1.0.18",
-                        recycler_adapters    : "2.0.0-RC14",
+                        application          : "1.4.0",
+                        commons              : "1.1.0",
+                        recycler_adapters    : "2.0.0",
                         annotation_processors: "1.0.6-RC3"
                 ],
-                java_commons: "1.0.6",
+                java_commons: "1.0.7",
                 bouncy      : "2.3",
         ]
         environment = [
@@ -38,7 +38,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
-
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

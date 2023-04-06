@@ -14,10 +14,11 @@ android {
         targetSdkVersion 33
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-        versionName "2.0.0-RC19"
+        versionName "2.0.0"
     }
     buildFeatures {
         dataBinding true
+        viewBinding true
     }
     buildTypes {
         release {
@@ -29,6 +30,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    namespace "com.github.rooneyandshadows.lightbulb.easyrecyclerview"
 }
 
 tasks.withType(JavaCompile) {
