@@ -38,12 +38,11 @@ tasks.withType(JavaCompile) {
     options.deprecation = true
 }
 
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier "sources"
-}
-
 afterEvaluate {
+    task sourceJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier "sources"
+    }
     publishing {
         repositories {
             mavenLocal()
@@ -54,6 +53,9 @@ afterEvaluate {
                 groupId "$environment.group_id"
                 version android.defaultConfig.versionName
                 artifactId project.name
+                artifact sourceJar {
+                    classifier "sources"
+                }
             }
         }
     }
