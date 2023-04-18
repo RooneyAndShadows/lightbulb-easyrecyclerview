@@ -30,15 +30,15 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.Recyc
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RefreshView
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerFilterableAdapter
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.callbacks.EasyAdapterCollectionChangedListener
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.EasyRecyclerAdapterCollection
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.EasyRecyclerAdapterCollection.*
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.HeaderViewRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.HeaderViewRecyclerAdapter.ViewListeners
 import com.google.android.material.progressindicator.LinearProgressIndicator
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "UNUSED_PARAMETER")
 @JvmSuppressWildcards
-abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<ItemType>> @JvmOverloads constructor(
+abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<out EasyRecyclerAdapterCollection<ItemType>>> @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.easyRecyclerViewStyle,
@@ -73,11 +73,12 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel, AType : EasyRec
     private val showRefreshLayoutDelayedRunnable = Runnable { refreshLayout!!.setRefreshing(true) }
     private val dataAdapter: AType by lazy {
         return@lazy adapterCreator.createAdapter().apply dataAdapter@{
-            addOnCollectionChangedListener(object : EasyAdapterCollectionChangedListener {
+            collection.addOnCollectionChangedListener(object : CollectionChangeListener {
                 override fun onChanged() {
-                    setEmptyLayoutVisibility(!hasItems())
+                    setEmptyLayoutVisibility(collection.isEmpty())
                 }
             })
+            val recyclerView = this@EasyRecyclerView.recyclerView
             wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView).apply {
                 setDataAdapter(this@dataAdapter)
                 recyclerView.adapter = this

@@ -9,10 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterSelectableModes
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterSelectableModes.SELECT_SINGLE
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.ExtendedCollection
 
-class LabelsAdapter : EasyRecyclerAdapter<DemoModel>(EasyAdapterSelectableModes.SELECT_MULTIPLE) {
+class LabelsAdapter : EasyRecyclerAdapter<ExtendedCollection<DemoModel>>() {
+    override fun createCollection(): ExtendedCollection<DemoModel> {
+        return ExtendedCollection(this, SELECT_SINGLE)
+    }
+
     @Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return LabelItemViewHolder(
@@ -23,7 +28,7 @@ class LabelsAdapter : EasyRecyclerAdapter<DemoModel>(EasyAdapterSelectableModes.
     @Override
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         val holder = viewHolder as LabelItemViewHolder
-        holder.bindData(getItem(position)!!)
+        holder.bindData(collection.getItem(position)!!)
     }
 
     @Override

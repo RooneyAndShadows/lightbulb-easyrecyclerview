@@ -8,9 +8,13 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoListItemLayoutBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerFilterableAdapter
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.BasicCollection
 
-class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
+class SimpleAdapter : EasyRecyclerAdapter<BasicCollection<DemoModel>>() {
+
+    override fun createCollection(): BasicCollection<DemoModel> {
+        return BasicCollection(this)
+    }
 
     @Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -26,7 +30,7 @@ class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
     @Override
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
-        val model: DemoModel = getItems()[position]
+        val model: DemoModel = collection.getItem(position) ?: return
         vh.binding.title = model.itemName
         vh.binding.subtitle = model.subtitle
     }

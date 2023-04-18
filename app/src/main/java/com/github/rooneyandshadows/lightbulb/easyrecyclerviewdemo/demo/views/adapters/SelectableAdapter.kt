@@ -11,8 +11,14 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.De
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterSelectableModes
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.ExtendedCollection
 
-class SelectableAdapter : EasyRecyclerAdapter<DemoModel>(EasyAdapterSelectableModes.SELECT_MULTIPLE) {
+class SelectableAdapter : EasyRecyclerAdapter<ExtendedCollection<DemoModel>>() {
+
+    override fun createCollection(): ExtendedCollection<DemoModel> {
+        return ExtendedCollection(this, EasyAdapterSelectableModes.SELECT_MULTIPLE)
+    }
+
     @Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding: DemoSelectableItemLayoutBinding = DataBindingUtil.inflate(
@@ -27,7 +33,7 @@ class SelectableAdapter : EasyRecyclerAdapter<DemoModel>(EasyAdapterSelectableMo
     @Override
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
-        val model: DemoModel = getItem(position)!!
+        val model: DemoModel = collection.getItem(position) ?: return
         vh.binding.title = model.itemName
         vh.binding.subtitle = model.subtitle
         vh.initialize()
@@ -45,14 +51,12 @@ class SelectableAdapter : EasyRecyclerAdapter<DemoModel>(EasyAdapterSelectableMo
             binding.root
         ) {
         fun initialize() {
+            val collection = adapter.collection
             val itemPos = absoluteAdapterPosition - adapter.headersCount
-            val isSelectedInAdapter: Boolean = adapter.isItemSelected(itemPos)
+            val isSelectedInAdapter: Boolean = collection.isItemSelected(itemPos)
             binding.cardContainer.setBackgroundDrawable(getBackgroundDrawable(isSelectedInAdapter))
             binding.cardContainer.setOnClickListener {
-                adapter.selectItemAt(
-                    itemPos,
-                    !adapter.isItemSelected(itemPos)
-                )
+                collection.selectItemAt(itemPos, !collection.isItemSelected(itemPos))
             }
         }
 

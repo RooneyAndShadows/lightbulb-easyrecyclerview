@@ -11,8 +11,14 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoStickySimpleItemLayoutBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.BasicCollection
 
-class StickyAdapterSimple : EasyRecyclerAdapter<StickySimpleDemoModel>(), StickyHeaderInterface {
+class StickyAdapterSimple : EasyRecyclerAdapter<BasicCollection<StickySimpleDemoModel>>(), StickyHeaderInterface {
+
+    override fun createCollection(): BasicCollection<StickySimpleDemoModel> {
+        return BasicCollection(this)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView: View
         return if (viewType == 0) {
@@ -31,16 +37,16 @@ class StickyAdapterSimple : EasyRecyclerAdapter<StickySimpleDemoModel>(), Sticky
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (getItem(position)!!.isHeader) 0 else 1
+        return if (collection.getItem(position)!!.isHeader) 0 else 1
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = collection.getItem(position) ?: return
         if (holder is ViewHolder) {
-            val model: StickySimpleDemoModel = getItem(position)!!
-            holder.binding.title = model.itemName
-            holder.binding.subtitle = model.subtitle
+            holder.binding.title = item.itemName
+            holder.binding.subtitle = item.subtitle
         } else if (holder is HeaderViewHolder) {
-            holder.bind(getItem(position))
+            holder.bind(item)
         }
     }
 
@@ -61,11 +67,11 @@ class StickyAdapterSimple : EasyRecyclerAdapter<StickySimpleDemoModel>(), Sticky
 
     override fun bindHeaderData(header: View?, headerPosition: Int) {
         val tv: TextView = header!!.findViewById(R.id.header_title)
-        tv.text = getItem(headerPosition)!!.itemName
+        tv.text = collection.getItem(headerPosition)!!.itemName
     }
 
     override fun isHeader(itemPosition: Int): Boolean {
-        return getItem(itemPosition)!!.isHeader
+        return collection.getItem(itemPosition)!!.isHeader
     }
 
     internal inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

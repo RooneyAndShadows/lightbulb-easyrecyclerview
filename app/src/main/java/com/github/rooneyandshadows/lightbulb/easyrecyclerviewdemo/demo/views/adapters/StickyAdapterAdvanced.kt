@@ -11,8 +11,15 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoStickyAdvancedItemLayoutBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickyAdvancedDemoModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.BasicCollection
 
-class StickyAdapterAdvanced : EasyRecyclerAdapter<StickyAdvancedDemoModel>(), StickyHeaderInterface {
+class StickyAdapterAdvanced : EasyRecyclerAdapter<BasicCollection<StickyAdvancedDemoModel>>(), StickyHeaderInterface {
+
+    @Override
+    override fun createCollection(): BasicCollection<StickyAdvancedDemoModel> {
+        return BasicCollection(this)
+    }
+
     @Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding: DemoStickyAdvancedItemLayoutBinding = DataBindingUtil.inflate(
@@ -27,7 +34,7 @@ class StickyAdapterAdvanced : EasyRecyclerAdapter<StickyAdvancedDemoModel>(), St
     @Override
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
-        val model: StickyAdvancedDemoModel = getItem(position)!!
+        val model: StickyAdvancedDemoModel = collection.getItem(position) ?: return
         vh.binding.isHeader = model.isHeader
         vh.binding.title = model.itemName
         vh.binding.dayString = model.dateString
@@ -54,15 +61,13 @@ class StickyAdapterAdvanced : EasyRecyclerAdapter<StickyAdvancedDemoModel>(), St
     @Override
     override fun bindHeaderData(header: View?, headerPosition: Int) {
         val tv: TextView = header!!.findViewById(R.id.header_title)
-        tv.text = getItem(headerPosition)!!.dateString
+        tv.text = collection.getItem(headerPosition)!!.dateString
     }
 
     @Override
     override fun isHeader(itemPosition: Int): Boolean {
-        return getItem(itemPosition)!!.isHeader
+        return collection.getItem(itemPosition)!!.isHeader
     }
-
-    internal class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     class ViewHolder(val binding: DemoStickyAdvancedItemLayoutBinding) : RecyclerView.ViewHolder(binding.root)
 }

@@ -7,18 +7,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoListItemLayoutBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterSelectableModes.SELECT_NONE
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerFilterableAdapter
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.ExtendedCollection
 import java.util.*
 
-class FilterableAdapter : EasyRecyclerFilterableAdapter<DemoModel>() {
+class FilterableAdapter : EasyRecyclerAdapter<ExtendedCollection<DemoModel>>() {
 
-    @Override
-    override fun filterItem(item: DemoModel, filterQuery: String): Boolean {
-        val query = filterQuery.lowercase(Locale.getDefault())
-        val title = item.itemName.lowercase(Locale.getDefault())
-        val subtitle = item.subtitle.lowercase(Locale.getDefault())
-        return title.contains(query) || subtitle.contains(query)
+    override fun createCollection(): ExtendedCollection<DemoModel> {
+        val adapter = this
+        return object : ExtendedCollection<DemoModel>(adapter, SELECT_NONE) {
+            override fun filterItem(item: DemoModel, filterQuery: String): Boolean {
+                val query = filterQuery.lowercase(Locale.getDefault())
+                val title = item.itemName.lowercase(Locale.getDefault())
+                val subtitle = item.subtitle.lowercase(Locale.getDefault())
+                return title.contains(query) || subtitle.contains(query)
+            }
+        }
     }
 
     @Override
@@ -32,10 +37,11 @@ class FilterableAdapter : EasyRecyclerFilterableAdapter<DemoModel>() {
         return ViewHolder(binding)
     }
 
+
     @Override
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
-        val model: DemoModel = getFilteredItems()[position]
+        val model: DemoModel = collection.getFilteredItem(position) ?: return
         vh.binding.title = model.itemName
         vh.binding.subtitle = model.subtitle
     }
