@@ -12,8 +12,11 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.De
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickyAdvancedDemoModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.BasicCollection
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.EasyRecyclerAdapterCollection
 
-class StickyAdapterAdvanced : EasyRecyclerAdapter<BasicCollection<StickyAdvancedDemoModel>>(), StickyHeaderInterface {
+class StickyAdapterAdvanced : EasyRecyclerAdapter<StickyAdvancedDemoModel>(), StickyHeaderInterface {
+    override val collection: EasyRecyclerAdapterCollection<StickyAdvancedDemoModel>
+        get() = super.collection as BasicCollection<StickyAdvancedDemoModel>
 
     @Override
     override fun createCollection(): BasicCollection<StickyAdvancedDemoModel> {

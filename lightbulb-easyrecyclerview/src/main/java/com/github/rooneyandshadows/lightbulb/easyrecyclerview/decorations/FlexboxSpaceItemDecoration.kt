@@ -12,13 +12,13 @@ class FlexboxSpaceItemDecoration : EasyRecyclerItemDecoration {
     private val verticalSpacing: Int
     private val horizontalSpacing: Int
 
-    constructor(spacing: Int, recyclerView: EasyRecyclerView<*, *>) {
+    constructor(spacing: Int, recyclerView: EasyRecyclerView<*>) {
         verticalSpacing = spacing / 2
         horizontalSpacing = spacing / 2
         recyclerView.findViewById<View>(R.id.recyclerView).setPadding(horizontalSpacing, spacing, horizontalSpacing, 0)
     }
 
-    constructor(verticalSpacing: Int, horizontalSpacing: Int, recyclerView: EasyRecyclerView<*, *>) {
+    constructor(verticalSpacing: Int, horizontalSpacing: Int, recyclerView: EasyRecyclerView<*>) {
         this.verticalSpacing = verticalSpacing / 2
         this.horizontalSpacing = horizontalSpacing / 2
         recyclerView.findViewById<View>(R.id.recyclerView)

@@ -9,8 +9,11 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.De
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.BasicCollection
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.ExtendedCollection
 
-class SimpleAdapter : EasyRecyclerAdapter<BasicCollection<DemoModel>>() {
+class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
+    override val collection: ExtendedCollection<DemoModel>
+        get() = super.collection as ExtendedCollection<DemoModel>
 
     override fun createCollection(): BasicCollection<DemoModel> {
         return BasicCollection(this)

@@ -13,7 +13,9 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.St
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.BasicCollection
 
-class StickyAdapterSimple : EasyRecyclerAdapter<BasicCollection<StickySimpleDemoModel>>(), StickyHeaderInterface {
+class StickyAdapterSimple : EasyRecyclerAdapter<StickySimpleDemoModel>(), StickyHeaderInterface {
+    override val collection: BasicCollection<StickySimpleDemoModel>
+        get() = super.collection as BasicCollection<StickySimpleDemoModel>
 
     override fun createCollection(): BasicCollection<StickySimpleDemoModel> {
         return BasicCollection(this)

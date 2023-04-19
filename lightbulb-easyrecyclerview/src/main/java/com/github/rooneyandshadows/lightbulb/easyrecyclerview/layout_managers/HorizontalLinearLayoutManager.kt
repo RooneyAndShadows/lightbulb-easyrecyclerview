@@ -8,8 +8,8 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAd
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import kotlin.math.abs
 
-class HorizontalLinearLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>>(
-    private val easyRecyclerView: EasyRecyclerView<IType, AType>
+class HorizontalLinearLayoutManager<ItemType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<ItemType>>(
+    private val easyRecyclerView: EasyRecyclerView<ItemType>,
 ) : LinearLayoutManager(easyRecyclerView.context, HORIZONTAL, false) {
     private var scrollingHorizontally = false
     private var scrollingVertically = false
@@ -59,8 +59,8 @@ class HorizontalLinearLayoutManager<IType : EasyAdapterDataModel, AType : EasyRe
     private fun handleLoadMore() {
         if (!easyRecyclerView.supportsLazyLoading()) return
         val lastView = getChildAt(childCount - 1) ?: return
-        val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter
-        val size = easyRecyclerView.items.size
+        val recyclerAdapter: EasyRecyclerAdapter<ItemType> = easyRecyclerView.adapter
+        val size = easyRecyclerView.adapter.collection.size()
         val last = (lastView.layoutParams as LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
         if (last == size - 1) easyRecyclerView.loadMoreData()
     }

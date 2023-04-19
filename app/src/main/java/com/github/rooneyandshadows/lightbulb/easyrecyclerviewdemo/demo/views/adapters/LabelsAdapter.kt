@@ -13,7 +13,10 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAd
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.ExtendedCollection
 
-class LabelsAdapter : EasyRecyclerAdapter<ExtendedCollection<DemoModel>>() {
+class LabelsAdapter : EasyRecyclerAdapter<DemoModel>() {
+    override val collection: ExtendedCollection<DemoModel>
+        get() = super.collection as ExtendedCollection<DemoModel>
+
     override fun createCollection(): ExtendedCollection<DemoModel> {
         return ExtendedCollection(this, SELECT_SINGLE)
     }

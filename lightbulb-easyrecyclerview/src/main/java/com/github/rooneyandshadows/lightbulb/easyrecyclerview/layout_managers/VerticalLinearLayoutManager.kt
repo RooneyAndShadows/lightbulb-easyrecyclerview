@@ -8,8 +8,8 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAd
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import kotlin.math.abs
 
-class VerticalLinearLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>>(
-    private val easyRecyclerView: EasyRecyclerView<IType, AType>
+class VerticalLinearLayoutManager<IType : EasyAdapterDataModel>(
+    private val easyRecyclerView: EasyRecyclerView<IType>,
 ) : LinearLayoutManager(easyRecyclerView.context, VERTICAL, false) {
     @Override
     override fun scrollVerticallyBy(dy: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {
@@ -32,9 +32,8 @@ class VerticalLinearLayoutManager<IType : EasyAdapterDataModel, AType : EasyRecy
         if (!easyRecyclerView.supportsLazyLoading()) return
         val lastView = getChildAt(childCount - 1) ?: return
         val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter
-        val size = easyRecyclerView.items.size
-        val last =
-            (lastView.layoutParams as LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
+        val size = easyRecyclerView.adapter.collection.size()
+        val last = (lastView.layoutParams as LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
         if (last == size - 1) easyRecyclerView.loadMoreData()
     }
 }

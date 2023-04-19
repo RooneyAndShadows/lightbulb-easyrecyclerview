@@ -12,7 +12,9 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRe
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.ExtendedCollection
 import java.util.*
 
-class FilterableAdapter : EasyRecyclerAdapter<ExtendedCollection<DemoModel>>() {
+class FilterableAdapter : EasyRecyclerAdapter<DemoModel>() {
+    override val collection: ExtendedCollection<DemoModel>
+        get() = super.collection as ExtendedCollection<DemoModel>
 
     override fun createCollection(): ExtendedCollection<DemoModel> {
         val adapter = this

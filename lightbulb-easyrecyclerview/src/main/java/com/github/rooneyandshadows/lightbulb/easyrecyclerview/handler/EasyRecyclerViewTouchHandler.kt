@@ -22,14 +22,14 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 
 @Suppress("unused", "UNUSED_VARIABLE", "UNUSED_PARAMETER")
-class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<IType>>(
-    private val easyRecyclerView: EasyRecyclerView<IType, AType>,
-    private val touchCallbacks: TouchCallbacks<IType>,
+class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
+    private val easyRecyclerView: EasyRecyclerView<ItemType>,
+    private val touchCallbacks: TouchCallbacks<ItemType>,
 ) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
     private var undoClicked = false
     private var snackbar: Snackbar? = null
     private var pendingAction: Runnable? = null
-    private val adapter: AType = easyRecyclerView.adapter
+    private val adapter: EasyRecyclerAdapter<ItemType> = easyRecyclerView.adapter
     private val configuration: SwipeConfiguration = touchCallbacks.getConfiguration(easyRecyclerView.context)
     private val drawerHelper: SwipeToDeleteDrawerHelper = SwipeToDeleteDrawerHelper()
     private val actionsHandler = Handler(Looper.getMainLooper(), null)
@@ -62,7 +62,7 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
         val fromPosition = viewHolder.absoluteAdapterPosition - adapter.headersCount
         val toPosition = target.absoluteAdapterPosition - adapter.headersCount
         if (toPosition < 0 || toPosition > adapter.itemCount) return false
-        adapter.moveItem(fromPosition, toPosition)
+        adapter.collection.move(fromPosition, toPosition)
         return true
     }
 
@@ -108,7 +108,7 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
         easyRecyclerView.enablePullToRefreshLayout(false)
         val itemPosition = viewHolder.absoluteAdapterPosition - adapter.headersCount
         if (itemPosition != -1) {
-            val item: IType? = getItem(viewHolder)
+            val item: ItemType? = getItem(viewHolder)
             var moved = -1
             if (item != null) {
                 var direction: Directions? = null
@@ -153,10 +153,10 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
         }
     }
 
-    private fun addPendingAction(item: IType, direction: Directions) {
+    private fun addPendingAction(item: ItemType, direction: Directions) {
         undoClicked = false
         pendingAction = Runnable {
-            val position = adapter.getPosition(item)
+            val position = adapter.collection.getPosition(item)
             if (undoClicked) {
                 adapter.notifyItemChanged(position + adapter.headersCount)
                 touchCallbacks.onActionCancelled(item, adapter, position)
@@ -170,7 +170,7 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
 
     @SuppressLint("ShowToast")
     @Synchronized
-    private fun showSwipedItemSnackBar(item: IType, direction: Directions) {
+    private fun showSwipedItemSnackBar(item: ItemType, direction: Directions) {
         executePendingAction()
         addPendingAction(item, direction)
         val pendingActionText = touchCallbacks.getPendingActionText(direction) ?: ""
@@ -191,7 +191,7 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
         ) else false
     }
 
-    private fun getActionText(item: IType): String? {
+    private fun getActionText(item: ItemType): String? {
         return touchCallbacks.getActionBackgroundText(item)
     }
 
@@ -205,17 +205,15 @@ class EasyRecyclerViewTouchHandler<IType : EasyAdapterDataModel, AType : EasyRec
         }
     }
 
-    private fun getItem(viewHolder: RecyclerView.ViewHolder): IType? {
+    private fun getItem(viewHolder: RecyclerView.ViewHolder): ItemType? {
         val position = viewHolder.absoluteAdapterPosition - adapter.headersCount
-        return adapter.getItem(position)
+        return adapter.collection.getItem(position)
     }
 
     private inner class SwipeToDeleteDrawerHelper {
         private var backgroundDrawable: ColorDrawable? = null
         fun clearBounds() {
-            if (backgroundDrawable != null) {
-                backgroundDrawable!!.setBounds(0, 0, 0, 0)
-            }
+            if (backgroundDrawable != null) backgroundDrawable!!.setBounds(0, 0, 0, 0)
         }
 
         fun draw(

@@ -11,9 +11,9 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.ada
 class FilterableRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-) : EasyRecyclerView<DemoModel, FilterableAdapter>(context, attrs) {
-    override val adapterCreator: AdapterCreator<FilterableAdapter>
-        get() = object : AdapterCreator<FilterableAdapter> {
+) : EasyRecyclerView<DemoModel>(context, attrs) {
+    override val adapterCreator: AdapterCreator<DemoModel>
+        get() = object : AdapterCreator<DemoModel> {
             override fun createAdapter(): FilterableAdapter {
                 return FilterableAdapter()
             }
