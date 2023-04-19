@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="colorDelimiter" format="reference|color" />
+
+    <declare-styleable name="DemoItemView">
+        <attr name="state_checked" format="boolean" />
+        <attr name="state_enabled" format="boolean" />
+    </declare-styleable>
 </resources>

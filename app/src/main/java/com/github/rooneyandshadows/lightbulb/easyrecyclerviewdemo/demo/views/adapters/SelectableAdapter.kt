@@ -9,16 +9,16 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoSelectableItemLayoutBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterSelectableModes
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.ExtendedCollection
+import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.collection.ExtendedCollection
+import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.collection.ExtendedCollection.SelectableModes.SELECT_MULTIPLE
 
 class SelectableAdapter : EasyRecyclerAdapter<DemoModel>() {
     override val collection: ExtendedCollection<DemoModel>
         get() = super.collection as ExtendedCollection<DemoModel>
 
     override fun createCollection(): ExtendedCollection<DemoModel> {
-        return ExtendedCollection(this, EasyAdapterSelectableModes.SELECT_MULTIPLE)
+        return ExtendedCollection(this, SELECT_MULTIPLE)
     }
 
     @Override
