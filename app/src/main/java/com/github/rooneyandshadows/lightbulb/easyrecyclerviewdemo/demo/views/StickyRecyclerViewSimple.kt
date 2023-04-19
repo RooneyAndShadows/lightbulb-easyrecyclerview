@@ -10,13 +10,17 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.StickyAdapterSimple
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 
 class StickyRecyclerViewSimple @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-) : EasyRecyclerView<StickySimpleDemoModel, StickyAdapterSimple>(context, attrs) {
-    override val adapterCreator: AdapterCreator<StickyAdapterSimple>
-        get() = object : AdapterCreator<StickyAdapterSimple> {
+) : EasyRecyclerView<StickySimpleDemoModel>(context, attrs) {
+    override val adapter: StickyAdapterSimple
+        get() = super.adapter as StickyAdapterSimple
+
+    override val adapterCreator: AdapterCreator<StickySimpleDemoModel>
+        get() = object : AdapterCreator<StickySimpleDemoModel> {
             override fun createAdapter(): StickyAdapterSimple {
                 return StickyAdapterSimple()
             }

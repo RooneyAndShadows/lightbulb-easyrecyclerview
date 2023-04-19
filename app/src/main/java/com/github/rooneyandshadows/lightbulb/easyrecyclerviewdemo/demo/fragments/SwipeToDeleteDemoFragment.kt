@@ -19,7 +19,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.ada
 @FragmentConfiguration(layoutName = "fragment_demo_swipe_to_delete")
 class SwipeToDeleteDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: EasyRecyclerView<DemoModel, SimpleAdapter>
+    lateinit var recyclerView: EasyRecyclerView<DemoModel>
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -32,7 +32,7 @@ class SwipeToDeleteDemoFragment : BaseFragment() {
 
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        if (savedInstanceState == null)
-            recyclerView.adapter.setCollection(generateData(20))
+        if (savedInstanceState != null) return
+        recyclerView.adapter.collection.set(generateData(20))
     }
 }

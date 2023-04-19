@@ -33,8 +33,8 @@ class FlowLayoutManagerDemoFragment : BaseFragment() {
         recyclerView.apply {
             val itemDecoration = FlexboxSpaceItemDecoration(ResourceUtils.dpToPx(10), this)
             addItemDecoration(itemDecoration)
-            if (savedInstanceState == null)
-                adapter.setCollection(generateLabelsData())
+            if (savedInstanceState != null) return@apply
+            adapter.collection.set(generateLabelsData())
         }
     }
 }

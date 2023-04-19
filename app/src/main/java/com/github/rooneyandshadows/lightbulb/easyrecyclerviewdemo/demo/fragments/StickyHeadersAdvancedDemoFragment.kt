@@ -29,7 +29,7 @@ class StickyHeadersAdvancedDemoFragment : BaseFragment() {
 
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        if (savedInstanceState == null)
-            recyclerView.adapter.setCollection(generateStickyHeadersAdvanceData())
+        if (savedInstanceState != null) return
+        recyclerView.adapter.collection.set(generateStickyHeadersAdvanceData())
     }
 }

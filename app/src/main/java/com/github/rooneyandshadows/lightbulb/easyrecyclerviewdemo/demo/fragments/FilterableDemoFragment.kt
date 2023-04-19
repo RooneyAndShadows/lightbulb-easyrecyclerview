@@ -2,9 +2,7 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragment
 
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import androidx.appcompat.widget.SearchView
-import androidx.core.widget.doOnTextChanged
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
@@ -16,7 +14,6 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.getHomeIcon
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.FilterableRecyclerView
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 
 @FragmentScreen(screenName = "Filterable", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_filterable", hasLeftDrawer = true)
@@ -44,7 +41,7 @@ class FilterableDemoFragment : BaseFragment() {
             addItemDecoration(itemDecoration)
             if (savedInstanceState == null) {
                 val initialData = generateData(20)
-                adapter.setCollection(initialData)
+                adapter.collection.set(initialData)
             }
         }
     }
@@ -55,13 +52,13 @@ class FilterableDemoFragment : BaseFragment() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             @Override
             override fun onQueryTextSubmit(query: String?): Boolean {
-                recyclerView.filter(query ?: "")
+                recyclerView.adapter.collection.filter.filter(query ?: "")
                 return true
             }
 
             @Override
             override fun onQueryTextChange(newText: String?): Boolean {
-                recyclerView.filter(newText ?: "")
+                recyclerView.adapter.collection.filter.filter(newText ?: "")
                 return true
             }
         })

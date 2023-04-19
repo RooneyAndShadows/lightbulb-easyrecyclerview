@@ -11,7 +11,6 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.SimpleAdapter
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
@@ -37,18 +36,19 @@ class LazyLoadingDemoFragment : BaseFragment() {
         recyclerView.apply {
             addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
             recyclerView.setItemAnimator(null)
-            setLoadMoreCallback(object : EasyRecyclerView.LoadMoreCallback<DemoModel, SimpleAdapter> {
-                override fun loadMore(rv: EasyRecyclerView<DemoModel, SimpleAdapter>) {
+            setLoadMoreCallback(object : EasyRecyclerView.LoadMoreCallback<DemoModel> {
+                override fun loadMore(rv: EasyRecyclerView<DemoModel>) {
                     rv.postDelayed({
-                        val offset = rv.adapter.getItems().size
+                        val adapter = rv.adapter
+                        val offset = adapter.collection.size()
                         val newItems = generateData(10, offset)
-                        rv.adapter.appendCollection(newItems)
+                        adapter.collection.addAll(newItems)
                         rv.showLoadingFooter(false)
                     }, 1500)
                 }
             })
-            if (savedInstanceState == null)
-                adapter.setCollection(generateData(10))
+            if (savedInstanceState != null) return@apply
+            adapter.collection.set(generateData(10))
         }
     }
 }

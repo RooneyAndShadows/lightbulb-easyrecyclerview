@@ -34,7 +34,7 @@ class BounceEffectDemoFragment : BaseFragment() {
         recyclerView.apply {
             val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
             recyclerView.addItemDecoration(itemDecoration)
-            if (savedInstanceState == null) recyclerView.adapter.setCollection(generateData(20))
+            if (savedInstanceState == null) recyclerView.adapter.collection.set(generateData(20))
         }
     }
 }

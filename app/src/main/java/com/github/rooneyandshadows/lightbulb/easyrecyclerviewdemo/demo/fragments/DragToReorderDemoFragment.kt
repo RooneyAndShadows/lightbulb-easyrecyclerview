@@ -52,7 +52,7 @@ class DragToReorderDemoFragment : BaseFragment() {
             addHeaderView(headerView)
             setEmptyLayout(emptyLayout)
             recyclerView.addItemDecoration(itemDecoration)
-            if (savedInstanceState == null) adapter.setCollection(generateData(20))
+            if (savedInstanceState == null) adapter.collection.set(generateData(20))
         }
     }
 
@@ -116,7 +116,7 @@ class DragToReorderDemoFragment : BaseFragment() {
             val progressBar: ProgressBar = emptyLayout.findViewById(R.id.progressBar)
             emptyLayoutImage.visibility = View.GONE
             progressBar.visibility = View.VISIBLE
-            emptyLayout.postDelayed({ recyclerView.adapter.appendCollection(generateData(20)) }, 2000)
+            emptyLayout.postDelayed({ recyclerView.adapter.collection.addAll(generateData(20)) }, 2000)
         }
         return emptyLayout
     }

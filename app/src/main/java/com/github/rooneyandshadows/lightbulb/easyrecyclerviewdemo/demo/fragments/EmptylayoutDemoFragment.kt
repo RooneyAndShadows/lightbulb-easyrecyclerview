@@ -50,7 +50,7 @@ class EmptyLayoutDemoFragment : BaseFragment() {
             emptyLayoutImage.visibility = View.GONE
             progressBar.visibility = View.VISIBLE
             emptyLayout.postDelayed({
-                recyclerView.adapter.appendCollection(generateData(20))
+                recyclerView.adapter.collection.addAll(generateData(20))
             }, 2000)
         }
         return emptyLayout

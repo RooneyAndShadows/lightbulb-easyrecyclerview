@@ -2,7 +2,7 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models
 
 import android.os.Parcel
 import android.os.Parcelable.Creator
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 
 class DemoModel : EasyAdapterDataModel {
     val subtitle: String

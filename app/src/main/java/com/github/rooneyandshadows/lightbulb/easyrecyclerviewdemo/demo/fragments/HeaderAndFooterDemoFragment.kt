@@ -39,8 +39,8 @@ class HeaderAndFooterDemoFragment : BaseFragment() {
             addHeaderView(headerView)
             addFooterView(footerView)
             addItemDecoration(itemDemoRecyclerView)
-            if (savedInstanceState == null)
-                adapter.setCollection(generateData(20))
+            if (savedInstanceState != null) return@apply
+            adapter.collection.set(generateData(20))
         }
     }
 }

@@ -10,7 +10,6 @@ import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.A
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.StickyAdapterSimple
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateStickyHeadersSimpleData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
 
@@ -19,7 +18,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.St
 @FragmentConfiguration(layoutName = "fragment_demo_sticky_headers_simple")
 class StickyHeadersSimpleDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: EasyRecyclerView<StickySimpleDemoModel, StickyAdapterSimple>
+    lateinit var recyclerView: EasyRecyclerView<StickySimpleDemoModel>
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -33,8 +32,7 @@ class StickyHeadersSimpleDemoFragment : BaseFragment() {
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         super.doOnViewCreated(fragmentView, savedInstanceState)
-        if (savedInstanceState == null)
-            recyclerView.adapter.setCollection(generateStickyHeadersSimpleData())
+        if (savedInstanceState != null) return
+        recyclerView.adapter.collection.set(generateStickyHeadersSimpleData())
     }
-
 }

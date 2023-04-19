@@ -7,11 +7,15 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.SimpleAdapter
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.FilterableAdapter
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 
 class FilterableRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
 ) : EasyRecyclerView<DemoModel>(context, attrs) {
+    override val adapter: FilterableAdapter
+        get() = super.adapter as FilterableAdapter
+
     override val adapterCreator: AdapterCreator<DemoModel>
         get() = object : AdapterCreator<DemoModel> {
             override fun createAdapter(): FilterableAdapter {

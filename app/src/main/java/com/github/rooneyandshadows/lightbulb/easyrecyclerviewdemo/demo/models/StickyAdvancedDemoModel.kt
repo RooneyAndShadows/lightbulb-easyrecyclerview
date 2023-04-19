@@ -5,7 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable.Creator
 import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate
 import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelUtils
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyAdapterDataModel
+import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 import java.time.OffsetDateTime
 
 class StickyAdvancedDemoModel : EasyAdapterDataModel {

@@ -37,8 +37,8 @@ class SelectionDemoFragment : BaseFragment() {
             val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
             addHeaderView(headerView)
             addItemDecoration(itemDecoration)
-            if (savedInstanceState == null)
-                adapter.setCollection(generateData(20))
+            if (savedInstanceState != null) return@apply
+            adapter.collection.set(generateData(20))
         }
     }
 }

@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.*
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.TouchCallbacks
@@ -23,9 +24,11 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRe
 class SwipeToDeleteRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-) : EasyRecyclerView<DemoModel, SimpleAdapter>(context, attrs) {
-    override val adapterCreator: AdapterCreator<SimpleAdapter>
-        get() = object : AdapterCreator<SimpleAdapter> {
+) : EasyRecyclerView<DemoModel>(context, attrs) {
+    override val adapter: SimpleAdapter
+        get() = super.adapter as SimpleAdapter
+    override val adapterCreator: AdapterCreator<DemoModel>
+        get() = object : AdapterCreator<DemoModel> {
             override fun createAdapter(): SimpleAdapter {
                 return SimpleAdapter()
             }
@@ -52,7 +55,7 @@ class SwipeToDeleteRecyclerView @JvmOverloads constructor(
             val progressBar = emptyLayout.findViewById<ProgressBar>(R.id.progressBar)
             emptyLayoutImage.visibility = View.GONE
             progressBar.visibility = View.VISIBLE
-            emptyLayout.postDelayed({ adapter.appendCollection(generateData(20)) }, 2000)
+            emptyLayout.postDelayed({ adapter.collection.addAll(generateData(20)) }, 2000)
         }
         return emptyLayout
     }
@@ -82,8 +85,8 @@ class SwipeToDeleteRecyclerView @JvmOverloads constructor(
                 direction: EasyRecyclerViewTouchHandler.Directions,
             ) {
                 post {
-                    val actualPosition = adapter.getPosition(item)
-                    adapter.removeItem(actualPosition)
+                    val actualPosition = adapter.collection.getPosition(item)
+                    adapter.collection.remove(actualPosition)
                 }
             }
 
