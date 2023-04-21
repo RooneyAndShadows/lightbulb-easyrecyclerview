@@ -1,6 +1,6 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters
 
-import android.graphics.drawable.Drawable
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -9,6 +9,7 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoSelectableItemLayoutBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.DemoItemView
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.collection.ExtendedCollection
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.collection.ExtendedCollection.SelectableModes.SELECT_MULTIPLE
@@ -36,7 +37,7 @@ class SelectableAdapter : EasyRecyclerAdapter<DemoModel>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
         val model: DemoModel = collection.getItem(position) ?: return
-        vh.binding.title = model.itemName
+        vh.binding.title = model.title
         vh.binding.subtitle = model.subtitle
         vh.initialize()
     }
@@ -48,27 +49,31 @@ class SelectableAdapter : EasyRecyclerAdapter<DemoModel>() {
         vh.recycle()
     }
 
-    class ViewHolder(val binding: DemoSelectableItemLayoutBinding, private val adapter: SelectableAdapter) :
-        RecyclerView.ViewHolder(
-            binding.root
-        ) {
-        fun initialize() {
-            val collection = adapter.collection
-            val itemPos = absoluteAdapterPosition - adapter.headersCount
-            val isSelectedInAdapter: Boolean = collection.isItemSelected(itemPos)
-            binding.cardContainer.setBackgroundDrawable(getBackgroundDrawable(isSelectedInAdapter))
-            binding.cardContainer.setOnClickListener {
-                collection.selectItemAt(itemPos, !collection.isItemSelected(itemPos))
+    class ViewHolder(
+        val binding: DemoSelectableItemLayoutBinding,
+        private val adapter: SelectableAdapter,
+    ) : RecyclerView.ViewHolder(binding.root) {
+        private val demoItemView: DemoItemView = binding.itemView
+        private val context: Context
+            get() = itemView.context
+
+        init {
+            demoItemView.apply {
+                addOnCheckChangeListener { newValue ->
+                    val collection = adapter.collection
+                    val itemPos = absoluteAdapterPosition - adapter.headersCount
+                    collection.selectItemAt(itemPos, newValue, false)
+                }
             }
         }
 
-        private fun getBackgroundDrawable(selected: Boolean): Drawable {
-            return if (selected) ResourceUtils.getDrawable(itemView.context, R.drawable.bg_card_selected)!!
-            else ResourceUtils.getDrawable(itemView.context, R.drawable.bg_card)!!
+        fun initialize() {
+            demoItemView.background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item)
+            println(demoItemView.isChecked)
         }
 
         fun recycle() {
-            binding.cardContainer.setBackgroundDrawable(null)
+            demoItemView.background = null
         }
     }
 }

@@ -11,7 +11,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.DemoStickySimpleItemLayoutBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.BasicCollection
+import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.collection.BasicCollection
 
 class StickyAdapterSimple : EasyRecyclerAdapter<StickySimpleDemoModel>(), StickyHeaderInterface {
     override val collection: BasicCollection<StickySimpleDemoModel>

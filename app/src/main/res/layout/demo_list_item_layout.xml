@@ -19,7 +19,7 @@
         android:id="@+id/demoItemView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:ssubtitle="@{subtitle}"
+        app:subtitle="@{subtitle}"
         app:title="@{title}" />
 
 </layout>

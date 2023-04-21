@@ -5,5 +5,8 @@
     <declare-styleable name="DemoItemView">
         <attr name="state_checked" format="boolean" />
         <attr name="state_enabled" format="boolean" />
+        <attr name="div_checkable" format="boolean" />
+        <attr name="div_title" format="string" />
+        <attr name="div_subtitle" format="string" />
     </declare-styleable>
 </resources>

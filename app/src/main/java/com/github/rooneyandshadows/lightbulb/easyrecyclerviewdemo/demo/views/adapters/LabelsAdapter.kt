@@ -52,7 +52,7 @@ class LabelsAdapter : EasyRecyclerAdapter<DemoModel>() {
 
         fun bindData(model: DemoModel) {
             container.background = ResourceUtils.getDrawable(container.context, R.drawable.bg_label_item)
-            textView.text = model.itemName
+            textView.text = model.title
         }
 
         fun recycle() {

@@ -74,7 +74,7 @@ class SwipeToDeleteRecyclerView @JvmOverloads constructor(
 
             @Override
             override fun getActionBackgroundText(item: DemoModel): String {
-                return item.itemName
+                return item.title
             }
 
             @Override
