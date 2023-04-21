@@ -13,6 +13,7 @@ class DemoModel : EasyAdapterObservableDataModel {
         set(value) {
             if (field == value) return
             field = value
+            println("ssssssssssssss")
             notifyPropertyChanged(BR.title)
         }
 

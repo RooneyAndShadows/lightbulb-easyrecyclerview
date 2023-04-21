@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
-            name="title"
-            type="String" />
-
-        <variable
-            name="subtitle"
-            type="String" />
-
+            name="item"
+            type="com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel" />
     </data>
 
     <com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.DemoItemView
@@ -21,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:div_checkable="true"
-        app:div_subtitle="@={subtitle}"
-        app:div_title="@={title}" />
+        app:div_subtitle="@={item.subtitle}"
+        app:div_title="@={item.title}" />
 
 </layout>

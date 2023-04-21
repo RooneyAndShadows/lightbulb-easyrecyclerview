@@ -28,30 +28,12 @@ class DemoItemView(
     private val subtitleTextView: TextView by lazy {
         return@lazy findViewById(R.id.subtitle)!!
     }
-    private val onCheckChangeListeners: MutableList<(newState: Boolean) -> Unit> = mutableListOf()
-    private val onClick = OnClickListener { isChecked = !isChecked }
     var isChecked = false
         set(value) {
-            var newValue = value
-            if (!isCheckable) newValue = false
-            if (field == newValue) return
-            field = newValue
-            refreshDrawableState()
-            onCheckChangeListeners.forEach {
-                if (!isCheckable) return@forEach
-                it.invoke(field)
-            }
-        }
-    var isCheckable = false
-        set(value) {
             if (field == value) return
-            if (value) setOnClickListener(onClick)
-            else setOnClickListener(null)
             field = value
             refreshDrawableState()
-            if (!value) isChecked = false
         }
-
     var title: String = ""
         set(value) {
             field = value
@@ -70,19 +52,9 @@ class DemoItemView(
         readAttributes(context, attrs)
     }
 
-    fun addOnCheckChangeListener(listener: (newState: Boolean) -> Unit) {
-        if (onCheckChangeListeners.contains(listener)) return
-        onCheckChangeListeners.add(listener)
-    }
-
-    fun removeOnCheckChangeListener(listener: (newState: Boolean) -> Unit) {
-        onCheckChangeListeners.remove(listener)
-    }
-
     private fun readAttributes(context: Context, attrs: AttributeSet?) {
         val attributes = context.theme.obtainStyledAttributes(attrs, R.styleable.DemoItemView, 0, 0)
         try {
-            isCheckable = attributes.getBoolean(R.styleable.DemoItemView_div_checkable, false)
             title = attributes.getString(R.styleable.DemoItemView_div_title) ?: ""
             subtitle = attributes.getString(R.styleable.DemoItemView_div_subtitle) ?: ""
         } finally {

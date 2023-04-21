@@ -1,6 +1,5 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -36,10 +35,10 @@ class SelectableAdapter : EasyRecyclerAdapter<DemoModel>() {
     @Override
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
-        val model: DemoModel = collection.getItem(position) ?: return
-        vh.binding.title = model.title
-        vh.binding.subtitle = model.subtitle
-        vh.initialize()
+        collection.getItem(position)?.apply {
+            vh.binding.item = this
+            vh.bind()
+        }
     }
 
     @Override
@@ -54,22 +53,26 @@ class SelectableAdapter : EasyRecyclerAdapter<DemoModel>() {
         private val adapter: SelectableAdapter,
     ) : RecyclerView.ViewHolder(binding.root) {
         private val demoItemView: DemoItemView = binding.itemView
-        private val context: Context
-            get() = itemView.context
+        private val collection: ExtendedCollection<DemoModel>
+            get() = adapter.collection
+        private val positionInAdapter: Int
+            get() = absoluteAdapterPosition - adapter.headersCount
 
         init {
-            demoItemView.apply {
-                addOnCheckChangeListener { newValue ->
-                    val collection = adapter.collection
-                    val itemPos = absoluteAdapterPosition - adapter.headersCount
-                    collection.selectItemAt(itemPos, newValue, false)
-                }
+            demoItemView.setOnClickListener {
+                val demoItem = it as DemoItemView
+                val pos = positionInAdapter
+                val isSelected = collection.isItemSelected(positionInAdapter)
+                collection.selectItemAt(pos, !isSelected, false)
+                demoItem.isChecked = !isSelected
             }
         }
 
-        fun initialize() {
-            demoItemView.background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item)
-            println(demoItemView.isChecked)
+        fun bind() {
+            demoItemView.apply {
+                background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item)
+                isChecked = collection.isItemSelected(positionInAdapter)
+            }
         }
 
         fun recycle() {
