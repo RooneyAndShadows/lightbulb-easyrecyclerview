@@ -10,15 +10,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.LayoutAnimationController
+import android.widget.EdgeEffect
 import android.widget.RelativeLayout
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
-import com.factor.bouncy.BouncyRecyclerView
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.*
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.edge.BounceEdge
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.TouchCallbacks
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalFlowLayoutManager
@@ -44,13 +46,11 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     defStyleRes: Int = R.style.EasyRecyclerViewDefaultStyle,
 ) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
     private lateinit var loadingIndicator: LinearProgressIndicator
-    private lateinit var recyclerView: BouncyRecyclerView
+    private lateinit var recyclerView: RecyclerView
     private val layoutManagerStateTag = "LAYOUT_MANAGER_STATE_TAG"
     private val emptyLayoutTag = "EMPTY_LAYOUT_TAG"
     private val showRefreshManualDelay = 300
     private val showLoadingManualDelay = 300
-    private val bouncyFlingAnimationSize = 0.1f
-    private val bouncyOverscrollAnimationSize = 0.1f
     private var supportsPullToRefresh = false
     private var supportsLazyLoading = false
     private var hasMoreDataToLoad = true
@@ -70,6 +70,11 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     private var renderedCallback: EasyRecyclerItemsReadyListener? = null
     private var emptyLayoutListeners: EasyRecyclerEmptyLayoutListener? = null
     private val showRefreshLayoutDelayedRunnable = Runnable { refreshLayout!!.setRefreshing(true) }
+    private val defaultEdgeFactory = object : EdgeEffectFactory() {
+        override fun createEdgeEffect(view: RecyclerView, direction: Int): EdgeEffect {
+            return EdgeEffect(view.getContext());
+        }
+    }
     private val dataAdapter: EasyRecyclerAdapter<ItemType> by lazy {
         return@lazy adapterCreator.createAdapter().apply dataAdapter@{
             collection.addOnCollectionChangedListener(object : CollectionChangeListener {
@@ -602,7 +607,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     }
 
     private fun configureRecycler() {
-        recyclerView.stiffness = SpringForce.STIFFNESS_MEDIUM
         recyclerView.clearOnScrollListeners()
         //animationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
         //recyclerView.setLayoutAnimation(animationController);
@@ -645,10 +649,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     private fun enableBounceOverscrollInternally(enabled: Boolean) {
         overscrollBounceEnabled = enabled
-        recyclerView.flingAnimationSize = if (enabled) bouncyFlingAnimationSize else 0f
-        recyclerView.overscrollAnimationSize = if (enabled) bouncyOverscrollAnimationSize else 0f
-        recyclerView.dampingRatio =
-            if (enabled) SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY else SpringForce.DAMPING_RATIO_NO_BOUNCY
+        recyclerView.edgeEffectFactory = if (enabled) BounceEdge() else defaultEdgeFactory
     }
 
     private fun enablePullToRefreshLayoutInternally(enabled: Boolean) {

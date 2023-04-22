@@ -69,7 +69,6 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$versions.android_recyclerview"
     implementation "androidx.dynamicanimation:dynamicanimation:$versions.android.dynamication"
     implementation "com.google.android.material:material:$versions.android.material"
-    implementation "com.github.valkriaine:Bouncy:$versions.bouncy"
     implementation "com.google.android.flexbox:flexbox:$versions.android.flexbox"
     implementation "com.github.rooneyandshadows:java-commons:$versions.java_commons"
     implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycler_adapters"

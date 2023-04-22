@@ -13,7 +13,7 @@ buildscript {
                         constraint_layout: "2.1.4",
                         material         : "1.8.0",
                         flexbox          : "3.0.0",
-                        dynamication     : "1.1.0-alpha03",
+                        dynamication     : "1.0.0",
                 ],
                 lightbulb   : [
                         application          : "1.4.0",
@@ -22,7 +22,6 @@ buildscript {
                         annotation_processors: "1.0.6-RC3"
                 ],
                 java_commons: "1.0.7",
-                bouncy      : "2.3",
         ]
         environment = [
                 "group_id": "com.github.rooneyandshadows"
