@@ -17,6 +17,11 @@ class FilterableAdapter : EasyRecyclerAdapter<DemoModel>() {
     override val collection: ExtendedCollection<DemoModel>
         get() = super.collection as ExtendedCollection<DemoModel>
 
+
+    override fun getItemCount(): Int {
+        return collection.filteredItems.size
+    }
+
     override fun createCollection(): ExtendedCollection<DemoModel> {
         val adapter = this
         return object : ExtendedCollection<DemoModel>(adapter, SELECT_NONE) {

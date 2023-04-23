@@ -22,7 +22,7 @@ object MenuConfigurations {
                         null,
                         1
                     ) { slider: SliderMenu ->
-                        route().back()
+                        route().toDemoRegular().replace()
                         slider.closeSlider()
                     }
                 )

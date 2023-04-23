@@ -16,7 +16,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.getHomeIc
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.FilterableRecyclerView
 
 @FragmentScreen(screenName = "Filterable", screenGroup = "Demo")
-@FragmentConfiguration(layoutName = "fragment_demo_filterable", hasLeftDrawer = true)
+@FragmentConfiguration(layoutName = "fragment_demo_filterable", hasLeftDrawer = false)
 class FilterableDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
     lateinit var recyclerView: FilterableRecyclerView
@@ -28,8 +28,7 @@ class FilterableDemoFragment : BaseFragment() {
     override fun configureActionBar(): ActionBarConfiguration {
         return ActionBarConfiguration(R.id.toolbar)
             .withActionButtons(true)
-            .withHomeIcon(getHomeIcon(requireContext()))
-            .attachToDrawer(true)
+            .attachToDrawer(false)
             .withSubTitle(ResourceUtils.getPhrase(requireContext(), R.string.filterable_demo))
             .withTitle(ResourceUtils.getPhrase(requireContext(), R.string.app_name))
     }

@@ -39,7 +39,6 @@ class SelectionDemoFragment : BaseFragment() {
             addItemDecoration(itemDecoration)
             if (savedInstanceState != null) return@apply
             adapter.collection.set(generateData(20))
-            postDelayed({adapter.collection.getItem(0)!!.title = "asfasf"},5000)
         }
     }
 }
