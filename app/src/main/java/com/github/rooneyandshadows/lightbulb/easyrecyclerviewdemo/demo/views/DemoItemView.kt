@@ -6,6 +6,8 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.view.setPadding
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
@@ -22,10 +24,10 @@ class DemoItemView(
     private val stateCheckable = intArrayOf(R.attr.state_enabled)
     private val stateNotCheckable = intArrayOf(-R.attr.state_enabled)
     private val titleTextView: TextView by lazy {
-        return@lazy findViewById(R.id.title)!!
+        return@lazy findViewById<TextView>(R.id.title)!!
     }
     private val subtitleTextView: TextView by lazy {
-        return@lazy findViewById(R.id.subtitle)!!
+        return@lazy findViewById<TextView>(R.id.subtitle)!!
     }
     var isChecked = false
         set(value) {
@@ -45,16 +47,35 @@ class DemoItemView(
         }
 
     init {
-        elevation = ResourceUtils.getDimenById(context, R.dimen.demo_item_elevation)
-        initBackground()
-        //foreground = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item_ripple)
-        //background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item)
         inflate(context, R.layout.demo_item_view, this)
         readAttributes(context, attrs)
+        setupTextViews()
+    }
+
+    fun setupView() {
+        clipToPadding = false
+        clipChildren = false
+
+        initBackground()
+        setupTextViews()
+    }
+
+    private fun setupTextViews() {
+        titleTextView.apply {
+            isDuplicateParentStateEnabled = true
+            setTextColor(ContextCompat.getColorStateList(context, R.color.demo_item_text_color_primary))
+        }
+        subtitleTextView.apply {
+            isDuplicateParentStateEnabled = true
+            setTextColor(ContextCompat.getColorStateList(context, R.color.demo_item_text_color_secondary))
+        }
     }
 
     fun initBackground() {
-        background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item_combined)
+        //foreground = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item_ripple)
+        //background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item)
+        background = ResourceUtils.getDrawable(context, R.drawable.demo_item_bg_combined)
+        elevation = ResourceUtils.getDimenById(context, R.dimen.demo_item_elevation)
     }
 
     fun removeBackground() {

@@ -53,7 +53,7 @@ class FilterableAdapter : EasyRecyclerAdapter<DemoModel>() {
         val context = vh.binding.demoItemView.context
         vh.binding.title = model.title
         vh.binding.subtitle = model.subtitle
-        vh.binding.demoItemView.background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item)
+        vh.binding.demoItemView.background = ResourceUtils.getDrawable(context, R.drawable.demo_item_bg)
     }
 
     @Override
