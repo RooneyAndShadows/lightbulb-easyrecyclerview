@@ -49,13 +49,12 @@ class DemoItemView(
     init {
         inflate(context, R.layout.demo_item_view, this)
         readAttributes(context, attrs)
-        setupTextViews()
+        setupView()
     }
 
     fun setupView() {
         clipToPadding = false
         clipChildren = false
-
         initBackground()
         setupTextViews()
     }
