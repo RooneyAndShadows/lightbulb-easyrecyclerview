@@ -4,16 +4,13 @@
 
     <!-- the normal bg color-->
     <item>
-        <shape android:shape="rectangle">
-            <corners android:radius="4dp" />
-            <solid android:color="?android:colorAccent" />
-        </shape>
+        <color android:color="@android:color/transparent" />
     </item>
 
     <!-- make sure the ripple doesn't exceed the bounds -->
     <item android:id="@android:id/mask">
         <shape android:shape="rectangle">
-            <corners android:radius="4dp" />
+            <corners android:radius="@dimen/demo_item_background_corner_radius" />
             <solid android:color="?android:colorAccent" />
         </shape>
     </item>

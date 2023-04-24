@@ -70,13 +70,15 @@ class SelectableAdapter : EasyRecyclerAdapter<DemoModel>() {
 
         fun bind() {
             demoItemView.apply {
-                background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item)
                 isChecked = collection.isItemSelected(positionInAdapter)
+                initBackground()
             }
         }
 
         fun recycle() {
-            demoItemView.background = null
+            demoItemView.apply {
+                removeBackground()
+            }
         }
     }
 }

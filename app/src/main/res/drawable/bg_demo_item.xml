@@ -1,13 +1,13 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:enterFadeDuration="@android:integer/config_shortAnimTime" android:exitFadeDuration="@android:integer/config_shortAnimTime">
     <item app:state_checked="true">
         <shape>
-            <corners android:radius="4dp" />
+            <corners android:radius="@dimen/demo_item_background_corner_radius" />
             <solid android:color="?colorPrimary" />
         </shape>
     </item>
     <item app:state_checked="false">
         <shape>
-            <corners android:radius="4dp" />
+            <corners android:radius="@dimen/demo_item_background_corner_radius" />
             <solid android:color="?colorSurface" />
         </shape>
     </item>

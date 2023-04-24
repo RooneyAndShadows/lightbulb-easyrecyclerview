@@ -4,7 +4,6 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
-import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -39,7 +38,6 @@ class DemoItemView(
             field = value
             titleTextView.text = value
         }
-
     var subtitle: String = ""
         set(value) {
             field = value
@@ -47,9 +45,20 @@ class DemoItemView(
         }
 
     init {
-        elevation = ResourceUtils.dpToPx(3).toFloat()
+        elevation = ResourceUtils.getDimenById(context, R.dimen.demo_item_elevation)
+        initBackground()
+        //foreground = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item_ripple)
+        //background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item)
         inflate(context, R.layout.demo_item_view, this)
         readAttributes(context, attrs)
+    }
+
+    fun initBackground() {
+        background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item_combined)
+    }
+
+    fun removeBackground() {
+        background = null
     }
 
     private fun readAttributes(context: Context, attrs: AttributeSet?) {

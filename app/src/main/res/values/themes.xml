@@ -17,5 +17,4 @@
         <item name="materialDrawerStyle">@style/SliderStyle</item>
         <item name="easyRecyclerViewStyle">@style/EasyRecyclerViewDefaultStyle</item>
     </style>
-
 </resources>

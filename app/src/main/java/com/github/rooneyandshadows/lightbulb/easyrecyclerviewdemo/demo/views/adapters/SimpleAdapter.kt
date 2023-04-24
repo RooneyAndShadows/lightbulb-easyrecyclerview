@@ -34,17 +34,20 @@ class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
         val model: DemoModel = collection.getItem(position) ?: return
-        val context = vh.binding.demoItemView.context
         vh.binding.title = model.title
         vh.binding.subtitle = model.subtitle
-        vh.binding.demoItemView.background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item)
+        vh.binding.demoItemView.apply {
+            initBackground()
+        }
     }
 
     @Override
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
         val vh = holder as ViewHolder
-        vh.binding.demoItemView.background = null
+        vh.binding.demoItemView.apply {
+            removeBackground()
+        }
     }
 
     class ViewHolder(val binding: DemoListItemLayoutBinding) : RecyclerView.ViewHolder(
