@@ -1,9 +1,7 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerview
 
 import android.content.Context
-import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
+import android.os.*
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +10,6 @@ import android.view.ViewTreeObserver
 import android.view.animation.LayoutAnimationController
 import android.widget.EdgeEffect
 import android.widget.RelativeLayout
-import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
@@ -36,6 +33,8 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.E
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.HeaderViewRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.HeaderViewRecyclerAdapter.ViewListeners
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "UNUSED_PARAMETER")
 abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
@@ -64,7 +63,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     private var recyclerEmptyLayoutContainer: RelativeLayout? = null
     private var refreshLayout: RecyclerRefreshLayout? = null
     private val animationController: LayoutAnimationController? = null
-    private var loadMoreCallback: LoadMoreCallback<ItemType>? = null
+    private var loadMoreDataAction: LazyLoadingAction<ItemType>? = null
     private var refreshCallback: RefreshCallback<ItemType>? = null
     private var touchHandler: EasyRecyclerViewTouchHandler<ItemType>? = null
     private var renderedCallback: EasyRecyclerItemsReadyListener? = null
@@ -72,7 +71,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     private val showRefreshLayoutDelayedRunnable = Runnable { refreshLayout!!.setRefreshing(true) }
     private val defaultEdgeFactory = object : EdgeEffectFactory() {
         override fun createEdgeEffect(view: RecyclerView, direction: Int): EdgeEffect {
-            return EdgeEffect(view.getContext());
+            return EdgeEffect(view.context)
         }
     }
     private val dataAdapter: EasyRecyclerAdapter<ItemType> by lazy {
@@ -357,9 +356,9 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     }
 
     fun loadMoreData() {
-        if (loadMoreCallback != null || hasMoreDataToLoad) {
-            showLoadingFooter(true)
-            if (loadMoreCallback != null) loadMoreCallback!!.loadMore(this)
+        if (loadMoreDataAction == null || !hasMoreDataToLoad) return
+        loadMoreDataAction!!.apply {
+            executeAsync(this@EasyRecyclerView)
         }
     }
 
@@ -386,10 +385,8 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     fun showLoadingFooter(isLoading: Boolean) {
         if (!supportsLazyLoading) return
         isShowingLoadingFooter = isLoading
-        recyclerView.post {
-            if (isLoading) addFooterView(loadingFooterView!!)
-            else removeFooterView(loadingFooterView!!)
-        }
+        if (isLoading) addFooterView(loadingFooterView!!)
+        else removeFooterView(loadingFooterView!!)
     }
 
     /**
@@ -401,22 +398,22 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     fun showRefreshLayout(isRefreshing: Boolean) {
         if (!pullToRefreshEnabled || isRefreshing == isShowingRefreshLayout) return
         isShowingRefreshLayout = isRefreshing
-        recyclerView.post {
-            if (!isShowingRefreshLayout) removeCallbacks(showRefreshLayoutDelayedRunnable)
+        if (!isShowingRefreshLayout) removeCallbacks(showRefreshLayoutDelayedRunnable)
+        recyclerView.post{
             refreshLayout!!.setRefreshing(isRefreshing)
         }
     }
 
     /**
-     * Sets the [LoadMoreCallback] to be called when lazy loading is triggered.
+     * Sets the [LazyLoadingAction] to be called when lazy loading is triggered.
      * The callback will be called only if [EasyRecyclerView.supportsLazyLoading] is true.
      *
      * @param callback - The LoadMoreCallback  to be executed on lazy loading.
      * @see EasyRecyclerView.setSupportsLazyLoading
      */
-    fun setLoadMoreCallback(callback: LoadMoreCallback<ItemType>?) {
+    fun configureLazyLoading(callback: LazyLoadingAction<ItemType>?) {
         if (!supportsLazyLoading) return
-        loadMoreCallback = callback
+        loadMoreDataAction = callback
     }
 
     /**
@@ -745,11 +742,43 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         fun refresh(view: EasyRecyclerView<ItemType>)
     }
 
-    interface LoadMoreCallback<ItemType : EasyAdapterDataModel> {
-        fun loadMore(view: EasyRecyclerView<ItemType>)
-    }
-
     interface AdapterCreator<ItemType : EasyAdapterDataModel> {
         fun createAdapter(): EasyRecyclerAdapter<ItemType>
+    }
+
+    class LazyLoadingAction<ItemType : EasyAdapterDataModel>(
+        private val task: LoadMoreAction<ItemType>,
+        private val callback: Callbacks<ItemType>,
+    ) {
+        private val executor: Executor = Executors.newSingleThreadExecutor()
+        private val handler: Handler = Handler(Looper.getMainLooper())
+
+        interface Callbacks<ItemType : EasyAdapterDataModel> {
+            fun onComplete(result: List<ItemType>, easyRecyclerView: EasyRecyclerView<ItemType>)
+            fun onError(error: java.lang.Exception)
+        }
+
+        interface LoadMoreAction<ItemType : EasyAdapterDataModel> {
+            fun execute(easyRecyclerView: EasyRecyclerView<ItemType>): List<ItemType>
+        }
+
+        fun executeAsync(easyRecyclerView: EasyRecyclerView<ItemType>) {
+            executor.execute {
+                try {
+                    handler.post { easyRecyclerView.showLoadingFooter(true) }
+                    task.execute(easyRecyclerView).apply {
+                        handler.post {
+                            easyRecyclerView.showLoadingFooter(false)
+                            callback.onComplete(this, easyRecyclerView)
+                        }
+                    }
+                } catch (exception: java.lang.Exception) {
+                    handler.post {
+                        easyRecyclerView.showLoadingFooter(false)
+                        callback.onError(exception)
+                    }
+                }
+            }
+        }
     }
 }
