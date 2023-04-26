@@ -50,10 +50,18 @@ class FilterableAdapter : EasyRecyclerAdapter<DemoModel>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
         val model: DemoModel = collection.getFilteredItem(position) ?: return
-        val context = vh.binding.demoItemView.context
-        vh.binding.title = model.title
-        vh.binding.subtitle = model.subtitle
-        vh.binding.demoItemView.background = ResourceUtils.getDrawable(context, R.drawable.demo_item_bg)
+        vh.binding.item = model
+        vh.binding.demoItemView.initBackground()
+    }
+
+    @Override
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+            return
+        }
+        val vh = holder as SimpleAdapter.ViewHolder
+        vh.binding.demoItemView.initBackground()
     }
 
     @Override

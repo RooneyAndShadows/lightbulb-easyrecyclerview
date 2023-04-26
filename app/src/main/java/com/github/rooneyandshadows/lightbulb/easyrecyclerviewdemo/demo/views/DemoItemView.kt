@@ -1,12 +1,15 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views
 
 import android.content.Context
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.StateListDrawable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.core.view.setPadding
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
@@ -73,7 +76,11 @@ class DemoItemView(
     fun initBackground() {
         //foreground = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item_ripple)
         //background = ResourceUtils.getDrawable(context, R.drawable.bg_demo_item)
-        background = ResourceUtils.getDrawable(context, R.drawable.demo_item_bg_combined)
+        background = ResourceUtils.getDrawable(context, R.drawable.demo_item_bg_combined)?.apply {
+            (this as LayerDrawable).apply {
+                (getDrawable(0) as StateListDrawable).jumpToCurrentState()
+            }
+        }
         elevation = ResourceUtils.getDimenById(context, R.dimen.demo_item_elevation)
     }
 

@@ -399,7 +399,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         if (!pullToRefreshEnabled || isRefreshing == isShowingRefreshLayout) return
         isShowingRefreshLayout = isRefreshing
         if (!isShowingRefreshLayout) removeCallbacks(showRefreshLayoutDelayedRunnable)
-        recyclerView.post{
+        recyclerView.post {
             refreshLayout!!.setRefreshing(isRefreshing)
         }
     }

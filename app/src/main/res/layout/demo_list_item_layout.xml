@@ -6,12 +6,8 @@
     <data>
 
         <variable
-            name="title"
-            type="String" />
-
-        <variable
-            name="subtitle"
-            type="String" />
+            name="item"
+            type="com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel" />
 
     </data>
 
@@ -19,7 +15,7 @@
         android:id="@+id/demoItemView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:subtitle="@{subtitle}"
-        app:title="@{title}" />
+        app:subtitle="@{item.subtitle}"
+        app:title="@{item.title}" />
 
 </layout>

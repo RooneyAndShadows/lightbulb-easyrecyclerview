@@ -34,11 +34,18 @@ class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val vh = holder as ViewHolder
         val model: DemoModel = collection.getItem(position) ?: return
-        vh.binding.title = model.title
-        vh.binding.subtitle = model.subtitle
-        vh.binding.demoItemView.apply {
-            initBackground()
+        vh.binding.item = model
+        vh.binding.demoItemView.initBackground()
+    }
+
+    @Override
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+            return
         }
+        val vh = holder as ViewHolder
+        vh.binding.demoItemView.initBackground()
     }
 
     @Override
