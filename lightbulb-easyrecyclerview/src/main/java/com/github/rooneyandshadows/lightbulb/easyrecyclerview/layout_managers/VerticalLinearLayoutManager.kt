@@ -29,7 +29,7 @@ class VerticalLinearLayoutManager<IType : EasyAdapterDataModel>(
     }
 
     private fun handleLoadMore() {
-        if (!easyRecyclerView.supportsLazyLoading()) return
+        if (!easyRecyclerView.supportsLazyLoading) return
         val lastView = getChildAt(childCount - 1) ?: return
         val recyclerAdapter: EasyRecyclerAdapter<IType> = easyRecyclerView.adapter
         val size = easyRecyclerView.adapter.collection.size()

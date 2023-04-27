@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView.*
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.*
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions.LoadMoreDataAction
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions.RefreshDataAction
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.edge.BounceEdge
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler
@@ -33,8 +35,6 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.E
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.HeaderViewRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.HeaderViewRecyclerAdapter.ViewListeners
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "UNUSED_PARAMETER")
 abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
@@ -44,36 +44,37 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     defStyleAttr: Int = R.attr.easyRecyclerViewStyle,
     defStyleRes: Int = R.style.EasyRecyclerViewDefaultStyle,
 ) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
-    private lateinit var loadingIndicator: LinearProgressIndicator
-    private lateinit var recyclerView: RecyclerView
-    private val layoutManagerStateTag = "LAYOUT_MANAGER_STATE_TAG"
-    private val emptyLayoutTag = "EMPTY_LAYOUT_TAG"
-    private val showRefreshManualDelay = 300
-    private val showLoadingManualDelay = 300
-    private var supportsPullToRefresh = false
-    private var supportsLazyLoading = false
-    private var hasMoreDataToLoad = true
-    private var supportsBounceOverscroll = false
-    private var showingEmptyLayout = false
-    private var overscrollBounceEnabled = false
-    private var pullToRefreshEnabled = false
-    private var loadingFooterView: View? = null
-    private var emptyLayoutId: Int? = null
-    private var layoutManagerType: LayoutManagerTypes? = null
-    private var recyclerEmptyLayoutContainer: RelativeLayout? = null
-    private var refreshLayout: RecyclerRefreshLayout? = null
-    private val animationController: LayoutAnimationController? = null
-    private var loadMoreDataAction: LazyLoadingAction<ItemType>? = null
-    private var refreshCallback: RefreshCallback<ItemType>? = null
-    private var touchHandler: EasyRecyclerViewTouchHandler<ItemType>? = null
-    private var renderedCallback: EasyRecyclerItemsReadyListener? = null
-    private var emptyLayoutListeners: EasyRecyclerEmptyLayoutListener? = null
-    private val showRefreshLayoutDelayedRunnable = Runnable { refreshLayout!!.setRefreshing(true) }
+    private val loadingIndicator: LinearProgressIndicator by lazy {
+        return@lazy findViewById(R.id.loadingIndicator)!!
+    }
+    private val recyclerView: RecyclerView by lazy {
+        return@lazy findViewById(R.id.recyclerView)!!
+    }
+    private val refreshLayout: RecyclerRefreshLayout by lazy {
+        return@lazy findViewById<RecyclerRefreshLayout?>(R.id.refreshLayout).apply {
+            isEnabled = false
+        }
+    }
+    private val recyclerEmptyLayoutContainer: RelativeLayout by lazy {
+        return@lazy findViewById(R.id.recyclerEmptyLayoutContainer)!!
+    }
+    private val loadingFooterView: View by lazy {
+        return@lazy inflate(context, R.layout.lv_loading_footer, null)
+    }
     private val defaultEdgeFactory = object : EdgeEffectFactory() {
         override fun createEdgeEffect(view: RecyclerView, direction: Int): EdgeEffect {
             return EdgeEffect(view.context)
         }
     }
+    private var hasMoreDataToLoad = true
+    private var emptyLayoutId: Int? = null
+    private var layoutManagerType: LayoutManagerTypes? = null
+    private val animationController: LayoutAnimationController? = null
+    private var touchHandler: EasyRecyclerViewTouchHandler<ItemType>? = null
+    private var renderedCallback: EasyRecyclerItemsReadyListener? = null
+    private var emptyLayoutListeners: EasyRecyclerEmptyLayoutListener? = null
+    private var loadMoreDataAction: LoadMoreDataAction<ItemType>? = null
+    private var refreshDataAction: RefreshDataAction<ItemType>? = null
     private val dataAdapter: EasyRecyclerAdapter<ItemType> by lazy {
         return@lazy adapterCreator.createAdapter().apply dataAdapter@{
             collection.addOnCollectionChangedListener(object : CollectionChangeListener {
@@ -88,43 +89,56 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             }
         }
     }
-    private val showLoadingDelayedRunnable = Runnable {
-        if (supportsPullToRefresh)
-            if (isShowingLoadingHeader) {
-                enablePullToRefreshLayout(false)
-                loadingIndicator.visibility = VISIBLE
-            } else {
-                enablePullToRefreshLayout(true)
-                loadingIndicator.visibility = GONE
+
+    var bounceOverscrollEnabled: Boolean
+        set(value) {
+            if (value && refreshLayout.isEnabled) {
+                recyclerView.edgeEffectFactory = defaultEdgeFactory
+                return
             }
-    }
-    var isShowingLoadingFooter = false
-        private set
-    var isShowingLoadingHeader = false
-        private set
-    var isShowingRefreshLayout = false
-        private set
+            recyclerView.edgeEffectFactory = if (value) BounceEdge() else defaultEdgeFactory
+        }
+        get() = recyclerView.edgeEffectFactory is BounceEdge
+    var pullToRefreshEnabled: Boolean
+        set(value) {
+            refreshLayout.apply {
+                if (value == isEnabled) return@apply
+                if (value) bounceOverscrollEnabled = false
+                isEnabled = value
+            }
+        }
+        get() = refreshLayout.isEnabled
     var emptyLayoutView: View? = null
         private set
-    open val adapter: EasyRecyclerAdapter<ItemType>
-        get() = dataAdapter
     val isAnimating: Boolean
         get() = recyclerView.itemAnimator != null && recyclerView.itemAnimator!!.isRunning
-
-    /**
-     * @return Layout manager for the view
-     */
+    val isShowingLoadingFooter: Boolean
+        get() = adapter.wrapperAdapter!!.containsFooterView(loadingFooterView)
+    val isShowingLoadingHeader: Boolean
+        get() = loadingIndicator.visibility == VISIBLE
+    val isShowingEmptyLayout: Boolean
+        get() = recyclerEmptyLayoutContainer.visibility == VISIBLE
+    val isShowingRefreshLayout: Boolean
+        get() = refreshLayout.isRefreshing
+    val supportsLazyLoading: Boolean
+        get() = loadMoreDataAction != null
     val layoutManager: LayoutManager?
         get() = recyclerView.layoutManager
-
-    /**
-     * @return Count of added item decorations to the recycler view.
-     */
     val itemDecorationCount: Int
         get() = recyclerView.itemDecorationCount
+    private val isRunningAction: Boolean
+        get() = loadMoreDataAction?.isRunning ?: false || refreshDataAction?.isRunning ?: false
+    open val adapter: EasyRecyclerAdapter<ItemType>
+        get() = dataAdapter
     protected abstract val adapterCreator: AdapterCreator<ItemType>
 
+    companion object {
+        private const val LAYOUT_MANAGER_STATE_KEY = "LAYOUT_MANAGER_STATE_KEY"
+        private const val EMPTY_LAYOUT_TAG = "EMPTY_LAYOUT_TAG"
+    }
+
     init {
+        inflate(context, R.layout.lv_layout, this)
         readAttributes(context, attrs)
         initView()
     }
@@ -135,21 +149,18 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         val myState = SavedState(superState)
         myState.adapterState = adapter.saveAdapterState()
         myState.hasMoreDataToLoad = hasMoreDataToLoad
-        myState.supportsLoadMore = supportsLazyLoading
-        myState.supportsPullToRefresh = supportsPullToRefresh
-        myState.supportsBounceOverscroll = supportsBounceOverscroll
-        myState.overscrollBounceEnabled = overscrollBounceEnabled
+        myState.overscrollBounceEnabled = bounceOverscrollEnabled
         myState.pullToRefreshEnabled = pullToRefreshEnabled
-        myState.showingRefreshLayout = isShowingRefreshLayout
+        myState.showingRefreshLayout = refreshLayout.isRefreshing
         myState.showingLoadingFooterLayout = isShowingLoadingFooter
         myState.showingLoadingIndicator = isShowingLoadingHeader
-        myState.emptyLayoutShowing = showingEmptyLayout
+        myState.emptyLayoutShowing = isShowingEmptyLayout
         myState.layoutManagerType = layoutManagerType!!.value
         if (emptyLayoutId != null)
             myState.emptyLayoutId = emptyLayoutId!!
         if (recyclerView.layoutManager != null) {
             val layoutManagerBundle = Bundle()
-            layoutManagerBundle.putParcelable(layoutManagerStateTag, recyclerView.layoutManager!!.onSaveInstanceState())
+            layoutManagerBundle.putParcelable(LAYOUT_MANAGER_STATE_KEY, recyclerView.layoutManager!!.onSaveInstanceState())
             myState.layoutManagerState = layoutManagerBundle
         }
         return myState
@@ -161,15 +172,12 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         super.onRestoreInstanceState(savedState.superState)
         adapter.restoreAdapterState(savedState.adapterState!!)
         hasMoreDataToLoad = savedState.hasMoreDataToLoad
-        supportsLazyLoading = savedState.supportsLoadMore
-        supportsPullToRefresh = savedState.supportsPullToRefresh
-        supportsBounceOverscroll = savedState.supportsBounceOverscroll
-        overscrollBounceEnabled = savedState.overscrollBounceEnabled
+        bounceOverscrollEnabled = savedState.overscrollBounceEnabled
         pullToRefreshEnabled = savedState.pullToRefreshEnabled
         layoutManagerType = LayoutManagerTypes.valueOf(savedState.layoutManagerType)
         emptyLayoutId = savedState.emptyLayoutId
-        enableBounceOverscroll(overscrollBounceEnabled)
-        enablePullToRefreshLayout(pullToRefreshEnabled)
+        bounceOverscrollEnabled = savedState.overscrollBounceEnabled
+        pullToRefreshEnabled = savedState.pullToRefreshEnabled
         showLoadingIndicator(savedState.showingLoadingIndicator)
         showRefreshLayout(savedState.showingRefreshLayout)
         showLoadingFooter(savedState.showingLoadingFooterLayout)
@@ -177,7 +185,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         configureLayoutManager()
         if (savedState.layoutManagerState != null && recyclerView.layoutManager != null) {
             val layoutManagerState = BundleUtils.getParcelable(
-                layoutManagerStateTag,
+                LAYOUT_MANAGER_STATE_KEY,
                 savedState.layoutManagerState!!,
                 Parcelable::class.java
             )
@@ -210,43 +218,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
      */
     fun setItemAnimator(animator: ItemAnimator?) {
         recyclerView.itemAnimator = animator
-    }
-
-    /**
-     * @param supportsPullToRefresh - Whether pull to refresh is supported.
-     */
-    fun setSupportsPullToRefresh(supportsPullToRefresh: Boolean) {
-        this.supportsPullToRefresh = supportsPullToRefresh
-    }
-
-    /**
-     * @param supportsBounceOverscroll - Whether overscroll bounce effect is supported.
-     */
-    fun setSupportsBounceOverscroll(supportsBounceOverscroll: Boolean) {
-        this.supportsBounceOverscroll = supportsBounceOverscroll
-    }
-
-    /**
-     * @param enabled - Whether overscroll bounce is enabled.
-     */
-    fun enableBounceOverscroll(enabled: Boolean) {
-        if (!supportsBounceOverscroll) return
-        enableBounceOverscrollInternally(enabled)
-    }
-
-    /**
-     * @param enabled - Whether pull to refresh is enabled.
-     */
-    fun enablePullToRefreshLayout(enabled: Boolean) {
-        if (!supportsPullToRefresh) return
-        enablePullToRefreshLayoutInternally(enabled)
-    }
-
-    /**
-     * @param supportsLazyLoading - Whether lazy loading is supported.
-     */
-    fun setSupportsLazyLoading(supportsLazyLoading: Boolean) {
-        this.supportsLazyLoading = supportsLazyLoading
     }
 
     /**
@@ -296,17 +267,17 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         post {
             if (emptyLayout == null) {
                 emptyLayoutView = null
-                recyclerEmptyLayoutContainer!!.removeAllViews()
+                recyclerEmptyLayoutContainer.removeAllViews()
                 return@post
             }
-            recyclerEmptyLayoutContainer!!.removeAllViews()
+            recyclerEmptyLayoutContainer.removeAllViews()
             emptyLayoutView = emptyLayout
             emptyLayoutListeners = layoutListener
-            emptyLayoutView!!.tag = emptyLayoutTag
+            emptyLayoutView!!.tag = EMPTY_LAYOUT_TAG
             val isListEmpty = adapter.collection.isEmpty()
-            recyclerEmptyLayoutContainer!!.visibility = if (isListEmpty) VISIBLE else GONE
+            recyclerEmptyLayoutContainer.visibility = if (isListEmpty) VISIBLE else GONE
             recyclerView.visibility = if (isListEmpty) GONE else VISIBLE
-            val layout = findViewWithTag<View>(emptyLayoutTag)
+            val layout = findViewWithTag<View>(EMPTY_LAYOUT_TAG)
             layout?.let { removeView(it) }
             val params = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             params.addRule(ALIGN_PARENT_LEFT, TRUE)
@@ -314,7 +285,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             params.addRule(ALIGN_PARENT_BOTTOM, TRUE)
             params.addRule(ALIGN_PARENT_RIGHT, TRUE)
             if (emptyLayoutListeners != null) emptyLayoutListeners!!.onInflated(emptyLayoutView)
-            recyclerEmptyLayoutContainer!!.addView(emptyLayoutView, params)
+            recyclerEmptyLayoutContainer.addView(emptyLayoutView, params)
         }
     }
 
@@ -349,15 +320,15 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     }
 
     fun refreshData() {
-        if (!supportsPullToRefresh || isShowingRefreshLayout) return
-        isShowingRefreshLayout = true
-        postDelayed(showRefreshLayoutDelayedRunnable, showRefreshManualDelay.toLong())
-        if (refreshCallback != null) refreshCallback!!.refresh(this@EasyRecyclerView)
+        if (isRunningAction) return
+        refreshDataAction?.apply {
+            executeAsync(this@EasyRecyclerView)
+        }
     }
 
     fun loadMoreData() {
-        if (loadMoreDataAction == null || !hasMoreDataToLoad) return
-        loadMoreDataAction!!.apply {
+        if (isRunningAction || !hasMoreDataToLoad) return
+        loadMoreDataAction?.apply {
             executeAsync(this@EasyRecyclerView)
         }
     }
@@ -369,72 +340,55 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
      */
     fun showLoadingIndicator(state: Boolean) {
         if (state == isShowingLoadingHeader) return
-        isShowingLoadingHeader = state
-        if (!isShowingLoadingHeader) {
-            removeCallbacks(showLoadingDelayedRunnable)
-            loadingIndicator.visibility = GONE
-        } else postDelayed(showLoadingDelayedRunnable, showLoadingManualDelay.toLong())
+        if (state) loadingIndicator.visibility = VISIBLE
+        else loadingIndicator.visibility = GONE
     }
 
     /**
-     * Indicates whether lazy loading is activated.
+     * Shows loading footer view.
      *
      * @param isLoading - Whether is loading.
-     * @see EasyRecyclerView.setSupportsLazyLoading
      */
     fun showLoadingFooter(isLoading: Boolean) {
-        if (!supportsLazyLoading) return
-        isShowingLoadingFooter = isLoading
-        if (isLoading) addFooterView(loadingFooterView!!)
-        else removeFooterView(loadingFooterView!!)
+        if (isLoading) addFooterView(loadingFooterView)
+        else removeFooterView(loadingFooterView)
     }
 
     /**
-     * Indicates whether refresh is activated.
+     * Shows refresh layout visibillity
      *
-     * @param isRefreshing - Whether is loading.
-     * @see EasyRecyclerView.setSupportsPullToRefresh
+     * @param newState - Whether is loading.
      */
-    fun showRefreshLayout(isRefreshing: Boolean) {
-        if (!pullToRefreshEnabled || isRefreshing == isShowingRefreshLayout) return
-        isShowingRefreshLayout = isRefreshing
-        if (!isShowingRefreshLayout) removeCallbacks(showRefreshLayoutDelayedRunnable)
-        recyclerView.post {
-            refreshLayout!!.setRefreshing(isRefreshing)
-        }
+    fun showRefreshLayout(newState: Boolean) {
+        if (!pullToRefreshEnabled || refreshLayout.isRefreshing == newState) return
+        refreshLayout.setRefreshing(newState)
     }
 
     /**
-     * Sets the [LazyLoadingAction] to be called when lazy loading is triggered.
-     * The callback will be called only if [EasyRecyclerView.supportsLazyLoading] is true.
+     * Sets the [RefreshDataAction] to be called on swipe refresh.
      *
-     * @param callback - The LoadMoreCallback  to be executed on lazy loading.
-     * @see EasyRecyclerView.setSupportsLazyLoading
+     * @param refreshAction action to be executed on refresh.
      */
-    fun configureLazyLoading(callback: LazyLoadingAction<ItemType>?) {
-        if (!supportsLazyLoading) return
-        loadMoreDataAction = callback
-    }
-
-    /**
-     * Sets the [RefreshCallback] to be called on swipe refresh.
-     * The callback will be called only if [EasyRecyclerView.supportsPullToRefresh] is true.
-     *
-     * @param callback - The RefreshCallback to be executed on refresh.
-     * @see EasyRecyclerView.setSupportsPullToRefresh
-     */
-    fun setRefreshCallback(callback: RefreshCallback<ItemType>?) {
-        if (!supportsPullToRefresh) return
-        refreshCallback = callback
-        refreshLayout!!.setOnRefreshListener(object : RecyclerRefreshLayout.OnRefreshListener {
+    fun setRefreshAction(refreshAction: RefreshDataAction<ItemType>?) {
+        this.refreshDataAction = refreshAction
+        refreshLayout.setOnRefreshListener(object : RecyclerRefreshLayout.OnRefreshListener {
             override fun onRefresh() {
-                if (isShowingRefreshLayout)
+                if (isRunningAction) {
+                    refreshLayout.setRefreshing(false)
                     return
-                isShowingRefreshLayout = true
-                if (refreshCallback != null)
-                    refreshCallback!!.refresh(this@EasyRecyclerView)
+                }
+                refreshDataAction?.executeAsync(this@EasyRecyclerView)
             }
         })
+    }
+
+    /**
+     * Sets the [LoadMoreDataAction] called on lazy loading.
+     *
+     * @param loadMoreDataAction action to be executed.
+     */
+    fun setLazyLoadingAction(loadMoreDataAction: LoadMoreDataAction<ItemType>?) {
+        this.loadMoreDataAction = loadMoreDataAction
     }
 
     /**
@@ -451,27 +405,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
      */
     fun hasMoreDataToLoad(): Boolean {
         return hasMoreDataToLoad
-    }
-
-    /**
-     * @return whether component supports refresh
-     */
-    fun supportsPullToRefresh(): Boolean {
-        return supportsPullToRefresh
-    }
-
-    /**
-     * @return whether component supports lazy loading
-     */
-    fun supportsLazyLoading(): Boolean {
-        return supportsLazyLoading
-    }
-
-    /**
-     * @return whether component supports overscroll bounce
-     */
-    fun supportsBounceOverscroll(): Boolean {
-        return supportsBounceOverscroll
     }
 
     /**
@@ -549,40 +482,27 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             R.style.EasyRecyclerViewDefaultStyle
         )
         try {
-            //val textView = TextView(getContext())
-            val emptyLayoutId = attributes.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
-            if (emptyLayoutId != -1) this.emptyLayoutId = emptyLayoutId
-            supportsPullToRefresh = attributes.getBoolean(R.styleable.EasyRecyclerView_erv_supports_pull_to_refresh, false)
-            supportsBounceOverscroll =
-                attributes.getBoolean(R.styleable.EasyRecyclerView_erv_supports_overscroll_bounce, false)
-            supportsLazyLoading = attributes.getBoolean(R.styleable.EasyRecyclerView_erv_supports_load_more, false)
-            layoutManagerType = if (getLayoutManagerType() == UNDEFINED) LayoutManagerTypes.valueOf(
-                attributes.getInt(R.styleable.EasyRecyclerView_erv_layout_manager, 1)
-            ) else getLayoutManagerType()
+            attributes.apply {
+                val emptyLayoutId = getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
+                if (emptyLayoutId != -1) this@EasyRecyclerView.emptyLayoutId = emptyLayoutId
+                bounceOverscrollEnabled = getBoolean(R.styleable.EasyRecyclerView_erv_supports_overscroll_bounce, false)
+                pullToRefreshEnabled = getBoolean(R.styleable.EasyRecyclerView_erv_supports_pull_to_refresh, false)
+                layoutManagerType = if (getLayoutManagerType() == UNDEFINED) LayoutManagerTypes.valueOf(
+                    getInt(R.styleable.EasyRecyclerView_erv_layout_manager, 1)
+                ) else getLayoutManagerType()
+            }
         } finally {
             attributes.recycle()
         }
     }
 
     private fun initView() {
-        inflate(context, R.layout.lv_layout, this)
-        loadingFooterView = inflate(context, R.layout.lv_loading_footer, null)
-        selectViews()
         initLoadingIndicator()
         configureRecycler()
         configureLayoutManager()
         configureRefreshLayout()
         configureEmptyLayout()
         isNestedScrollingEnabled = isNestedScrollingEnabled
-        enableBounceOverscrollInternally(supportsBounceOverscroll)
-        enablePullToRefreshLayoutInternally(supportsPullToRefresh)
-    }
-
-    private fun selectViews() {
-        loadingIndicator = findViewById(R.id.loadingIndicator)
-        recyclerView = findViewById(R.id.recyclerView)
-        refreshLayout = findViewById(R.id.refreshLayout)
-        recyclerEmptyLayoutContainer = findViewById(R.id.recyclerEmptyLayoutContainer)
     }
 
     private fun initLoadingIndicator() {
@@ -622,8 +542,8 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         val layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, indicatorSize)
         val refreshView = RefreshView(context)
         refreshView.setBackgroundColor(refreshBackgroundColor)
-        refreshLayout!!.setRefreshView(refreshView, layoutParams)
-        refreshLayout!!.setRefreshStyle(RefreshStyle.NORMAL)
+        refreshLayout.setRefreshView(refreshView, layoutParams)
+        refreshLayout.setRefreshStyle(RefreshStyle.NORMAL)
     }
 
     private fun configureEmptyLayout() {
@@ -631,37 +551,22 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     }
 
     private fun setEmptyLayoutVisibility(visibility: Boolean) {
-        if (emptyLayoutView == null) return
-        showingEmptyLayout = visibility
+        if (emptyLayoutView == null || isShowingEmptyLayout == visibility) return
         if (visibility) {
-            recyclerEmptyLayoutContainer!!.visibility = VISIBLE
+            recyclerEmptyLayoutContainer.visibility = VISIBLE
             recyclerView.visibility = INVISIBLE
             if (emptyLayoutListeners != null) emptyLayoutListeners!!.onShow(emptyLayoutView)
         } else {
             if (emptyLayoutListeners != null) emptyLayoutListeners!!.onHide(emptyLayoutView)
-            recyclerEmptyLayoutContainer!!.visibility = INVISIBLE
+            recyclerEmptyLayoutContainer.visibility = INVISIBLE
             recyclerView.visibility = VISIBLE
         }
-    }
-
-    private fun enableBounceOverscrollInternally(enabled: Boolean) {
-        overscrollBounceEnabled = enabled
-        recyclerView.edgeEffectFactory = if (enabled) BounceEdge() else defaultEdgeFactory
-    }
-
-    private fun enablePullToRefreshLayoutInternally(enabled: Boolean) {
-        pullToRefreshEnabled = enabled
-        if (enabled) enableBounceOverscrollInternally(false)
-        refreshLayout!!.isEnabled = enabled
     }
 
     private class SavedState : BaseSavedState {
         var adapterState: Bundle? = null
         var hasMoreDataToLoad = false
         var overscrollBounceEnabled = false
-        var supportsBounceOverscroll = false
-        var supportsPullToRefresh = false
-        var supportsLoadMore = false
         var pullToRefreshEnabled = false
         var showingRefreshLayout = false
         var showingLoadingFooterLayout = false
@@ -678,10 +583,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             adapterState = parcel.readBundle(EasyRecyclerView::class.java.classLoader)
             hasMoreDataToLoad = parcel.readByte().toInt() != 0
             overscrollBounceEnabled = parcel.readByte().toInt() != 0
-            supportsPullToRefresh = parcel.readByte().toInt() != 0
             pullToRefreshEnabled = parcel.readByte().toInt() != 0
-            supportsBounceOverscroll = parcel.readByte().toInt() != 0
-            supportsLoadMore = parcel.readByte().toInt() != 0
             showingRefreshLayout = parcel.readByte().toInt() != 0
             showingLoadingFooterLayout = parcel.readByte().toInt() != 0
             showingLoadingIndicator = parcel.readByte().toInt() != 0
@@ -697,10 +599,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             out.writeBundle(adapterState)
             out.writeByte((if (hasMoreDataToLoad) 1 else 0).toByte())
             out.writeByte((if (overscrollBounceEnabled) 1 else 0).toByte())
-            out.writeByte((if (supportsPullToRefresh) 1 else 0).toByte())
             out.writeByte((if (pullToRefreshEnabled) 1 else 0).toByte())
-            out.writeByte((if (supportsBounceOverscroll) 1 else 0).toByte())
-            out.writeByte((if (supportsLoadMore) 1 else 0).toByte())
             out.writeByte((if (showingRefreshLayout) 1 else 0).toByte())
             out.writeByte((if (showingLoadingFooterLayout) 1 else 0).toByte())
             out.writeByte((if (showingLoadingIndicator) 1 else 0).toByte())
@@ -734,51 +633,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         fun execute()
     }
 
-    interface EasyRecyclerViewAdapterAction<ItemType : EasyAdapterDataModel> {
-        fun execute(adapter: EasyRecyclerAdapter<ItemType>)
-    }
-
-    interface RefreshCallback<ItemType : EasyAdapterDataModel> {
-        fun refresh(view: EasyRecyclerView<ItemType>)
-    }
-
     interface AdapterCreator<ItemType : EasyAdapterDataModel> {
         fun createAdapter(): EasyRecyclerAdapter<ItemType>
-    }
-
-    class LazyLoadingAction<ItemType : EasyAdapterDataModel>(
-        private val task: LoadMoreAction<ItemType>,
-        private val callback: Callbacks<ItemType>,
-    ) {
-        private val executor: Executor = Executors.newSingleThreadExecutor()
-        private val handler: Handler = Handler(Looper.getMainLooper())
-
-        interface Callbacks<ItemType : EasyAdapterDataModel> {
-            fun onComplete(result: List<ItemType>, easyRecyclerView: EasyRecyclerView<ItemType>)
-            fun onError(error: java.lang.Exception)
-        }
-
-        interface LoadMoreAction<ItemType : EasyAdapterDataModel> {
-            fun execute(easyRecyclerView: EasyRecyclerView<ItemType>): List<ItemType>
-        }
-
-        fun executeAsync(easyRecyclerView: EasyRecyclerView<ItemType>) {
-            executor.execute {
-                try {
-                    handler.post { easyRecyclerView.showLoadingFooter(true) }
-                    task.execute(easyRecyclerView).apply {
-                        handler.post {
-                            easyRecyclerView.showLoadingFooter(false)
-                            callback.onComplete(this, easyRecyclerView)
-                        }
-                    }
-                } catch (exception: java.lang.Exception) {
-                    handler.post {
-                        easyRecyclerView.showLoadingFooter(false)
-                        callback.onError(exception)
-                    }
-                }
-            }
-        }
     }
 }

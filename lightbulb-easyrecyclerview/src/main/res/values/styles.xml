@@ -6,7 +6,6 @@
         <item name="erv_empty_layout_id">@null</item>
         <item name="erv_supports_pull_to_refresh">false</item>
         <item name="erv_supports_overscroll_bounce">false</item>
-        <item name="erv_supports_load_more">false</item>
         <item name="erv_layout_manager">LAYOUT_LINEAR_VERTICAL</item>
     </style>
 </resources>

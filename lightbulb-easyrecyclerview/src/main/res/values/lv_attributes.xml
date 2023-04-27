@@ -7,7 +7,6 @@
     <declare-styleable name="EasyRecyclerView">
         <attr name="erv_empty_layout_id" format="reference" />
         <attr name="erv_supports_pull_to_refresh" format="boolean" />
-        <attr name="erv_supports_load_more" format="boolean" />
         <attr name="erv_supports_overscroll_bounce" format="boolean" />
         <attr name="erv_layout_manager" format="enum">
             <enum name="LAYOUT_LINEAR_VERTICAL" value="1" />

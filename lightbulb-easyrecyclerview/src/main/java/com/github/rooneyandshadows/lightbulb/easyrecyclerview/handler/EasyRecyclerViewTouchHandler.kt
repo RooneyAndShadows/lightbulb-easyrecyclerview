@@ -82,7 +82,7 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
         viewHolder.itemView.alpha = 1f
-        easyRecyclerView.enablePullToRefreshLayout(true)
+        easyRecyclerView.pullToRefreshEnabled = false
         if (isItemVisible(viewHolder)) executePendingAction()
     }
 
@@ -105,7 +105,7 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
 
     private fun handleSwipeDraw(viewHolder: RecyclerView.ViewHolder, canvas: Canvas, dx: Float, dy: Float) {
         val itemView = viewHolder.itemView
-        easyRecyclerView.enablePullToRefreshLayout(false)
+        easyRecyclerView.pullToRefreshEnabled = false
         val itemPosition = viewHolder.absoluteAdapterPosition - adapter.headersCount
         if (itemPosition != -1) {
             val item: ItemType? = getItem(viewHolder)

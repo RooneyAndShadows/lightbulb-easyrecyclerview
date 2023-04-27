@@ -80,6 +80,8 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
             }
         }
     }
+    val isRefreshing: Boolean
+        get() = mIsRefreshing
 
     init {
         setWillNotDraw(false)
@@ -294,7 +296,7 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
 
     override fun onNestedScroll(
         target: View, dxConsumed: Int, dyConsumed: Int,
-        dxUnconsumed: Int, dyUnconsumed: Int
+        dxUnconsumed: Int, dyUnconsumed: Int,
     ) {
         // Dispatch up to the nested parent first
         dispatchNestedScroll(
@@ -338,7 +340,7 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
 
     override fun dispatchNestedScroll(
         dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int,
-        dyUnconsumed: Int, offsetInWindow: IntArray?
+        dyUnconsumed: Int, offsetInWindow: IntArray?,
     ): Boolean {
         return mNestedScrollingChildHelper.dispatchNestedScroll(
             dxConsumed, dyConsumed,
@@ -352,14 +354,14 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
 
     override fun onNestedPreFling(
         target: View, velocityX: Float,
-        velocityY: Float
+        velocityY: Float,
     ): Boolean {
         return dispatchNestedPreFling(velocityX, velocityY)
     }
 
     override fun onNestedFling(
         target: View, velocityX: Float, velocityY: Float,
-        consumed: Boolean
+        consumed: Boolean,
     ): Boolean {
         return dispatchNestedFling(velocityX, velocityY, consumed)
     }
@@ -503,8 +505,8 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
      * @param refreshing Whether or not the view should show refresh progress.
      */
     fun setRefreshing(refreshing: Boolean) {
-        if (refreshing && mIsRefreshing != refreshing) {
-            mIsRefreshing = refreshing
+        if (refreshing && !mIsRefreshing) {
+            mIsRefreshing = true
             mNotifyListener = false
             animateToRefreshingPosition(mTargetOrRefreshViewOffsetY.toInt(), mRefreshingListener)
         } else {

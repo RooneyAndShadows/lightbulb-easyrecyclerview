@@ -16,7 +16,7 @@ class HorizontalLinearLayoutManager<ItemType : EasyAdapterDataModel, AType : Eas
 
     @Override
     override fun canScrollVertically(): Boolean {
-        return easyRecyclerView.supportsPullToRefresh() && !scrollingHorizontally
+        return easyRecyclerView.pullToRefreshEnabled && !scrollingHorizontally
     }
 
     @Override
@@ -57,7 +57,7 @@ class HorizontalLinearLayoutManager<ItemType : EasyAdapterDataModel, AType : Eas
     }
 
     private fun handleLoadMore() {
-        if (!easyRecyclerView.supportsLazyLoading()) return
+        if (!easyRecyclerView.supportsLazyLoading) return
         val lastView = getChildAt(childCount - 1) ?: return
         val recyclerAdapter: EasyRecyclerAdapter<ItemType> = easyRecyclerView.adapter
         val size = easyRecyclerView.adapter.collection.size()

@@ -9,14 +9,13 @@ import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragm
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LazyLoadingAction
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LazyLoadingAction.LoadMoreAction
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LazyLoadingAction.Callbacks
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions.AsyncAction
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions.AsyncAction.*
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions.LoadMoreDataAction
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.DemoItemView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 import java.lang.Exception
 
@@ -40,21 +39,21 @@ class LazyLoadingDemoFragment : BaseFragment() {
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         recyclerView.apply {
             addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
-            configureLazyLoading(LazyLoadingAction(object : LoadMoreAction<DemoModel> {
+            setLazyLoadingAction(LoadMoreDataAction(object : Action<DemoModel> {
                 override fun execute(easyRecyclerView: EasyRecyclerView<DemoModel>): List<DemoModel> {
                     Thread.sleep(1500)
                     val adapter = adapter
                     val offset = adapter.collection.size()
                     return generateData(10, offset)
                 }
-            }, object : Callbacks<DemoModel> {
-                override fun onComplete(result: List<DemoModel>, easyRecyclerView: EasyRecyclerView<DemoModel>) {
+            }, object : OnComplete<DemoModel> {
+                override fun execute(result: List<DemoModel>, easyRecyclerView: EasyRecyclerView<DemoModel>) {
                     easyRecyclerView.adapter.apply {
                         collection.addAll(result)
                     }
                 }
-
-                override fun onError(error: Exception) {
+            }, object : OnError<DemoModel> {
+                override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
                     error.printStackTrace()
                 }
             }))

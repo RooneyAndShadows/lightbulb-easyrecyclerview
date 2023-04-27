@@ -6,22 +6,23 @@
 
     <com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh.RecyclerRefreshLayout
         android:id="@+id/refreshLayout"
-        android:clipChildren="false"
-        android:clipToPadding="false"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <RelativeLayout
-            android:clipChildren="false"
-            android:clipToPadding="false"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/loadingIndicator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:indeterminate="true" />
+                android:indeterminate="true"
+                android:visibility="gone" />
 
             <RelativeLayout
                 android:id="@+id/recyclerEmptyLayoutContainer"
@@ -33,9 +34,9 @@
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_below="@id/loadingIndicator"
                 android:clipChildren="false"
                 android:clipToPadding="false"
-                android:layout_below="@id/loadingIndicator"
                 tools:itemCount="20" />
         </RelativeLayout>
 
