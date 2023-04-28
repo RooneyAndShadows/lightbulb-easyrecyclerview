@@ -1,4 +1,4 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments
+package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments.lazy_loading
 
 import android.os.Bundle
 import android.view.View
@@ -6,10 +6,10 @@ import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.B
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
+import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragmentWithViewModel
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions.AsyncAction
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions.AsyncAction.*
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions.LoadMoreDataAction
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
@@ -22,9 +22,33 @@ import java.lang.Exception
 @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE", "SameParameterValue")
 @FragmentScreen(screenName = "LazyLoading", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_lazy_loading")
-class LazyLoadingDemoFragment : BaseFragment() {
+class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewModel>() {
     @BindView(name = "recycler_view")
     lateinit var recyclerView: SimpleRecyclerView
+    override val viewModelClass: Class<LazyLoadingDemoViewModel>
+        get() = LazyLoadingDemoViewModel::class.java
+
+    @Override
+    override fun doOnCreate(savedInstanceState: Bundle?, viewModel: LazyLoadingDemoViewModel) {
+        if (savedInstanceState != null) return
+        viewModel.lazyLoadingAction = LoadMoreDataAction(object : Action<DemoModel> {
+            override fun execute(easyRecyclerView: EasyRecyclerView<DemoModel>): List<DemoModel> {
+                Thread.sleep(3000)
+                val offset = easyRecyclerView.adapter.collection.size()
+                return generateData(10, offset)
+            }
+        }, object : OnComplete<DemoModel> {
+            override fun execute(result: List<DemoModel>, easyRecyclerView: EasyRecyclerView<DemoModel>) {
+                easyRecyclerView.adapter.apply {
+                    collection.addAll(result)
+                }
+            }
+        }, object : OnError<DemoModel> {
+            override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
+                error.printStackTrace()
+            }
+        }, viewLifecycleOwner)
+    }
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -39,24 +63,7 @@ class LazyLoadingDemoFragment : BaseFragment() {
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         recyclerView.apply {
             addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
-            setLazyLoadingAction(LoadMoreDataAction(object : Action<DemoModel> {
-                override fun execute(easyRecyclerView: EasyRecyclerView<DemoModel>): List<DemoModel> {
-                    Thread.sleep(1500)
-                    val adapter = adapter
-                    val offset = adapter.collection.size()
-                    return generateData(10, offset)
-                }
-            }, object : OnComplete<DemoModel> {
-                override fun execute(result: List<DemoModel>, easyRecyclerView: EasyRecyclerView<DemoModel>) {
-                    easyRecyclerView.adapter.apply {
-                        collection.addAll(result)
-                    }
-                }
-            }, object : OnError<DemoModel> {
-                override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
-                    error.printStackTrace()
-                }
-            }))
+            setLazyLoadingAction(viewModel.lazyLoadingAction)
             if (savedInstanceState != null) return@apply
             adapter.collection.set(generateData(10))
         }

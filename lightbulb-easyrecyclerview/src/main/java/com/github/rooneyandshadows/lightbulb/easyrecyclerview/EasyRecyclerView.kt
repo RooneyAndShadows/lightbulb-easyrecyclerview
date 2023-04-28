@@ -89,7 +89,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             }
         }
     }
-
     var bounceOverscrollEnabled: Boolean
         set(value) {
             if (value && refreshLayout.isEnabled) {
@@ -322,14 +321,14 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     fun refreshData() {
         if (isRunningAction) return
         refreshDataAction?.apply {
-            executeAsync(this@EasyRecyclerView)
+            executeAsync()
         }
     }
 
     fun loadMoreData() {
         if (isRunningAction || !hasMoreDataToLoad) return
         loadMoreDataAction?.apply {
-            executeAsync(this@EasyRecyclerView)
+            executeAsync()
         }
     }
 
@@ -370,25 +369,23 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
      * @param refreshAction action to be executed on refresh.
      */
     fun setRefreshAction(refreshAction: RefreshDataAction<ItemType>?) {
-        this.refreshDataAction = refreshAction
-        refreshLayout.setOnRefreshListener(object : RecyclerRefreshLayout.OnRefreshListener {
-            override fun onRefresh() {
-                if (isRunningAction) {
-                    refreshLayout.setRefreshing(false)
-                    return
-                }
-                refreshDataAction?.executeAsync(this@EasyRecyclerView)
-            }
-        })
+        if (refreshAction == null) refreshDataAction?.detachFromRecycler()
+        this.refreshDataAction = refreshAction?.apply {
+            attachTo(this@EasyRecyclerView)
+        }
+        refreshAction?.attachTo(this)
     }
 
     /**
      * Sets the [LoadMoreDataAction] called on lazy loading.
      *
-     * @param loadMoreDataAction action to be executed.
+     * @param lazyLoadingAction action to be executed.
      */
-    fun setLazyLoadingAction(loadMoreDataAction: LoadMoreDataAction<ItemType>?) {
-        this.loadMoreDataAction = loadMoreDataAction
+    fun setLazyLoadingAction(lazyLoadingAction: LoadMoreDataAction<ItemType>?) {
+        if (lazyLoadingAction == null) loadMoreDataAction?.detachFromRecycler()
+        loadMoreDataAction = lazyLoadingAction?.apply {
+            attachTo(this@EasyRecyclerView)
+        }
     }
 
     /**
@@ -544,6 +541,15 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         refreshView.setBackgroundColor(refreshBackgroundColor)
         refreshLayout.setRefreshView(refreshView, layoutParams)
         refreshLayout.setRefreshStyle(RefreshStyle.NORMAL)
+        refreshLayout.setOnRefreshListener(object : RecyclerRefreshLayout.OnRefreshListener {
+            override fun onRefresh() {
+                if (isRunningAction) {
+                    refreshLayout.setRefreshing(false)
+                    return
+                }
+                refreshData()
+            }
+        })
     }
 
     private fun configureEmptyLayout() {
