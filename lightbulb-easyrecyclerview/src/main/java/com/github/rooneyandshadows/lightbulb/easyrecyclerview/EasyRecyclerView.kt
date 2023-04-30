@@ -195,7 +195,9 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     @Override
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (touchHandler != null) touchHandler!!.cancelPendingAction()
+        touchHandler?.apply { cancelPendingAction() }
+        loadMoreDataAction?.apply { onDetached() }
+        refreshDataAction?.apply { onDetached() }
     }
 
     protected open fun getLayoutManagerType(): LayoutManagerTypes {
@@ -369,11 +371,10 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
      * @param refreshAction action to be executed on refresh.
      */
     fun setRefreshAction(refreshAction: RefreshDataAction<ItemType>?) {
-        if (refreshAction == null) refreshDataAction?.detachFromRecycler()
+        if (refreshAction == null) refreshDataAction?.dispose()
         this.refreshDataAction = refreshAction?.apply {
-            attachTo(this@EasyRecyclerView)
+            onAttached(this@EasyRecyclerView)
         }
-        refreshAction?.attachTo(this)
     }
 
     /**
@@ -382,9 +383,9 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
      * @param lazyLoadingAction action to be executed.
      */
     fun setLazyLoadingAction(lazyLoadingAction: LoadMoreDataAction<ItemType>?) {
-        if (lazyLoadingAction == null) loadMoreDataAction?.detachFromRecycler()
+        if (lazyLoadingAction == null) loadMoreDataAction?.dispose()
         loadMoreDataAction = lazyLoadingAction?.apply {
-            attachTo(this@EasyRecyclerView)
+            onAttached(this@EasyRecyclerView)
         }
     }
 

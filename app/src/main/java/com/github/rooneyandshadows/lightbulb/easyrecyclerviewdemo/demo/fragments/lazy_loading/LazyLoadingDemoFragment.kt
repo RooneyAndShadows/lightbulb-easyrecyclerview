@@ -47,7 +47,7 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
             override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
                 error.printStackTrace()
             }
-        }, viewLifecycleOwner)
+        })
     }
 
     @Override

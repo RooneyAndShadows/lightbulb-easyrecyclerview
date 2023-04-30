@@ -1,16 +1,13 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions
 
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 
 class LoadMoreDataAction<ItemType : EasyAdapterDataModel> @JvmOverloads constructor(
     task: Action<ItemType>,
     onSuccess: OnComplete<ItemType>,
-    onError: OnError<ItemType>? = null,
-    lifecycleOwner: LifecycleOwner? = null
-) : AsyncAction<ItemType>(task, onSuccess, onError, lifecycleOwner) {
+    onError: OnError<ItemType>? = null
+) : AsyncAction<ItemType>(task, onSuccess, onError) {
 
     @Override
     override fun beforeExecute(easyRecyclerView: EasyRecyclerView<ItemType>) {
