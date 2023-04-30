@@ -5,7 +5,6 @@ import android.view.View
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
-import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragmentWithViewModel
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
@@ -19,7 +18,6 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.De
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 import java.lang.Exception
 
-@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE", "SameParameterValue")
 @FragmentScreen(screenName = "LazyLoading", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_lazy_loading")
 class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewModel>() {
@@ -31,23 +29,7 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
     @Override
     override fun doOnCreate(savedInstanceState: Bundle?, viewModel: LazyLoadingDemoViewModel) {
         if (savedInstanceState != null) return
-        viewModel.lazyLoadingAction = LoadMoreDataAction(object : Action<DemoModel> {
-            override fun execute(easyRecyclerView: EasyRecyclerView<DemoModel>): List<DemoModel> {
-                Thread.sleep(3000)
-                val offset = easyRecyclerView.adapter.collection.size()
-                return generateData(10, offset)
-            }
-        }, object : OnComplete<DemoModel> {
-            override fun execute(result: List<DemoModel>, easyRecyclerView: EasyRecyclerView<DemoModel>) {
-                easyRecyclerView.adapter.apply {
-                    collection.addAll(result)
-                }
-            }
-        }, object : OnError<DemoModel> {
-            override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
-                error.printStackTrace()
-            }
-        })
+        initLazyLoadingAction()
     }
 
     @Override
@@ -67,5 +49,23 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
             if (savedInstanceState != null) return@apply
             adapter.collection.set(generateData(10))
         }
+    }
+
+    private fun initLazyLoadingAction() {
+        viewModel.lazyLoadingAction = LoadMoreDataAction(object : Action<DemoModel> {
+            override fun execute(easyRecyclerView: EasyRecyclerView<DemoModel>): List<DemoModel> {
+                Thread.sleep(3000)
+                val offset = easyRecyclerView.adapter.collection.size()
+                return generateData(10, offset)
+            }
+        }, object : OnComplete<DemoModel> {
+            override fun execute(result: List<DemoModel>, easyRecyclerView: EasyRecyclerView<DemoModel>) {
+                easyRecyclerView.adapter.apply { collection.addAll(result) }
+            }
+        }, object : OnError<DemoModel> {
+            override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
+                error.printStackTrace()
+            }
+        })
     }
 }

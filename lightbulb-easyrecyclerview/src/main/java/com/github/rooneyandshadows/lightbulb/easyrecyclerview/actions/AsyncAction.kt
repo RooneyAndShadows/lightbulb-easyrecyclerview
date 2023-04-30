@@ -15,8 +15,8 @@ abstract class AsyncAction<ItemType : EasyAdapterDataModel>(
     private val executor: Executor = Executors.newSingleThreadExecutor()
     private val handler: Handler = Handler(Looper.getMainLooper())
     private val currentThread: Thread? = null
-    private var scheduledRecyclerAction = false
     private val pauseLock = Object()
+    private var scheduledRecyclerAction = false
     private var recyclerView: EasyRecyclerView<ItemType>? = null
         set(value) {
             if (scheduledRecyclerAction) handler.post { field = value }
