@@ -15,10 +15,13 @@ abstract class AsyncAction<ItemType : EasyAdapterDataModel>(
     private val executor: Executor = Executors.newSingleThreadExecutor()
     private val handler: Handler = Handler(Looper.getMainLooper())
     private val currentThread: Thread? = null
+    private var scheduledRecyclerAction = false
     private val pauseLock = Object()
-
-    @Volatile
     private var recyclerView: EasyRecyclerView<ItemType>? = null
+        set(value) {
+            if (scheduledRecyclerAction) handler.post { field = value }
+            else field = value
+        }
 
     @Volatile
     var isPaused: Boolean = false
@@ -37,28 +40,6 @@ abstract class AsyncAction<ItemType : EasyAdapterDataModel>(
     open fun onError(easyRecyclerView: EasyRecyclerView<ItemType>, exception: java.lang.Exception) {
     }
 
-    internal fun onAttached(easyRecyclerView: EasyRecyclerView<ItemType>) {
-        if (recyclerView == null) recyclerView = easyRecyclerView
-        if (!isRunning || !isPaused) return
-        synchronized(pauseLock) {
-            isPaused = false
-            pauseLock.notifyAll()
-        }
-    }
-
-    internal fun onDetached() {
-        if (!isPaused && isRunning) synchronized(pauseLock) {
-            isPaused = true
-        }
-        recyclerView = null
-    }
-
-    fun dispose() {
-        currentThread?.interrupt()
-        handler.post { recyclerView = null }
-
-    }
-
     fun executeAsync() {
         if (recyclerView == null || isRunning) return
         executor.execute {
@@ -67,22 +48,29 @@ abstract class AsyncAction<ItemType : EasyAdapterDataModel>(
                 handler.post { beforeExecute(recyclerView!!) }
                 action.execute(recyclerView!!).apply {
                     if (waitIfPaused()) return@execute
-                    handler.post {
+                    scheduledRecyclerAction = handler.post {
                         isRunning = false
                         onComplete(recyclerView!!)
                         onCompleteCallback.execute(this, recyclerView!!)
+                        scheduledRecyclerAction = false
                     }
                 }
 
             } catch (exception: java.lang.Exception) {
                 if (waitIfPaused()) return@execute
-                handler.post {
+                scheduledRecyclerAction = handler.post {
                     isRunning = false
                     onError(recyclerView!!, exception)
                     onErrorCallback?.execute(exception, recyclerView!!)
+                    scheduledRecyclerAction = false
                 }
             }
         }
+    }
+
+    fun dispose() {
+        currentThread?.interrupt()
+        recyclerView = null
     }
 
     private fun waitIfPaused(): Boolean {
@@ -95,6 +83,21 @@ abstract class AsyncAction<ItemType : EasyAdapterDataModel>(
         } catch (exception: InterruptedException) {
             true
         }
+    }
+
+    internal fun onAttached(easyRecyclerView: EasyRecyclerView<ItemType>) {
+        if (recyclerView == null) recyclerView = easyRecyclerView
+        if (!isRunning || !isPaused) return
+        synchronized(pauseLock) {
+            isPaused = false
+            pauseLock.notifyAll()
+        }
+    }
+
+    internal fun onDetached() {
+        if (!isPaused && isRunning)
+            synchronized(pauseLock) { isPaused = true }
+        recyclerView = null
     }
 
     interface OnError<ItemType : EasyAdapterDataModel> {
