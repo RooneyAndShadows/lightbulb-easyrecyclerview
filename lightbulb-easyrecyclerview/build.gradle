@@ -14,7 +14,7 @@ android {
         targetSdkVersion 33
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-        versionName "2.0.0-RC22"
+        versionName "2.0.0-RC23"
     }
     buildFeatures {
         dataBinding true
