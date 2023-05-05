@@ -16,9 +16,9 @@ buildscript {
                         dynamication     : "1.0.0",
                 ],
                 lightbulb   : [
-                        application          : "1.4.0",
-                        commons              : "1.1.0",
-                        recycler_adapters    : "2.0.0-RC18",
+                        application          : "[1.4.0,1.5.0[",
+                        commons              : "[1.1.0,1.2.0[",
+                        recycler_adapters    : "[2.0.0,2.1.0[",
                         annotation_processors: "1.0.6-RC3"
                 ],
                 java_commons: "1.0.7",
