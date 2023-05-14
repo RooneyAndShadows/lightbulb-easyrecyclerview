@@ -1,4 +1,5 @@
 # 💡 Lightbulb-EasyRecyclerView
+[![](https://jitpack.io/v/rooneyandshadows/lightbulb-easyrecyclerview.svg)](https://jitpack.io/#rooneyandshadows/lightbulb-easyrecyclerview)
 
 All-in-one easy to use RecyclerView for your android project
 
@@ -9,6 +10,7 @@ All-in-one easy to use RecyclerView for your android project
 - **Lifecycle aware adapter state** - Items loaded in the list outlive configuration changes (
   orientation change etc.)
 - Selection support
+- Filter support
 - Drag to reorder support
 - Pull to refresh support
 - Swipe to delete support
@@ -18,8 +20,7 @@ All-in-one easy to use RecyclerView for your android project
 - Header and footer list items support
 - Sticky headers decoration
 - Bounce effect on overscroll
-- Different layout managers support: LinearLayoutVertical, LinearLayoutHorizontal,
-  FlowLayoutVertical, FlowLayoutHorizontal
+- Different layout managers support: LinearLayoutVertical, LinearLayoutHorizontal, FlowLayoutVertical, FlowLayoutHorizontal
 
 -------
 
@@ -28,8 +29,11 @@ All-in-one easy to use RecyclerView for your android project
 ![Image](DEV/screenshots/combined.png)
 
 ## Latest releases 🛠
-- Kotlin | [v2.0.0-RC1](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/2.0.0-RC1)
-- Java & AndroidX | [v1.0.24](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/1.0.24)
+
+- Kotlin
+  | [v2.0.2](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/2.0.2)
+- Java & AndroidX
+  | [v1.0.24](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/1.0.24)
 
 # Setup
 
@@ -47,9 +51,9 @@ repositories {
 ### 2. Provide the gradle dependency
 
 ```gradle
-implementation 'com.github.rooneyandshadows:lightbulb-easyrecyclerview:2.0.0-RC1'
+implementation 'com.github.rooneyandshadows:lightbulb-easyrecyclerview:2.0.2'
 // Add recycler adapters support
-implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:2.0.0-RC1'
+implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:2.0.2'
 ```
 
 ### Note
@@ -59,23 +63,38 @@ implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:2.0.0-RC1
 ### 3. Describe the data model for the adapter
 
 ```Kotlin
-class DemoModel : EasyAdapterDataModel {
-    val subtitle: String
+class DemoModel : EasyAdapterObservableDataModel {
+    @get:Bindable
+    var title: String
+        set(value) {
+            if (field == value) return
+            field = value
+            notifyPropertyChanged(BR.title)
+        }
+
+    @get:Bindable
+    var subtitle: String
+        set(value) {
+            if (field == value) return
+            field = value
+            notifyPropertyChanged(BR.subtitle)
+        }
     override val itemName: String
+        get() = title
 
     constructor(title: String, subtitle: String) {
-        itemName = title
+        this.title = title
         this.subtitle = subtitle
     }
 
     // Parcelling part
     constructor(parcel: Parcel) {
-        itemName = parcel.readString()!!
+        title = parcel.readString()!!
         subtitle = parcel.readString()!!
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(itemName)
+        dest.writeString(title)
         dest.writeString(subtitle)
     }
 
@@ -95,16 +114,21 @@ class DemoModel : EasyAdapterDataModel {
 }
 ```
 
-### 4. Prepare your data adapter
+### 4. Create your data adapter
 
 ```kotlin
 class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
-    @Override
+    override val collection: BasicCollection<DemoModel>
+        get() = super.collection as BasicCollection<DemoModel>
+
+    override fun createCollection(): BasicCollection<DemoModel> {
+        return BasicCollection(this)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         //create your ViewHolder
     }
 
-    @Override
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         //bind your data
     }
@@ -115,25 +139,45 @@ class SimpleAdapter : EasyRecyclerAdapter<DemoModel>() {
 }
 ```
 
-### 5. Add the `EasyRecyclerView` into the XML
+### 5. Create your RecyclerView
+
+```kotlin
+class SimpleRecyclerView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+) : EasyRecyclerView<DemoModel>(context, attrs) {
+    override val adapter: EasyRecyclerAdapter<DemoModel>
+        get() = super.adapter as SimpleAdapter
+
+    override val adapterCreator: AdapterCreator<DemoModel>
+        get() = object : AdapterCreator<DemoModel> {
+            override fun createAdapter(): SimpleAdapter {
+                return SimpleAdapter()
+            }
+        }
+}
+```
+
+### 6. Add the `EasyRecyclerView` into the XML
 
 ```xml
 
-<com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
-    android:id="@+id/easy_recycler_view" 
+<com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
+    android:id="@+id/recycler_view" 
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 ```
 
-### 6. Select the view in your activity/fragment and provide it with adapter and data
+### 7. Select the view in your activity/fragment and provide it with adapter and data
 
 ```kotlin
 @Override
 override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-    easyRecyclerView = getView().findViewById(R.id.recycler_view)
-    easyRecyclerView.setAdapter(SimpleAdapter())
-    if (savedState == null)
-        recyclerView.getAdapter().setCollection(generateInitialData())
+    recyclerView = fragmentView.findViewById(R.id.recycler_view).apply {
+        if (savedInstanceState != null) return@apply
+        val initialData = generateData(20)
+        adapter.collection.set(initialData)
+    }
 }
 ```
 
@@ -146,11 +190,10 @@ And that's it. `EasyRecyclerView` is ready to use.
 ```xml
 
 <EasyRecyclerView>
-    <attr name="ERV_EmptyLayoutId" format="reference" /> <!--Layout to show when there is no data-->
-    <attr name="ERV_SupportsPullToRefresh" format="boolean" /> <!--Whether pull to refresh is supported.[default:false]-->
-    <attr name="ERV_SupportsLoadMore" format="boolean" /> <!--Whether lazy loading is supported.[default:false]-->
-    <attr name="ERV_SupportsOverscrollBounce" format="boolean" /> <!--Whether bounce on overscroll is supported.[default:false]-->
-    <attr name="ERV_LayoutManager" format="enum"> <!--Type of the layout manager for the recyclerview. [default:LAYOUT_LINEAR_VERTICAL] -->
+    <attr name="erv_empty_layout_id" format="reference" /><!--Layout to show when there is no data-->
+    <attr name="erv_supports_pull_to_refresh" format="boolean" /><!--Whether pull to refresh is supported.[default:false]-->
+    <attr name="erv_supports_overscroll_bounce" format="boolean" /><!--Whether bounce on overscroll is supported.[default:false]-->
+    <attr name="erv_layout_manager" format="enum"><!--Type of the layout manager for the recyclerview. [default:LAYOUT_LINEAR_VERTICAL] -->
         <enum name="LAYOUT_LINEAR_VERTICAL" value="1" />
         <enum name="LAYOUT_LINEAR_HORIZONTAL" value="2" />
         <enum name="LAYOUT_FLOW_VERTICAL" value="3" />
@@ -163,51 +206,106 @@ And that's it. `EasyRecyclerView` is ready to use.
 
 ### Note
 
-> To use this feature you must enable it trough XMl by adding ERV_SupportsPullToRefresh="true"
+> To use this feature you must enable it trough XMl by adding erv_supports_pull_to_refresh="true"
+
+### 1. Create a ViewModel which will keep the callback for the data.
 
 ```kotlin
-@Override
-override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-    recyclerView.setRefreshCallback(object :
-        EasyRecyclerView.RefreshCallback<DemoModel, SimpleAdapter> {
-        @Override
-        override fun refresh(view: EasyRecyclerView<DemoModel, SimpleAdapter>) {
-            recyclerView.postDelayed(
-                {
-                    //val yourData = ...
-                    recyclerView.adapter!!.setCollection(yourData)
-                    recyclerView.showRefreshLayout(false)
-                }, 2000
-            )
-            //Get your new payload for the recycler and set it.
+class PullToRefreshDemoViewModel : ViewModel() {
+    var pullToRefreshAction: RefreshDataAction<DemoModel>? = null
+
+    @Override
+    override fun onCleared() {
+        super.onCleared()
+        pullToRefreshAction?.dispose()
+    }
+}
+```
+
+### 2. Setup your fragment/activity
+
+```kotlin
+override fun doOnCreate(savedInstanceState: Bundle?, viewModel: PullToRefreshDemoViewModel) {
+    if (savedInstanceState != null) return
+    viewModel.pullToRefreshAction = RefreshDataAction(object : AsyncAction.Action<DemoModel> {
+        override fun execute(easyRecyclerView: EasyRecyclerView<DemoModel>): List<DemoModel> {
+            Thread.sleep(3000) //Simulate API call delay
+            return generateData(10)
+        }
+    }, object : AsyncAction.OnComplete<DemoModel> {
+        override fun execute(
+            result: List<DemoModel>,
+            easyRecyclerView: EasyRecyclerView<DemoModel>
+        ) {
+            easyRecyclerView.adapter.apply {
+                collection.set(result)
+            }
+        }
+    }, object : AsyncAction.OnError<DemoModel> {
+        override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
+            error.printStackTrace()
         }
     })
+}
+
+override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+    recyclerView.apply {
+        setRefreshAction(viewModel.pullToRefreshAction) //Set action from the ViewModel
+        addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
+        if (savedInstanceState != null) return@apply
+        val initialCollection = generateData(4)
+        adapter.collection.set(initialCollection)
+    }
 }
 ```
 
 ## Enable lazy loading
 
-### Note
-
-> To use this feature you must enable it trough XMl by adding ERV_SupportsLoadMore="true"
+### 1. Create a ViewModel which will keep the callback for the data.
 
 ```kotlin
-@Override
-override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-    recyclerView.setLoadMoreCallback(object :
-        EasyRecyclerView.LoadMoreCallback<DemoModel, SimpleAdapter> {
-        @Override
-        override fun loadMore(rv: EasyRecyclerView<DemoModel, SimpleAdapter>) {
-            rv.postDelayed(
-                {
-                    //val yourData = ...
-                    rv.adapter!!.appendCollection(yourData)
-                    rv.showLoadingFooter(false)
-                }, 2000
-            )
-            //Get your next batch of data and append it to list
+class LazyLoadingDemoViewModel : ViewModel() {
+    var lazyLoadingAction: LoadMoreDataAction<DemoModel>? = null
+
+    override fun onCleared() {
+        super.onCleared()
+        lazyLoadingAction?.dispose()
+    }
+}
+```
+
+### 2. Setup your fragment/activity
+
+```kotlin
+override fun doOnCreate(savedInstanceState: Bundle?, viewModel: LazyLoadingDemoViewModel) {
+    if (savedInstanceState != null) return
+    viewModel.lazyLoadingAction = LoadMoreDataAction(object : Action<DemoModel> {
+        override fun execute(easyRecyclerView: EasyRecyclerView<DemoModel>): List<DemoModel> {
+            Thread.sleep(3000)
+            val offset = easyRecyclerView.adapter.collection.size()
+            return generateData(10, offset)
+        }
+    }, object : OnComplete<DemoModel> {
+        override fun execute(
+            result: List<DemoModel>,
+            easyRecyclerView: EasyRecyclerView<DemoModel>
+        ) {
+            easyRecyclerView.adapter.apply { collection.addAll(result) }
+        }
+    }, object : OnError<DemoModel> {
+        override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
+            error.printStackTrace()
         }
     })
+}
+
+override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+    recyclerView.apply {
+        setLazyLoadingAction(viewModel.lazyLoadingAction) //Set action from the ViewModel
+        addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
+        if (savedInstanceState != null) return@apply
+        adapter.collection.set(generateData(10))
+    }
 }
 ```
 
@@ -222,22 +320,18 @@ override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
 
 private fun configureSwipeHandler(): TouchCallbacks<DemoModel> {
     return object : TouchCallbacks<DemoModel>(requireContext()) {
-        @Override
         override fun getAllowedSwipeDirections(item: DemoModel): Directions {
             return Directions.NONE
         }
 
-        @Override
         override fun getAllowedDragDirections(item: DemoModel): Directions {
             return Directions.UP_DOWN
         }
 
-        @Override
         override fun getActionBackgroundText(item: DemoModel): String {
             return item.itemName
         }
 
-        @Override
         override fun onSwipeActionApplied(
             item: DemoModel,
             position: Int,
@@ -246,7 +340,6 @@ private fun configureSwipeHandler(): TouchCallbacks<DemoModel> {
         ) {
         }
 
-        @Override
         override fun onActionCancelled(
             item: DemoModel,
             adapter: EasyRecyclerAdapter<DemoModel>,
@@ -254,22 +347,18 @@ private fun configureSwipeHandler(): TouchCallbacks<DemoModel> {
         ) {
         }
 
-        @Override
         override fun getSwipeBackgroundColor(direction: Directions): Int {
             return ResourceUtils.getColorByAttribute(requireContext(), R.attr.colorError)
         }
 
-        @Override
         override fun getSwipeIcon(direction: Directions): Drawable {
             return ResourceUtils.getDrawable(requireContext(), R.drawable.icon_delete)!!
         }
 
-        @Override
         override fun getPendingActionText(direction: Directions): String {
             return "Delete"
         }
 
-        @Override
         override fun getConfiguration(context: Context): SwipeConfiguration {
             return SwipeConfiguration(requireContext())
         }
@@ -284,10 +373,10 @@ private fun configureSwipeHandler(): TouchCallbacks<DemoModel> {
 ```xml
 
 <com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
-    android:id="@+id/easy_recycler_view"
+    android:id="@+id/easy_recycler_view" 
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:ERV_EmptyLayoutId="R.layout.yourlayout" />
+    android:layout_height="match_parent" 
+    app:erv_empty_layout_id="R.layout.yourlayout" />
 ```
 
 ### Trough java
