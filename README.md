@@ -1,7 +1,14 @@
 # 💡 Lightbulb-EasyRecyclerView
 [![](https://jitpack.io/v/rooneyandshadows/lightbulb-easyrecyclerview.svg)](https://jitpack.io/#rooneyandshadows/lightbulb-easyrecyclerview)
 
-All-in-one easy to use RecyclerView for your android project
+Looking for a hassle-free way to implement RecyclerViews in your Android app? Look no further than
+EasyRecyclerView! With this powerful library, you can quickly and easily create custom RecyclerViews
+with just a few lines of code. EasyRecyclerView can help you streamline your development process and
+improve your user interface.
+The library offers a range of features to help you create the perfect RecyclerView for your app.
+With support for swipe to dismiss, clickable items, drag and drop, and many other features, you can
+quickly create complex and interactive user interfaces that your users will love. Plus, the library
+is lightweight, easy to use, and fully customizable, so you can tweak it to your heart's content.
 
 -------
 
