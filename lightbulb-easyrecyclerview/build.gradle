@@ -14,7 +14,7 @@ android {
         targetSdkVersion 33
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-        versionName "2.0.2"
+        versionName "2.1.0"
     }
     buildFeatures {
         dataBinding true
@@ -70,7 +70,7 @@ dependencies {
     implementation "androidx.dynamicanimation:dynamicanimation:$versions.android.dynamication"
     implementation "com.google.android.material:material:$versions.android.material"
     implementation "com.google.android.flexbox:flexbox:$versions.android.flexbox"
-    implementation "com.github.rooneyandshadows:java-commons:$versions.java_commons"
+    implementation "com.github.rooneyandshadows:java-commons:$versions.misc.java_commons"
     implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycler_adapters"
     implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
 }

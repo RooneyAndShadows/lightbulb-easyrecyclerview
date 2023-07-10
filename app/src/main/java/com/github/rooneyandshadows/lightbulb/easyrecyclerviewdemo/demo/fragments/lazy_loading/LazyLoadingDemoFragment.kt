@@ -45,7 +45,7 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         recyclerView.apply {
             addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
-            setLazyLoadingAction(viewModel.lazyLoadingAction)
+            setLazyLoadingListener(viewModel.lazyLoadingAction)
             if (savedInstanceState != null) return@apply
             adapter.collection.set(generateData(10))
         }

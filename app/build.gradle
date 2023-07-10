@@ -53,11 +53,12 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$versions.android.appcompat"
     implementation "com.google.android.material:material:$versions.android.material"
     implementation "androidx.constraintlayout:constraintlayout:$versions.android.constraint_layout"
-    implementation "com.github.rooneyandshadows:java-commons:$versions.java_commons"
+    implementation "com.github.rooneyandshadows:java-commons:$versions.misc.java_commons"
     implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
     implementation "com.github.rooneyandshadows:lightbulb-application:$versions.lightbulb.application"
     implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycler_adapters"
     implementation "com.github.rooneyandshadows:lightbulb-annotation-processors:$versions.lightbulb.annotation_processors"
+    implementation "io.reactivex.rxjava3:rxandroid:$versions.misc.rx_android"
     kapt "com.github.rooneyandshadows:lightbulb-annotation-processors:$versions.lightbulb.annotation_processors"
     implementation project(":lightbulb-easyrecyclerview")
 }

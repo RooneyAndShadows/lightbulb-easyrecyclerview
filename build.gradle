@@ -3,11 +3,11 @@
 buildscript {
     ext {
         versions = [
-                kotlin      : "1.8.0",
-                ktx         : [
+                kotlin   : "1.8.0",
+                ktx      : [
                         core: "1.10.0"
                 ],
-                android     : [
+                android  : [
                         appcompat        : "1.6.1",
                         recyclerview     : "1.3.0",
                         constraint_layout: "2.1.4",
@@ -15,13 +15,16 @@ buildscript {
                         flexbox          : "3.0.0",
                         dynamication     : "1.0.0",
                 ],
-                lightbulb   : [
+                lightbulb: [
                         application          : "[1.4.0,1.5.0[",
                         commons              : "[1.2.0,1.3.0[",
                         recycler_adapters    : "[2.0.0,2.1.0[",
                         annotation_processors: "1.0.6-RC3"
                 ],
-                java_commons: "[1.0.7,1.1.0[",
+                misc     : [
+                        rx_android  : "3.0.2",
+                        java_commons: "[1.0.7,1.1.0[",
+                ],
         ]
         environment = [
                 "group_id": "com.github.rooneyandshadows"

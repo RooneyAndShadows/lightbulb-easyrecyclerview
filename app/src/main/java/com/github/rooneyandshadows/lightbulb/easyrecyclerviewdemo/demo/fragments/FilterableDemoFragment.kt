@@ -12,7 +12,6 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.getHomeIcon
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.FilterableRecyclerView
 
 @FragmentScreen(screenName = "Filterable", screenGroup = "Demo")

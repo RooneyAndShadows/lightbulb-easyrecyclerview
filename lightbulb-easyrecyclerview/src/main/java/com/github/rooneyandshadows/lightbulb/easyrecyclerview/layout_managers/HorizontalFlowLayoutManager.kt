@@ -66,8 +66,7 @@ class HorizontalFlowLayoutManager<ItemType : EasyAdapterDataModel>(
         val lastView = getChildAt(childCount - 1) ?: return
         val recyclerAdapter: EasyRecyclerAdapter<ItemType> = easyRecyclerView.adapter
         val size = easyRecyclerView.adapter.collection.size()
-        val last =
-            (lastView.layoutParams as RecyclerView.LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
+        val last = (lastView.layoutParams as RecyclerView.LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
         if (last == size - 1) easyRecyclerView.loadMoreData()
     }
 }

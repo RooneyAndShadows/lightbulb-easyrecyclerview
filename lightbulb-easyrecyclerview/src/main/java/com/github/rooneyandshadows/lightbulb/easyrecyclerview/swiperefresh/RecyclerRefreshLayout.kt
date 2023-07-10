@@ -18,7 +18,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Suppress("unused")
-class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: AttributeSet? = null) :
+class RecyclerRefreshLayout @JvmOverloads constructor(
+    context: Context?,
+    attrs: AttributeSet? = null
+) :
     ViewGroup(context, attrs) {
     // NestedScroll
     private var mTotalUnconsumed = 0f
@@ -54,17 +57,28 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
     private lateinit var mRefreshView: View
     private var mDragDistanceConverter: IDragDistanceConverter? = null
     private var mRefreshStatus: IRefreshStatus? = null
-    private var mOnRefreshListener: OnRefreshListener? = null
-    private var mAnimateToStartInterpolator: Interpolator = DecelerateInterpolator(DECELERATE_INTERPOLATION_FACTOR)
-    private var mAnimateToRefreshInterpolator: Interpolator = DecelerateInterpolator(DECELERATE_INTERPOLATION_FACTOR)
+    private var mOnRefreshListener: RefreshListener? = null
+    private var mAnimateToStartInterpolator: Interpolator =
+        DecelerateInterpolator(DECELERATE_INTERPOLATION_FACTOR)
+    private var mAnimateToRefreshInterpolator: Interpolator =
+        DecelerateInterpolator(DECELERATE_INTERPOLATION_FACTOR)
     private val mAnimateToRefreshingAnimation: Animation = object : Animation() {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
             when (mRefreshStyle) {
                 RefreshStyle.FLOAT -> {
                     val refreshTargetOffset = mRefreshTargetOffset + mRefreshInitialOffset
-                    animateToTargetOffset(refreshTargetOffset, mRefreshView.top.toFloat(), interpolatedTime)
+                    animateToTargetOffset(
+                        refreshTargetOffset,
+                        mRefreshView.top.toFloat(),
+                        interpolatedTime
+                    )
                 }
-                else -> animateToTargetOffset(mRefreshTargetOffset, mTarget!!.top.toFloat(), interpolatedTime)
+
+                else -> animateToTargetOffset(
+                    mRefreshTargetOffset,
+                    mTarget!!.top.toFloat(),
+                    interpolatedTime
+                )
             }
         }
     }
@@ -76,6 +90,7 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
                     mRefreshView.top.toFloat(),
                     interpolatedTime
                 )
+
                 else -> animateToTargetOffset(0.0f, mTarget!!.top.toFloat(), interpolatedTime)
             }
         }
@@ -94,27 +109,32 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
         initDragDistanceConverter()
     }
 
-    private fun animateToTargetOffset(targetEnd: Float, currentOffset: Float, interpolatedTime: Float) {
+    private fun animateToTargetOffset(
+        targetEnd: Float,
+        currentOffset: Float,
+        interpolatedTime: Float
+    ) {
         val targetOffset = (mFrom + (targetEnd - mFrom) * interpolatedTime).toInt()
         setTargetOrRefreshViewOffsetY((targetOffset - currentOffset).toInt())
     }
 
-    private val mRefreshingListener: Animation.AnimationListener = object : Animation.AnimationListener {
-        override fun onAnimationStart(animation: Animation) {
-            mIsAnimatingToStart = true
-            mRefreshStatus!!.refreshing()
-        }
-
-        override fun onAnimationRepeat(animation: Animation) {}
-        override fun onAnimationEnd(animation: Animation) {
-            if (mNotifyListener) {
-                if (mOnRefreshListener != null) {
-                    mOnRefreshListener!!.onRefresh()
-                }
+    private val mRefreshingListener: Animation.AnimationListener =
+        object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation) {
+                mIsAnimatingToStart = true
+                mRefreshStatus!!.refreshing()
             }
-            mIsAnimatingToStart = false
+
+            override fun onAnimationRepeat(animation: Animation) {}
+            override fun onAnimationEnd(animation: Animation) {
+                if (mNotifyListener) {
+                    if (mOnRefreshListener != null) {
+                        mOnRefreshListener!!.execute()
+                    }
+                }
+                mIsAnimatingToStart = false
+            }
         }
-    }
     private val mResetListener: Animation.AnimationListener = object : Animation.AnimationListener {
         override fun onAnimationStart(animation: Animation) {
             mIsAnimatingToStart = true
@@ -348,7 +368,12 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
         )
     }
 
-    override fun dispatchNestedPreScroll(dx: Int, dy: Int, consumed: IntArray?, offsetInWindow: IntArray?): Boolean {
+    override fun dispatchNestedPreScroll(
+        dx: Int,
+        dy: Int,
+        consumed: IntArray?,
+        offsetInWindow: IntArray?
+    ): Boolean {
         return mNestedScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow)
     }
 
@@ -366,7 +391,11 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
         return dispatchNestedFling(velocityX, velocityY, consumed)
     }
 
-    override fun dispatchNestedFling(velocityX: Float, velocityY: Float, consumed: Boolean): Boolean {
+    override fun dispatchNestedFling(
+        velocityX: Float,
+        velocityY: Float,
+        consumed: Boolean
+    ): Boolean {
         return mNestedScrollingChildHelper.dispatchNestedFling(velocityX, velocityY, consumed)
     }
 
@@ -433,10 +462,12 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
                     mRefreshInitialOffset = 0.0f
                     mTargetOrRefreshViewOffsetY = mRefreshInitialOffset
                 }
+
                 RefreshStyle.FLOAT -> {
                     mRefreshInitialOffset = -mRefreshView.measuredHeight.toFloat()
                     mTargetOrRefreshViewOffsetY = mRefreshInitialOffset
                 }
+
                 else -> {
                     mTargetOrRefreshViewOffsetY = 0.0f
                     mRefreshInitialOffset = -mRefreshView.measuredHeight.toFloat()
@@ -467,24 +498,40 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
 
     private fun measureTarget() {
         mTarget!!.measure(
-            MeasureSpec.makeMeasureSpec(measuredWidth - paddingLeft - paddingRight, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(measuredHeight - paddingTop - paddingBottom, MeasureSpec.EXACTLY)
+            MeasureSpec.makeMeasureSpec(
+                measuredWidth - paddingLeft - paddingRight,
+                MeasureSpec.EXACTLY
+            ),
+            MeasureSpec.makeMeasureSpec(
+                measuredHeight - paddingTop - paddingBottom,
+                MeasureSpec.EXACTLY
+            )
         )
     }
 
     private fun measureRefreshView(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val lp = mRefreshView.layoutParams as MarginLayoutParams
         val childWidthMeasureSpec: Int = if (lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-            val width = max(0, measuredWidth - paddingLeft - paddingRight - lp.leftMargin - lp.rightMargin)
+            val width =
+                max(0, measuredWidth - paddingLeft - paddingRight - lp.leftMargin - lp.rightMargin)
             MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY)
         } else {
-            getChildMeasureSpec(widthMeasureSpec, paddingLeft + paddingRight + lp.leftMargin + lp.rightMargin, lp.width)
+            getChildMeasureSpec(
+                widthMeasureSpec,
+                paddingLeft + paddingRight + lp.leftMargin + lp.rightMargin,
+                lp.width
+            )
         }
         val childHeightMeasureSpec: Int = if (lp.height == ViewGroup.LayoutParams.MATCH_PARENT) {
-            val height = max(0, measuredHeight - paddingTop - paddingBottom - lp.topMargin - lp.bottomMargin)
+            val height =
+                max(0, measuredHeight - paddingTop - paddingBottom - lp.topMargin - lp.bottomMargin)
             MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
         } else {
-            getChildMeasureSpec(heightMeasureSpec, paddingTop + paddingBottom + lp.topMargin + lp.bottomMargin, lp.height)
+            getChildMeasureSpec(
+                heightMeasureSpec,
+                paddingTop + paddingBottom + lp.topMargin + lp.bottomMargin,
+                lp.height
+            )
         }
         mRefreshView.measure(childWidthMeasureSpec, childHeightMeasureSpec)
     }
@@ -493,6 +540,7 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
         when (ev.actionMasked) {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->                 // support compile sdk version < 23
                 onStopNestedScroll(this)
+
             else -> {}
         }
         return super.dispatchTouchEvent(ev)
@@ -519,7 +567,10 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
             mNotifyListener = notify
             mIsRefreshing = refreshing
             if (refreshing) {
-                animateToRefreshingPosition(mTargetOrRefreshViewOffsetY.toInt(), mRefreshingListener)
+                animateToRefreshingPosition(
+                    mTargetOrRefreshViewOffsetY.toInt(),
+                    mRefreshingListener
+                )
             } else {
                 animateOffsetToStartPosition(mTargetOrRefreshViewOffsetY.toInt(), mResetListener)
             }
@@ -552,7 +603,8 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
         }
         mFrom = from
         mAnimateToRefreshingAnimation.reset()
-        mAnimateToRefreshingAnimation.duration = computeAnimateToRefreshingDuration(from.toFloat()).toLong()
+        mAnimateToRefreshingAnimation.duration =
+            computeAnimateToRefreshingDuration(from.toFloat()).toLong()
         mAnimateToRefreshingAnimation.interpolator = mAnimateToRefreshInterpolator
         if (listener != null) {
             mAnimateToRefreshingAnimation.setAnimationListener(listener)
@@ -572,6 +624,7 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
                     abs(from - mRefreshInitialOffset - mRefreshTargetOffset) / mRefreshTargetOffset
                 )
             ) * mAnimateToRefreshDuration).toInt()
+
             else -> (max(
                 0.0f,
                 min(
@@ -594,6 +647,7 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
                     abs(from - mRefreshInitialOffset) / mRefreshTargetOffset
                 )
             ) * mAnimateToStartDuration).toInt()
+
             else -> (max(
                 0.0f,
                 min(
@@ -614,11 +668,18 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
             when (mRefreshStyle) {
                 RefreshStyle.FLOAT -> {
                     convertScrollOffset = (mRefreshInitialOffset
-                            + mDragDistanceConverter!!.convert(targetOrRefreshViewOffsetY, mRefreshTargetOffset))
+                            + mDragDistanceConverter!!.convert(
+                        targetOrRefreshViewOffsetY,
+                        mRefreshTargetOffset
+                    ))
                     refreshTargetOffset = mRefreshTargetOffset
                 }
+
                 else -> {
-                    convertScrollOffset = mDragDistanceConverter!!.convert(targetOrRefreshViewOffsetY, mRefreshTargetOffset)
+                    convertScrollOffset = mDragDistanceConverter!!.convert(
+                        targetOrRefreshViewOffsetY,
+                        mRefreshTargetOffset
+                    )
                     refreshTargetOffset = mRefreshTargetOffset
                 }
             }
@@ -672,10 +733,12 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
                 mRefreshView.offsetTopAndBottom(offsetY)
                 mRefreshView.top.toFloat()
             }
+
             RefreshStyle.PINNED -> {
                 mTarget!!.offsetTopAndBottom(offsetY)
                 mTarget!!.top.toFloat()
             }
+
             else -> {
                 mTarget!!.offsetTopAndBottom(offsetY)
                 mRefreshView.offsetTopAndBottom(offsetY)
@@ -688,6 +751,7 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
                 mTargetOrRefreshViewOffsetY,
                 (mTargetOrRefreshViewOffsetY - mRefreshInitialOffset) / mRefreshTargetOffset
             )
+
             else -> mRefreshStatus!!.pullProgress(
                 mTargetOrRefreshViewOffsetY,
                 mTargetOrRefreshViewOffsetY / mRefreshTargetOffset
@@ -745,12 +809,12 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
      * Set the listener to be notified when a refresh is triggered via the swipe
      * gesture.
      */
-    fun setOnRefreshListener(listener: OnRefreshListener?) {
+    fun setOnRefreshListener(listener: RefreshListener?) {
         mOnRefreshListener = listener
     }
 
-    interface OnRefreshListener {
-        fun onRefresh()
+    fun interface RefreshListener {
+        fun execute()
     }
 
     /**
@@ -772,7 +836,10 @@ class RecyclerRefreshLayout @JvmOverloads constructor(context: Context?, attrs: 
     }
 
     override fun generateDefaultLayoutParams(): LayoutParams {
-        return LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        return LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
     }
 
     override fun checkLayoutParams(p: ViewGroup.LayoutParams): Boolean {
