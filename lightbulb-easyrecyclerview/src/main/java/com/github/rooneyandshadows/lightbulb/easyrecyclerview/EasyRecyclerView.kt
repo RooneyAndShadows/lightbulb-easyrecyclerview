@@ -17,6 +17,10 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.*
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_enable_lazy_loading
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_enable_pull_to_refresh
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_layout_manager
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_supports_overscroll_bounce
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.edge.BounceEdge
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler
@@ -104,9 +108,9 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             }
         }
         get() = refreshLayout.isEnabled
+    var lazyLoadingEnabled: Boolean = false
     var lazyLoadingListener: LazyLoadingListener<ItemType>? = null
     var pullToRefreshListener: PullToRefreshListener<ItemType>? = null
-    var supportsLazyLoading: Boolean = false
     var emptyLayoutView: View? = null
         private set
     val isAnimating: Boolean
@@ -146,6 +150,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         myState.hasMoreDataToLoad = hasMoreDataToLoad
         myState.overscrollBounceEnabled = bounceOverscrollEnabled
         myState.pullToRefreshEnabled = pullToRefreshEnabled
+        myState.lazyLoadingEnabled = lazyLoadingEnabled
         myState.showingRefreshLayout = refreshLayout.isRefreshing
         myState.showingLoadingFooterLayout = isShowingLoadingFooter
         myState.showingLoadingIndicator = isShowingLoadingHeader
@@ -172,6 +177,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         hasMoreDataToLoad = savedState.hasMoreDataToLoad
         bounceOverscrollEnabled = savedState.overscrollBounceEnabled
         pullToRefreshEnabled = savedState.pullToRefreshEnabled
+        lazyLoadingEnabled = savedState.lazyLoadingEnabled
         layoutManagerType = LayoutManagerTypes.valueOf(savedState.layoutManagerType)
         emptyLayoutId = savedState.emptyLayoutId
         bounceOverscrollEnabled = savedState.overscrollBounceEnabled
@@ -441,28 +447,28 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     }
 
     private fun readAttributes(context: Context, attrs: AttributeSet?) {
-        val attributes = context.theme.obtainStyledAttributes(
+        val a = context.theme.obtainStyledAttributes(
             attrs,
             R.styleable.EasyRecyclerView,
             R.attr.easyRecyclerViewStyle,
             R.style.EasyRecyclerViewDefaultStyle
         )
         try {
-            attributes.apply {
-                val emptyLayoutId =
-                    getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
-                if (emptyLayoutId != -1) this@EasyRecyclerView.emptyLayoutId = emptyLayoutId
-                bounceOverscrollEnabled =
-                    getBoolean(R.styleable.EasyRecyclerView_erv_supports_overscroll_bounce, false)
-                pullToRefreshEnabled =
-                    getBoolean(R.styleable.EasyRecyclerView_erv_enable_pull_to_refresh, false)
-                layoutManagerType =
-                    if (getLayoutManagerType() == UNDEFINED) LayoutManagerTypes.valueOf(
-                        getInt(R.styleable.EasyRecyclerView_erv_layout_manager, 1)
-                    ) else getLayoutManagerType()
+            val emptyLayoutId =
+                a.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
+            if (emptyLayoutId != -1) this@EasyRecyclerView.emptyLayoutId = emptyLayoutId
+            bounceOverscrollEnabled =
+                a.getBoolean(EasyRecyclerView_erv_supports_overscroll_bounce, false)
+            pullToRefreshEnabled = a.getBoolean(EasyRecyclerView_erv_enable_pull_to_refresh, false)
+            lazyLoadingEnabled = a.getBoolean(EasyRecyclerView_erv_enable_lazy_loading, false)
+            layoutManagerType = if (getLayoutManagerType() == UNDEFINED) {
+                LayoutManagerTypes.valueOf(a.getInt(EasyRecyclerView_erv_layout_manager, 1))
+            } else {
+                getLayoutManagerType()
             }
+
         } finally {
-            attributes.recycle()
+            a.recycle()
         }
     }
 

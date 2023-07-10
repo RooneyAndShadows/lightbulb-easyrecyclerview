@@ -57,7 +57,7 @@ class HorizontalLinearLayoutManager<ItemType : EasyAdapterDataModel, AType : Eas
     }
 
     private fun handleLoadMore() {
-        if (!easyRecyclerView.supportsLazyLoading) return
+        if (!easyRecyclerView.lazyLoadingEnabled) return
         val lastView = getChildAt(childCount - 1) ?: return
         val recyclerAdapter: EasyRecyclerAdapter<ItemType> = easyRecyclerView.adapter
         val size = easyRecyclerView.adapter.collection.size()

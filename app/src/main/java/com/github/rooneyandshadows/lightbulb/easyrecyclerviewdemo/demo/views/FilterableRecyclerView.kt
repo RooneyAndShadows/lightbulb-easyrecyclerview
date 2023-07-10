@@ -17,9 +17,5 @@ class FilterableRecyclerView @JvmOverloads constructor(
         get() = super.adapter as FilterableAdapter
 
     override val adapterCreator: AdapterCreator<DemoModel>
-        get() = object : AdapterCreator<DemoModel> {
-            override fun createAdapter(): FilterableAdapter {
-                return FilterableAdapter()
-            }
-        }
+        get() = AdapterCreator { FilterableAdapter() }
 }
