@@ -331,6 +331,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     }
 
     fun loadMoreData(showLoadingFooter: Boolean = true) {
+        if (isAnimating || isShowingRefreshLayout) return
         lazyLoading.load(showLoadingFooter)
     }
 

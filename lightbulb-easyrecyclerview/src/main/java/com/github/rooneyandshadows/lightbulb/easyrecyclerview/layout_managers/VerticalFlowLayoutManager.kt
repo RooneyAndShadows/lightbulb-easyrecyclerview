@@ -18,30 +18,31 @@ class VerticalFlowLayoutManager<ItemType : EasyAdapterDataModel>(
     }
 
     @Override
-    override fun scrollVerticallyBy(dy: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {
-        val scrollRange = super.scrollVerticallyBy(dy, recycler, state)
+    override fun scrollVerticallyBy(
+        dy: Int,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
+    ): Int {
         //val overScroll = dy - scrollRange
-        if (abs(dy) > 20) easyRecyclerView.parent.requestDisallowInterceptTouchEvent(true)
-        if (needToLoadMoreData(dy)) handleLoadMore()
+        val scrollRange = super.scrollVerticallyBy(dy, recycler, state)
+        if (abs(dy) > 20) {
+            easyRecyclerView.parent.requestDisallowInterceptTouchEvent(true)
+        }
+        if (needToLoadData(dy)) {
+            easyRecyclerView.loadMoreData()
+        }
         return scrollRange
     }
 
-    private fun needToLoadMoreData(dy: Int): Boolean {
-        return easyRecyclerView.hasMoreDataToLoad() &&
-                !easyRecyclerView.isShowingLoadingHeader &&
-                !easyRecyclerView.isAnimating &&
-                !easyRecyclerView.isShowingRefreshLayout &&
-                !easyRecyclerView.isLazyLoadingRunning && dy > 0
-    }
-
-    private fun handleLoadMore() {
-        if (!easyRecyclerView.lazyLoadingEnabled) return
-        val lastView = getChildAt(childCount - 1) ?: return
+    private fun needToLoadData(dy: Int): Boolean {
+        if (dy <= 0) return false
+        val lastView = getChildAt(childCount - 1) ?: return false
         val recyclerAdapter: EasyRecyclerAdapter<ItemType> = easyRecyclerView.adapter
-        val size = easyRecyclerView.adapter.collection.size()
-        val last = (lastView.layoutParams as LayoutParams).absoluteAdapterPosition - recyclerAdapter.headersCount
-        if (last == size - 1) easyRecyclerView.loadMoreData()
+        val lastViewAdapterPos =
+            (lastView.layoutParams as RecyclerView.LayoutParams).absoluteAdapterPosition
+        val headersCount = recyclerAdapter.headersCount
+        val visibleLastPosition = lastViewAdapterPos - headersCount
+        val totalSize = easyRecyclerView.adapter.collection.size()
+        return visibleLastPosition == totalSize - 1
     }
-
-
 }

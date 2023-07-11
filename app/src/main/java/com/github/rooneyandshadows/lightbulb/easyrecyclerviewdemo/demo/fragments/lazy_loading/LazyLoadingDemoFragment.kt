@@ -7,8 +7,8 @@ import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.F
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragmentWithViewModel
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
+import com.github.rooneyandshadows.lightbulb.commons.utils.InteractionUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LazyLoadingListener
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
@@ -41,7 +41,7 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         val decoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
         recyclerView.addItemDecoration(decoration)
-        recyclerView.lazyLoadingListener = LazyLoadingListener {
+        recyclerView.setLazyLoadingListener {
             viewModel.getNextPage()
         }
         if (savedInstanceState != null) return
@@ -51,11 +51,18 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
     private fun initLazyLoadingAction() {
         viewModel.setListeners(object : LazyLoadingDemoViewModel.DataListener {
             override fun onSuccess(items: List<DemoModel>) {
+                val hasMoreData = recyclerView.adapter.collection.size() + items.size < 40
                 recyclerView.adapter.collection.addAll(items)
+                recyclerView.onLazyLoadingFinished(hasMoreData)
+                if (!hasMoreData) InteractionUtils.showMessage(
+                    requireContext(),
+                    "All data has been loaded."
+                )
             }
 
             override fun onFailure(errorDetails: String?) {
                 println(errorDetails)
+                recyclerView.onLazyLoadingFinished(true)
             }
         })
     }

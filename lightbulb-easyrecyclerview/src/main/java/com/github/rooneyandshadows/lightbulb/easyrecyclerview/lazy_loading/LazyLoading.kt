@@ -40,7 +40,7 @@ internal class LazyLoading<ItemType : EasyAdapterDataModel>(
     }
 
     fun load(showFooterLayout: Boolean = true) {
-        if (loadingListener == null || !hasMoreData) {
+        if (loadingListener == null || !hasMoreData || isLoading) {
             return
         }
 
@@ -75,10 +75,12 @@ internal class LazyLoading<ItemType : EasyAdapterDataModel>(
     }
 
     private fun enableLoadingFooter(newState: Boolean) {
-        if (newState) {
-            recyclerView.addFooterView(loadingFooterView)
-        } else {
-            recyclerView.removeFooterView(loadingFooterView)
+        recyclerView.post {
+            if (newState) {
+                recyclerView.addFooterView(loadingFooterView)
+            } else {
+                recyclerView.removeFooterView(loadingFooterView)
+            }
         }
     }
 }
