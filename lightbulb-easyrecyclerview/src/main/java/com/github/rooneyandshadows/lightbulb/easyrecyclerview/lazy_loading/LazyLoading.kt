@@ -43,11 +43,8 @@ internal class LazyLoading<ItemType : EasyAdapterDataModel>(
         if (loadingListener == null || !hasMoreData || isLoading) {
             return
         }
-
         isLoading = true
-
         enableLoadingFooter(showFooterLayout)
-
         loadingListener!!.execute(recyclerView)
     }
 
@@ -68,7 +65,6 @@ internal class LazyLoading<ItemType : EasyAdapterDataModel>(
     fun restoreState(savedState: Bundle) {
         hasMoreData = BundleUtils.getBoolean(HAS_MORE_DATA_TO_LOAD_KEY, savedState)
         isLoading = BundleUtils.getBoolean(IS_LOADING_KEY, savedState)
-
         if (isLoading) {
             enableLoadingFooter(true)
         }

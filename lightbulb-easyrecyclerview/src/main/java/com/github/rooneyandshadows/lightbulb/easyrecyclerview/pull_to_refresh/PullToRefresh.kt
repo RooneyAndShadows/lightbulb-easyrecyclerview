@@ -38,6 +38,7 @@ internal class PullToRefresh<ItemType : EasyAdapterDataModel>(
 
     init {
         configureRefreshLayout()
+        setEnabled(false)
     }
 
     fun setOnRefreshListener(listener: PullToRefreshListener<ItemType>?) {
@@ -47,7 +48,6 @@ internal class PullToRefresh<ItemType : EasyAdapterDataModel>(
 
     fun setEnabled(newState: Boolean) {
         enabled = newState
-
         enableRefreshLayout(newState)
     }
 
@@ -55,29 +55,24 @@ internal class PullToRefresh<ItemType : EasyAdapterDataModel>(
         if (!enabled || refreshing || onRefreshListener == null) {
             return
         }
-
         if (showLoading) {
             showRefreshLayout(true)
         }
-
         refreshing = true
         onRefreshListener!!.execute(recyclerView)
     }
 
     fun finalizeRefresh() {
         if (!enabled) return
-
         refreshing = false
         showRefreshLayout(false)
     }
 
     fun saveState(): Bundle {
         val out = Bundle()
-
         BundleUtils.putBoolean(ENABLED_KEY, out, enabled)
         BundleUtils.putBoolean(IS_REFRESHING_KEY, out, refreshing)
         BundleUtils.putBoolean(IS_SHOWING_REFRESH_LAYOUT, out, refreshLayout.isRefreshing)
-
         return out
     }
 
@@ -85,15 +80,12 @@ internal class PullToRefresh<ItemType : EasyAdapterDataModel>(
         val enabled = BundleUtils.getBoolean(ENABLED_KEY, savedState)
         val isShowingRefreshLayout = BundleUtils.getBoolean(IS_SHOWING_REFRESH_LAYOUT, savedState)
         setEnabled(enabled)
-
         refreshing = BundleUtils.getBoolean(IS_REFRESHING_KEY, savedState)
-
         showRefreshLayout(isShowingRefreshLayout)
     }
 
     private fun enableRefreshLayout(newState: Boolean) {
         refreshLayout.isEnabled = newState
-
         if (newState) {
             recyclerView.bounceOverscrollEnabled = false
         }
@@ -103,9 +95,7 @@ internal class PullToRefresh<ItemType : EasyAdapterDataModel>(
         val indicatorSize: Int = getDimenPxById(context, erv_header_refresh_indicator_size)
         val layoutParams = LayoutParams(MATCH_PARENT, indicatorSize)
         val refreshBackgroundColor: Int = getColorByAttribute(context, colorBackground)
-
         refreshView.setBackgroundColor(refreshBackgroundColor)
-
         refreshLayout.setRefreshView(refreshView, layoutParams)
         refreshLayout.setRefreshStyle(RecyclerRefreshLayout.RefreshStyle.NORMAL)
         refreshLayout.setOnRefreshListener {

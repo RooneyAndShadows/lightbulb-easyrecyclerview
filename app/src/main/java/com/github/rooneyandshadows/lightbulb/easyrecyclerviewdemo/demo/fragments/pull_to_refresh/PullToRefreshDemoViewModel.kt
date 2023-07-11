@@ -37,7 +37,6 @@ class PullToRefreshDemoViewModel : ViewModel() {
                 data.clear()
                 data.addAll(result)
                 dataListener?.onSuccess(result)
-
             }) { throwable: Throwable ->
                 dataDisposable!!.dispose()
                 dataListener?.onFailure(throwable.message)

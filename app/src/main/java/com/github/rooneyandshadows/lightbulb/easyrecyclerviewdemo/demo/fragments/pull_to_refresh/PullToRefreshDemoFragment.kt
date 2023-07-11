@@ -25,7 +25,6 @@ class PullToRefreshDemoFragment : BaseFragmentWithViewModel<PullToRefreshDemoVie
 
     @Override
     override fun doOnCreate(savedInstanceState: Bundle?, viewModel: PullToRefreshDemoViewModel) {
-        if (savedInstanceState != null) return
         initPullToRefreshAction()
     }
 

@@ -24,7 +24,6 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
 
     @Override
     override fun doOnCreate(savedInstanceState: Bundle?, viewModel: LazyLoadingDemoViewModel) {
-        if (savedInstanceState != null) return
         initLazyLoadingAction()
     }
 
