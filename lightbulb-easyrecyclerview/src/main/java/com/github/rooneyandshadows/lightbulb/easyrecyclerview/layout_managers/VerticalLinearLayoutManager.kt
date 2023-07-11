@@ -25,7 +25,7 @@ class VerticalLinearLayoutManager<IType : EasyAdapterDataModel>(
                 !easyRecyclerView.isShowingLoadingHeader &&
                 !easyRecyclerView.isAnimating &&
                 !easyRecyclerView.isShowingRefreshLayout &&
-                !easyRecyclerView.isShowingLoadingFooter && dy > 0
+                !easyRecyclerView.isLazyLoadingRunning && dy > 0
     }
 
     private fun handleLoadMore() {

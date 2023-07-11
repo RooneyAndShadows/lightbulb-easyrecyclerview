@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
@@ -21,24 +22,29 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.E
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 
-@Suppress("unused", "UNUSED_VARIABLE", "UNUSED_PARAMETER")
+@Suppress("unused")
 class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
     private val easyRecyclerView: EasyRecyclerView<ItemType>,
     private val touchCallbacks: TouchCallbacks<ItemType>,
-) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+) : SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
     private var undoClicked = false
     private var snackbar: Snackbar? = null
     private var pendingAction: Runnable? = null
     private val adapter: EasyRecyclerAdapter<ItemType> = easyRecyclerView.adapter
-    private val configuration: SwipeConfiguration = touchCallbacks.getConfiguration(easyRecyclerView.context)
+    private val configuration: SwipeConfiguration =
+        touchCallbacks.getConfiguration(easyRecyclerView.context)
     private val drawerHelper: SwipeToDeleteDrawerHelper = SwipeToDeleteDrawerHelper()
     private val actionsHandler = Handler(Looper.getMainLooper(), null)
     private val isVerticalLayoutManager = easyRecyclerView.layoutManager!!.canScrollVertically()
     private lateinit var allowedDragDirections: Directions
     private lateinit var allowedSwipeDirections: Directions
+    private var touchHelperListeners: TouchHelperListeners? = null
 
     @Override
-    override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+    override fun getMovementFlags(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder
+    ): Int {
         val position = viewHolder.absoluteAdapterPosition
         if (adapter.headersCount > 0 && position < adapter.headersCount) return 0
         if (adapter.footersCount > 0 && position >= adapter.itemCount) return 0
@@ -75,14 +81,15 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
     @Override
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         super.onSelectedChanged(viewHolder, actionState)
-        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && viewHolder != null) viewHolder.itemView.alpha = 0.6f
+        if (actionState == ACTION_STATE_DRAG && viewHolder != null)
+            viewHolder.itemView.alpha = 0.6f
     }
 
     @Override
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
+        touchHelperListeners?.onClearView()
         viewHolder.itemView.alpha = 1f
-        easyRecyclerView.pullToRefreshEnabled = false
         if (isItemVisible(viewHolder)) executePendingAction()
     }
 
@@ -97,15 +104,24 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
         isCurrentlyActive: Boolean,
     ) {
         when (actionState) {
-            ItemTouchHelper.ACTION_STATE_DRAG -> {}
-            ItemTouchHelper.ACTION_STATE_SWIPE -> handleSwipeDraw(viewHolder, c, dX, dY)
+            ACTION_STATE_DRAG -> {}
+            ACTION_STATE_SWIPE -> handleSwipeDraw(viewHolder, c, dX, dY)
         }
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+        touchHelperListeners?.onChildDraw()
     }
 
-    private fun handleSwipeDraw(viewHolder: RecyclerView.ViewHolder, canvas: Canvas, dx: Float, dy: Float) {
+    fun setTouchHelperListeners(listeners: TouchHelperListeners) {
+        touchHelperListeners = listeners
+    }
+
+    private fun handleSwipeDraw(
+        viewHolder: RecyclerView.ViewHolder,
+        canvas: Canvas,
+        dx: Float,
+        dy: Float
+    ) {
         val itemView = viewHolder.itemView
-        easyRecyclerView.pullToRefreshEnabled = false
         val itemPosition = viewHolder.absoluteAdapterPosition - adapter.headersCount
         if (itemPosition != -1) {
             val item: ItemType? = getItem(viewHolder)
@@ -115,7 +131,8 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
                 if (isVerticalLayoutManager) {
                     if (dx > 0) direction = RIGHT else if (dx < 0) direction = LEFT
                 } else {
-                    if (dy > 0) direction = Directions.UP else if (dy < 0) direction = Directions.DOWN
+                    if (dy > 0) direction = Directions.UP else if (dy < 0) direction =
+                        Directions.DOWN
                 }
                 if (direction == null) {
                     drawerHelper.clearBounds()
@@ -124,14 +141,24 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
                 when (direction) {
                     LEFT, RIGHT ->
                         moved = dx.toInt()
+
                     Directions.UP, Directions.DOWN ->
                         moved = dy.toInt()
+
                     else -> {}
                 }
                 val actionText = getActionText(item)
                 val backgroundColor = getActionBackgroundColor(direction)
                 val icon = getActionIcon(direction)
-                drawerHelper.draw(actionText, itemView, moved, canvas, direction, backgroundColor, icon)
+                drawerHelper.draw(
+                    actionText,
+                    itemView,
+                    moved,
+                    canvas,
+                    direction,
+                    backgroundColor,
+                    icon
+                )
             }
         }
     }
@@ -175,10 +202,16 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
         addPendingAction(item, direction)
         val pendingActionText = touchCallbacks.getPendingActionText(direction) ?: ""
         val undoText = configuration.swipeCancelActionText
-        snackbar = Snackbar.make(easyRecyclerView, pendingActionText, configuration.swipeActionDelay)
-            .setAction(undoText) { cancelPendingAction() }
-            .setActionTextColor(ResourceUtils.getColorByAttribute(easyRecyclerView.context, R.attr.colorError))
-            .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
+        snackbar =
+            Snackbar.make(easyRecyclerView, pendingActionText, configuration.swipeActionDelay)
+                .setAction(undoText) { cancelPendingAction() }
+                .setActionTextColor(
+                    ResourceUtils.getColorByAttribute(
+                        easyRecyclerView.context,
+                        R.attr.colorError
+                    )
+                )
+                .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
         //val backgroundView = snackbar!!.view
         snackbar!!.show()
     }
@@ -226,7 +259,12 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
             icon: Drawable?,
         ) {
             backgroundDrawable = ColorDrawable(backgroundColor)
-            backgroundDrawable!!.setBounds(itemView.left, itemView.top, itemView.right, itemView.bottom)
+            backgroundDrawable!!.setBounds(
+                itemView.left,
+                itemView.top,
+                itemView.right,
+                itemView.bottom
+            )
             backgroundDrawable!!.draw(canvas)
             canvas.save()
             val backgroundCornerOffset = 20
@@ -256,6 +294,7 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
                     iconRight = itemView.right - iconMargin
                     canvas.drawText(text!!, iconLeft - iconMargin - textWidth, yPos, textPaint)
                 }
+
                 RIGHT -> {
                     canvas.clipRect(
                         itemView.left,
@@ -269,6 +308,7 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
                     iconRight = itemView.left + iconMargin + configuration.swipeIconSize
                     canvas.drawText(text!!, (iconRight + iconMargin).toFloat(), yPos, textPaint)
                 }
+
                 Directions.UP -> {
                     canvas.clipRect(
                         itemView.left,
@@ -282,6 +322,7 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
                     iconRight = itemView.left + iconMargin + configuration.swipeIconSize
                     canvas.drawText(text!!, (iconRight + iconMargin).toFloat(), yPos, textPaint)
                 }
+
                 Directions.DOWN -> {
                     canvas.clipRect(
                         itemView.left,
@@ -295,6 +336,7 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
                     iconRight = itemView.right - iconMargin
                     canvas.drawText(text!!, iconLeft - iconMargin - textWidth, yPos, textPaint)
                 }
+
                 else -> {}
             }
             icon?.setBounds(iconLeft, iconTop, iconRight, iconBottom)
@@ -309,6 +351,15 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
             return itemView.top + (itemCenter - textHeight)
         }
     }
+
+    abstract class TouchHelperListeners {
+        open fun onChildDraw() {
+        }
+
+        open fun onClearView() {
+        }
+    }
+
 
     enum class Directions(val value: Int) {
         UP(ItemTouchHelper.UP),
@@ -326,7 +377,8 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
     }
 
     class SwipeConfiguration(context: Context) {
-        var swipeCancelActionText: String = ResourceUtils.getPhrase(context, R.string.erv_swipe_undo_default_text)
+        var swipeCancelActionText: String =
+            ResourceUtils.getPhrase(context, R.string.erv_swipe_undo_default_text)
         var swipeTextAndIconColor: Int = ResourceUtils.getColorById(context, R.color.white)
         var swipeIconSize: Int = ResourceUtils.getDimenPxById(context, R.dimen.erv_swipe_icon_size)
         var swipeTextSize: Int = ResourceUtils.getDimenPxById(context, R.dimen.erv_swipe_text_size)

@@ -1,4 +1,4 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.pull_to_refresh.refresh_layout
 
 /**
  * [RecyclerRefreshLayout.mRefreshView] all the custom drop-down refresh view need to

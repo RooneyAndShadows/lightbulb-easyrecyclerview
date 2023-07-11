@@ -13,9 +13,12 @@ class LazyLoadingDemoViewModel : ViewModel() {
     private var dataListener: DataListener? = null
     private var data: MutableList<DemoModel> = mutableListOf()
     private var offset = 0
+    val listData: List<DemoModel>
+        get() = data.toList()
+
 
     init {
-        val initialCount = 4
+        val initialCount = 10
         val initialData = generateData(initialCount)
         offset = initialCount
         data.addAll(initialData)
@@ -25,7 +28,7 @@ class LazyLoadingDemoViewModel : ViewModel() {
         this.dataListener = dataListener
     }
 
-    fun getCategories(refresh: Boolean = false) {
+    fun getNextPage() {
         dataDisposable = Single.create { emitter ->
             Thread.sleep(4000)
             emitter.onSuccess(generateData(10, offset))
@@ -50,7 +53,7 @@ class LazyLoadingDemoViewModel : ViewModel() {
     }
 
     interface DataListener {
-        fun onSuccess(categories: List<DemoModel>)
+        fun onSuccess(items: List<DemoModel>)
         fun onFailure(errorDetails: String?)
     }
 }

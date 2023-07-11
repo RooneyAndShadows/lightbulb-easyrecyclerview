@@ -21,7 +21,7 @@ class HorizontalFlowLayoutManager<ItemType : EasyAdapterDataModel>(
 
     @Override
     override fun canScrollVertically(): Boolean {
-        return easyRecyclerView.pullToRefreshEnabled && !scrollingHorizontally
+        return easyRecyclerView.isPullToRefreshEnabled && !scrollingHorizontally
     }
 
     @Override
@@ -58,7 +58,7 @@ class HorizontalFlowLayoutManager<ItemType : EasyAdapterDataModel>(
                 !easyRecyclerView.isShowingLoadingHeader &&
                 !easyRecyclerView.isAnimating &&
                 !easyRecyclerView.isShowingRefreshLayout &&
-                !easyRecyclerView.isShowingLoadingFooter && dx > 0
+                !easyRecyclerView.isLazyLoadingRunning && dx > 0
     }
 
     private fun handleLoadMore() {

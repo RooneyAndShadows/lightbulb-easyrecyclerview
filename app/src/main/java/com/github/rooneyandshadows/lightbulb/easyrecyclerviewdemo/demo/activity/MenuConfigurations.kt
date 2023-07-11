@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.SliderMenu
 import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.config.SliderMenuConfiguration
+import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.config.SliderMenuConfiguration.HeaderConfiguration
 import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.items.PrimaryMenuItem
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
@@ -12,7 +13,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.
 object MenuConfigurations {
     @SuppressLint("InflateParams")
     fun getConfiguration(context: Context): SliderMenuConfiguration {
-        return SliderMenuConfiguration(R.layout.demo_drawer_header_view).apply {
+        return SliderMenuConfiguration(HeaderConfiguration(R.layout.demo_drawer_header_view)).apply {
             itemsList.apply {
                 add(
                     PrimaryMenuItem(

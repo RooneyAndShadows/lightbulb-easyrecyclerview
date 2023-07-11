@@ -8,7 +8,7 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRe
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 import kotlin.math.abs
 
-class HorizontalLinearLayoutManager<ItemType : EasyAdapterDataModel, AType : EasyRecyclerAdapter<ItemType>>(
+class HorizontalLinearLayoutManager<ItemType : EasyAdapterDataModel>(
     private val easyRecyclerView: EasyRecyclerView<ItemType>,
 ) : LinearLayoutManager(easyRecyclerView.context, HORIZONTAL, false) {
     private var scrollingHorizontally = false
@@ -16,7 +16,7 @@ class HorizontalLinearLayoutManager<ItemType : EasyAdapterDataModel, AType : Eas
 
     @Override
     override fun canScrollVertically(): Boolean {
-        return easyRecyclerView.pullToRefreshEnabled && !scrollingHorizontally
+        return easyRecyclerView.isPullToRefreshEnabled && !scrollingHorizontally
     }
 
     @Override
@@ -53,7 +53,7 @@ class HorizontalLinearLayoutManager<ItemType : EasyAdapterDataModel, AType : Eas
                 !easyRecyclerView.isShowingLoadingHeader &&
                 !easyRecyclerView.isAnimating &&
                 !easyRecyclerView.isShowingRefreshLayout &&
-                !easyRecyclerView.isShowingLoadingFooter && dx > 0
+                !easyRecyclerView.isLazyLoadingRunning && dx > 0
     }
 
     private fun handleLoadMore() {

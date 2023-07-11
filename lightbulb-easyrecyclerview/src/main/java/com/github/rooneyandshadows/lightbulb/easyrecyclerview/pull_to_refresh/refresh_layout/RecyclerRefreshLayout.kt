@@ -1,4 +1,4 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview.swiperefresh
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.pull_to_refresh.refresh_layout
 
 import android.content.Context
 import android.graphics.Canvas

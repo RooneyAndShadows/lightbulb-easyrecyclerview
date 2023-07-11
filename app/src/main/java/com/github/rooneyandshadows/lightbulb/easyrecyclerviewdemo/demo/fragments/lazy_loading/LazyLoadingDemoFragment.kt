@@ -8,15 +8,11 @@ import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.F
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragmentWithViewModel
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions.AsyncAction.*
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.actions.LoadMoreDataAction
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LazyLoadingListener
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
-import java.lang.Exception
 
 @FragmentScreen(screenName = "LazyLoading", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_lazy_loading")
@@ -43,28 +39,23 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
 
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        recyclerView.apply {
-            addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
-            setLazyLoadingListener(viewModel.lazyLoadingAction)
-            if (savedInstanceState != null) return@apply
-            adapter.collection.set(generateData(10))
+        val decoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
+        recyclerView.addItemDecoration(decoration)
+        recyclerView.lazyLoadingListener = LazyLoadingListener {
+            viewModel.getNextPage()
         }
+        if (savedInstanceState != null) return
+        recyclerView.adapter.collection.set(viewModel.listData)
     }
 
     private fun initLazyLoadingAction() {
-        viewModel.lazyLoadingAction = LoadMoreDataAction(object : Action<DemoModel> {
-            override fun execute(easyRecyclerView: EasyRecyclerView<DemoModel>): List<DemoModel> {
-                Thread.sleep(3000)
-                val offset = easyRecyclerView.adapter.collection.size()
-                return generateData(10, offset)
+        viewModel.setListeners(object : LazyLoadingDemoViewModel.DataListener {
+            override fun onSuccess(items: List<DemoModel>) {
+                recyclerView.adapter.collection.addAll(items)
             }
-        }, object : OnComplete<DemoModel> {
-            override fun execute(result: List<DemoModel>, easyRecyclerView: EasyRecyclerView<DemoModel>) {
-                easyRecyclerView.adapter.apply { collection.addAll(result) }
-            }
-        }, object : OnError<DemoModel> {
-            override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
-                error.printStackTrace()
+
+            override fun onFailure(errorDetails: String?) {
+                println(errorDetails)
             }
         })
     }

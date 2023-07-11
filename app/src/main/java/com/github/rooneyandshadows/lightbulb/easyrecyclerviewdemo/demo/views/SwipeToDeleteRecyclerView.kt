@@ -18,6 +18,8 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.SimpleAdapter
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.StickyAdapterSimple
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 
 @SuppressLint("InflateParams")
@@ -28,11 +30,7 @@ class SwipeToDeleteRecyclerView @JvmOverloads constructor(
     override val adapter: SimpleAdapter
         get() = super.adapter as SimpleAdapter
     override val adapterCreator: AdapterCreator<DemoModel>
-        get() = object : AdapterCreator<DemoModel> {
-            override fun createAdapter(): SimpleAdapter {
-                return SimpleAdapter()
-            }
-        }
+        get() = AdapterCreator { SimpleAdapter() }
 
     init {
         val inflater = LayoutInflater.from(context)
@@ -91,7 +89,11 @@ class SwipeToDeleteRecyclerView @JvmOverloads constructor(
             }
 
             @Override
-            override fun onActionCancelled(item: DemoModel, adapter: EasyRecyclerAdapter<DemoModel>, position: Int) {
+            override fun onActionCancelled(
+                item: DemoModel,
+                adapter: EasyRecyclerAdapter<DemoModel>,
+                position: Int
+            ) {
             }
 
             @Override

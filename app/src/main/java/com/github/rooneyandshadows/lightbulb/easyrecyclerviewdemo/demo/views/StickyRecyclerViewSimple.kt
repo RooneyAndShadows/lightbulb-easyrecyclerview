@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.StickyHeaderItemDecoration
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickyAdvancedDemoModel
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.StickyAdapterSimple
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.StickyAdapterAdvanced
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 
 class StickyRecyclerViewSimple @JvmOverloads constructor(
@@ -18,13 +20,8 @@ class StickyRecyclerViewSimple @JvmOverloads constructor(
 ) : EasyRecyclerView<StickySimpleDemoModel>(context, attrs) {
     override val adapter: StickyAdapterSimple
         get() = super.adapter as StickyAdapterSimple
-
     override val adapterCreator: AdapterCreator<StickySimpleDemoModel>
-        get() = object : AdapterCreator<StickySimpleDemoModel> {
-            override fun createAdapter(): StickyAdapterSimple {
-                return StickyAdapterSimple()
-            }
-        }
+        get() = AdapterCreator { StickyAdapterSimple() }
 
     init {
         addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
