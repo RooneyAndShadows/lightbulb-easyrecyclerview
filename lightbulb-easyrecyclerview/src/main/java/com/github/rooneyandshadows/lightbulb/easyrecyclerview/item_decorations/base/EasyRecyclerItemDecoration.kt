@@ -1,4 +1,4 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.base
 
 import androidx.recyclerview.widget.RecyclerView
 

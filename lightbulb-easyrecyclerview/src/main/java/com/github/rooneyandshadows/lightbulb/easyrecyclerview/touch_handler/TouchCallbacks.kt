@@ -1,10 +1,10 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler
 
 import android.content.Context
 import android.graphics.drawable.Drawable
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler.*
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler.*
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 

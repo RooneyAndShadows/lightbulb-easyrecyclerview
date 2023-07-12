@@ -6,7 +6,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
-import android.view.ViewTreeObserver
 import android.view.animation.LayoutAnimationController
 import android.widget.EdgeEffect
 import android.widget.RelativeLayout
@@ -22,13 +21,13 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.L
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.UNDEFINED
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_layout_manager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_supports_overscroll_bounce
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.edge.BounceEdge
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.base.EasyRecyclerItemDecoration
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.edge_factory.BounceEdge
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.empty_layout.EasyRecyclerEmptyLayoutListener
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.empty_layout.EmptyLayout
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler.TouchHelperListeners
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.TouchCallbacks
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler.TouchHelperListeners
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.TouchCallbacks
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalFlowLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalLinearLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalFlowLayoutManager
@@ -64,28 +63,26 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         return@lazy LazyLoading(this)
     }
     private val emptyLayout: EmptyLayout<ItemType> by lazy {
-        val emptyLayout = EmptyLayout(this)
-        emptyLayout.setEmptyLayout(emptyLayoutId)
-        return@lazy emptyLayout
+        return@lazy EmptyLayout(this)
     }
     private val defaultEdgeFactory = object : EdgeEffectFactory() {
         override fun createEdgeEffect(view: RecyclerView, direction: Int): EdgeEffect {
             return EdgeEffect(view.context)
         }
     }
+    private val dataAdapter: EasyRecyclerAdapter<ItemType> by lazy {
+        val dataAdapter = adapterCreator.create()
+        val wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
+        wrapperAdapter.setDataAdapter(dataAdapter)
+        recyclerView.adapter = wrapperAdapter
+        //empty layout relies on the adapter
+        emptyLayout.setEmptyLayout(emptyLayoutId)
+
+        return@lazy dataAdapter
+    }
     private var layoutManagerType: LayoutManagerTypes? = null
     private val animationController: LayoutAnimationController? = null
     private var touchHandler: EasyRecyclerViewTouchHandler<ItemType>? = null
-    private var renderedCallback: EasyRecyclerItemsReadyListener? = null
-    private val dataAdapter: EasyRecyclerAdapter<ItemType> by lazy {
-        return@lazy adapterCreator.create().apply dataAdapter@{
-            val recyclerView = this@EasyRecyclerView.recyclerView
-            wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView).apply {
-                setDataAdapter(this@dataAdapter)
-                recyclerView.adapter = this
-            }
-        }
-    }
     private var emptyLayoutId: Int = -1
     var bounceOverscrollEnabled: Boolean
         set(value) {
@@ -312,15 +309,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     }
 
     /**
-     * Sets the [EasyRecyclerItemsReadyListener] to be executed on view ready.
-     *
-     * @param renderedCallback - The EasyRecyclerItemsReadyCallback to be executed on view ready.
-     */
-    fun setRenderedCallback(renderedCallback: EasyRecyclerItemsReadyListener?) {
-        this.renderedCallback = renderedCallback
-    }
-
-    /**
      * Notifies adapter for change occurred at position.
      *
      * @param position - position of the changed item.
@@ -441,13 +429,13 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         recyclerView.clearOnScrollListeners()
         //animationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
         //recyclerView.setLayoutAnimation(animationController);
-        recyclerView.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                if (renderedCallback != null) renderedCallback!!.execute()
-                recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
+        //recyclerView.viewTreeObserver.addOnGlobalLayoutListener(object :
+        //    ViewTreeObserver.OnGlobalLayoutListener {
+        //    override fun onGlobalLayout() {
+        //        if (renderedCallback != null) renderedCallback!!.execute()
+        //        recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+        //    }
+        //})
     }
 
     private class SavedState : BaseSavedState {

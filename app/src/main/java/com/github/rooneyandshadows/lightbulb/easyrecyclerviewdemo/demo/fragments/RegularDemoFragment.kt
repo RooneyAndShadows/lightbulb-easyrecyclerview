@@ -1,24 +1,18 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragments
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
-import com.github.rooneyandshadows.lightbulb.commons.utils.PermissionUtils.Companion.launch
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.VerticalAndHorizontalSpaceItemDecoration
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.getHomeIcon
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @FragmentScreen(screenName = "Regular", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_regular", hasLeftDrawer = true)

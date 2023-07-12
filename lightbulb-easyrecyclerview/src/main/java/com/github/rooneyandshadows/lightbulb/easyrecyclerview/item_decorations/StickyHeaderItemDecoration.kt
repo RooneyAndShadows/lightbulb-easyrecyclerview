@@ -1,4 +1,4 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations
 
 import android.graphics.Canvas
 import android.graphics.Rect
@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.base.EasyRecyclerItemDecoration
 
 open class StickyHeaderItemDecoration(
     private val verticalSpacing: Int,

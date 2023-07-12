@@ -1,4 +1,4 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview.edge
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.edge_factory
 
 import android.graphics.Canvas
 import android.widget.EdgeEffect

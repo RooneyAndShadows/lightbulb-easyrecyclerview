@@ -1,9 +1,9 @@
-package com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations
+package com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations
 
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.base.EasyRecyclerItemDecoration
 
 @Suppress("unused")
 class HorizontalSpaceItemDecoration(private val itemSpacing: Int) : EasyRecyclerItemDecoration() {
