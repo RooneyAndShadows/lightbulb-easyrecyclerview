@@ -10,7 +10,6 @@ import android.widget.RelativeLayout.ALIGN_PARENT_LEFT
 import android.widget.RelativeLayout.ALIGN_PARENT_RIGHT
 import android.widget.RelativeLayout.ALIGN_PARENT_TOP
 import android.widget.RelativeLayout.GONE
-import android.widget.RelativeLayout.INVISIBLE
 import android.widget.RelativeLayout.LayoutParams
 import android.widget.RelativeLayout.LayoutParams.MATCH_PARENT
 import android.widget.RelativeLayout.TRUE

@@ -57,14 +57,22 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     private val recyclerView: RecyclerView by lazy {
         return@lazy findViewById(R.id.recyclerView)!!
     }
+    private val pullToRefresh: PullToRefresh<ItemType> by lazy {
+        return@lazy PullToRefresh(this)
+    }
+    private val lazyLoading: LazyLoading<ItemType> by lazy {
+        return@lazy LazyLoading(this)
+    }
+    private val emptyLayout: EmptyLayout<ItemType> by lazy {
+        val emptyLayout = EmptyLayout(this)
+        emptyLayout.setEmptyLayout(emptyLayoutId)
+        return@lazy emptyLayout
+    }
     private val defaultEdgeFactory = object : EdgeEffectFactory() {
         override fun createEdgeEffect(view: RecyclerView, direction: Int): EdgeEffect {
             return EdgeEffect(view.context)
         }
     }
-    private val pullToRefresh: PullToRefresh<ItemType>
-    private val lazyLoading: LazyLoading<ItemType>
-    private val emptyLayout: EmptyLayout<ItemType>
     private var layoutManagerType: LayoutManagerTypes? = null
     private val animationController: LayoutAnimationController? = null
     private var touchHandler: EasyRecyclerViewTouchHandler<ItemType>? = null
@@ -78,6 +86,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             }
         }
     }
+    private var emptyLayoutId: Int = -1
     var bounceOverscrollEnabled: Boolean
         set(value) {
             if (value && pullToRefresh.enabled) {
@@ -116,9 +125,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     init {
         inflate(context, R.layout.lv_layout, this)
-        pullToRefresh = PullToRefresh(this)
-        lazyLoading = LazyLoading(this)
-        emptyLayout = EmptyLayout(this)
         readAttributes(context, attrs)
         initView()
     }
@@ -155,7 +161,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         emptyLayout.restoreState(savedState.emptyLayoutState!!)
         bounceOverscrollEnabled = savedState.overscrollBounceEnabled
         layoutManagerType = LayoutManagerTypes.valueOf(savedState.layoutManagerType)
-        bounceOverscrollEnabled = savedState.overscrollBounceEnabled
         showLoadingIndicator(savedState.showingLoadingIndicator)
         configureLayoutManager()
         if (savedState.layoutManagerState != null && recyclerView.layoutManager != null) {
@@ -390,15 +395,14 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             R.style.EasyRecyclerViewDefaultStyle
         )
         try {
-            val emptyLayoutId = a.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
-            bounceOverscrollEnabled =
-                a.getBoolean(EasyRecyclerView_erv_supports_overscroll_bounce, false)
+            val layoutManagerInt = a.getInt(EasyRecyclerView_erv_layout_manager, 1)
+            emptyLayoutId = a.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
+            bounceOverscrollEnabled = a.getBoolean(EasyRecyclerView_erv_supports_overscroll_bounce, false)
             layoutManagerType = if (getLayoutManagerType() == UNDEFINED) {
-                LayoutManagerTypes.valueOf(a.getInt(EasyRecyclerView_erv_layout_manager, 1))
+                LayoutManagerTypes.valueOf(layoutManagerInt)
             } else {
                 getLayoutManagerType()
             }
-            emptyLayout.setEmptyLayout(emptyLayoutId)
         } finally {
             a.recycle()
         }
