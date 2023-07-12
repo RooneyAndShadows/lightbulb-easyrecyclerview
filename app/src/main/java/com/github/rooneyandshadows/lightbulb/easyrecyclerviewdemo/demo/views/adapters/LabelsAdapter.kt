@@ -24,7 +24,8 @@ class LabelsAdapter : EasyRecyclerAdapter<DemoModel>() {
     @Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return LabelItemViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.demo_list_item_label_layout, parent, false)
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.demo_list_item_label_layout, parent, false)
         )
     }
 
@@ -51,7 +52,8 @@ class LabelsAdapter : EasyRecyclerAdapter<DemoModel>() {
         }
 
         fun bindData(model: DemoModel) {
-            container.background = ResourceUtils.getDrawable(container.context, R.drawable.bg_label_item)
+            container.background =
+                ResourceUtils.getDrawable(container.context, R.drawable.bg_label_item)
             textView.text = model.title
         }
 

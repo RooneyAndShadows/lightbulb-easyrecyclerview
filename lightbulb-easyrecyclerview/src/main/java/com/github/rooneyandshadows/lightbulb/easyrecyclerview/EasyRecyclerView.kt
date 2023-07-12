@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.LayoutAnimationController
@@ -25,6 +24,8 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRe
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_supports_overscroll_bounce
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.decorations.base.EasyRecyclerItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.edge.BounceEdge
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.empty_layout.EasyRecyclerEmptyLayoutListener
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.empty_layout.EmptyLayout
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.EasyRecyclerViewTouchHandler.TouchHelperListeners
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.handler.TouchCallbacks
@@ -37,7 +38,6 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.lazy_loading.LazyL
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.pull_to_refresh.PullToRefresh
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.pull_to_refresh.PullToRefreshListener
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.EasyRecyclerAdapterCollection.CollectionChangeListener
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.HeaderViewRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.HeaderViewRecyclerAdapter.ViewListeners
@@ -57,9 +57,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     private val recyclerView: RecyclerView by lazy {
         return@lazy findViewById(R.id.recyclerView)!!
     }
-    private val recyclerEmptyLayoutContainer: RelativeLayout by lazy {
-        return@lazy findViewById(R.id.recyclerEmptyLayoutContainer)!!
-    }
     private val defaultEdgeFactory = object : EdgeEffectFactory() {
         override fun createEdgeEffect(view: RecyclerView, direction: Int): EdgeEffect {
             return EdgeEffect(view.context)
@@ -67,21 +64,13 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     }
     private val pullToRefresh: PullToRefresh<ItemType>
     private val lazyLoading: LazyLoading<ItemType>
-    val isPullToRefreshEnabled: Boolean
-        get() = pullToRefresh.hasAttachedListener
-    private var emptyLayoutId: Int? = null
+    private val emptyLayout: EmptyLayout<ItemType>
     private var layoutManagerType: LayoutManagerTypes? = null
     private val animationController: LayoutAnimationController? = null
     private var touchHandler: EasyRecyclerViewTouchHandler<ItemType>? = null
     private var renderedCallback: EasyRecyclerItemsReadyListener? = null
-    private var emptyLayoutListeners: EasyRecyclerEmptyLayoutListener? = null
     private val dataAdapter: EasyRecyclerAdapter<ItemType> by lazy {
         return@lazy adapterCreator.create().apply dataAdapter@{
-            collection.addOnCollectionChangedListener(object : CollectionChangeListener {
-                override fun onChanged() {
-                    setEmptyLayoutVisibility(collection.isEmpty())
-                }
-            })
             val recyclerView = this@EasyRecyclerView.recyclerView
             wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView).apply {
                 setDataAdapter(this@dataAdapter)
@@ -100,6 +89,8 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         get() = recyclerView.edgeEffectFactory is BounceEdge
     var emptyLayoutView: View? = null
         private set
+    val isPullToRefreshEnabled: Boolean
+        get() = pullToRefresh.hasAttachedListener
     val isAnimating: Boolean
         get() = recyclerView.itemAnimator != null && recyclerView.itemAnimator!!.isRunning
     val isLazyLoadingRunning: Boolean
@@ -107,7 +98,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     val isShowingLoadingHeader: Boolean
         get() = loadingIndicator.visibility == VISIBLE
     val isShowingEmptyLayout: Boolean
-        get() = recyclerEmptyLayoutContainer.visibility == VISIBLE
+        get() = emptyLayout.isShowing
     val isShowingRefreshLayout: Boolean
         get() = pullToRefresh.refreshing
     val layoutManager: LayoutManager?
@@ -127,6 +118,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         inflate(context, R.layout.lv_layout, this)
         pullToRefresh = PullToRefresh(this)
         lazyLoading = LazyLoading(this)
+        emptyLayout = EmptyLayout(this)
         readAttributes(context, attrs)
         initView()
     }
@@ -138,12 +130,10 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         myState.adapterState = adapter.saveAdapterState()
         myState.pullToRefreshState = pullToRefresh.saveState()
         myState.lazyLoadingState = lazyLoading.saveState()
+        myState.emptyLayoutState = emptyLayout.saveState()
         myState.overscrollBounceEnabled = bounceOverscrollEnabled
         myState.showingLoadingIndicator = isShowingLoadingHeader
-        myState.emptyLayoutShowing = isShowingEmptyLayout
         myState.layoutManagerType = layoutManagerType!!.value
-        if (emptyLayoutId != null)
-            myState.emptyLayoutId = emptyLayoutId!!
         if (recyclerView.layoutManager != null) {
             val layoutManagerBundle = Bundle()
             layoutManagerBundle.putParcelable(
@@ -162,12 +152,11 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         adapter.restoreAdapterState(savedState.adapterState!!)
         pullToRefresh.restoreState(savedState.pullToRefreshState!!)
         lazyLoading.restoreState(savedState.lazyLoadingState!!)
+        emptyLayout.restoreState(savedState.emptyLayoutState!!)
         bounceOverscrollEnabled = savedState.overscrollBounceEnabled
         layoutManagerType = LayoutManagerTypes.valueOf(savedState.layoutManagerType)
-        emptyLayoutId = savedState.emptyLayoutId
         bounceOverscrollEnabled = savedState.overscrollBounceEnabled
         showLoadingIndicator(savedState.showingLoadingIndicator)
-        setEmptyLayoutVisibility(savedState.emptyLayoutShowing)
         configureLayoutManager()
         if (savedState.layoutManagerState != null && recyclerView.layoutManager != null) {
             val layoutManagerState = BundleUtils.getParcelable(
@@ -227,62 +216,22 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
      * Sets alternative layout to show in case of empty list.
      *
      * @param emptyLayoutId - Resource identifier for layout to show.
-     */
-    fun setEmptyLayout(emptyLayoutId: Int) {
-        setEmptyLayout(emptyLayoutId, null)
-    }
-
-    /**
-     * Sets alternative layout to show in case of empty list.
-     *
-     * @param emptyLayoutView - Layout to show.
-     */
-    fun setEmptyLayout(emptyLayoutView: View?) {
-        setEmptyLayout(emptyLayoutView, null)
-    }
-
-    /**
-     * Sets alternative layout to show in case of empty list.
-     *
-     * @param emptyLayoutId - Resource identifier for layout to show.
      * @param onLayoutReady - Callback to be executed when layout is ready.
      */
-    fun setEmptyLayout(emptyLayoutId: Int, onLayoutReady: EasyRecyclerEmptyLayoutListener?) {
-        this.emptyLayoutId = emptyLayoutId
-        val layout = LayoutInflater.from(context).inflate(emptyLayoutId, null)
-        setEmptyLayout(layout, onLayoutReady)
+    @JvmOverloads
+    fun setEmptyLayout(emptyLayoutId: Int, onLayoutReady: EasyRecyclerEmptyLayoutListener? = null) {
+        emptyLayout.setEmptyLayout(emptyLayoutId, onLayoutReady)
     }
 
     /**
      * Sets alternative layout to show in case of empty list.
      *
-     * @param emptyLayout    - Layout to show.
+     * @param layout    - Layout to show.
      * @param layoutListener - Callbacks to be executed on show/hide.
      */
-    fun setEmptyLayout(emptyLayout: View?, layoutListener: EasyRecyclerEmptyLayoutListener?) {
-        post {
-            if (emptyLayout == null) {
-                emptyLayoutView = null
-                recyclerEmptyLayoutContainer.removeAllViews()
-                return@post
-            }
-            recyclerEmptyLayoutContainer.removeAllViews()
-            emptyLayoutView = emptyLayout
-            emptyLayoutListeners = layoutListener
-            emptyLayoutView!!.tag = EMPTY_LAYOUT_TAG
-            val isListEmpty = adapter.collection.isEmpty()
-            recyclerEmptyLayoutContainer.visibility = if (isListEmpty) VISIBLE else GONE
-            recyclerView.visibility = if (isListEmpty) GONE else VISIBLE
-            val layout = findViewWithTag<View>(EMPTY_LAYOUT_TAG)
-            layout?.let { removeView(it) }
-            val params = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-            params.addRule(ALIGN_PARENT_LEFT, TRUE)
-            params.addRule(ALIGN_PARENT_TOP, TRUE)
-            params.addRule(ALIGN_PARENT_BOTTOM, TRUE)
-            params.addRule(ALIGN_PARENT_RIGHT, TRUE)
-            if (emptyLayoutListeners != null) emptyLayoutListeners!!.onInflated(emptyLayoutView)
-            recyclerEmptyLayoutContainer.addView(emptyLayoutView, params)
-        }
+    @JvmOverloads
+    fun setEmptyLayout(layout: View?, layoutListener: EasyRecyclerEmptyLayoutListener? = null) {
+        emptyLayout.setEmptyLayout(layout, layoutListener)
     }
 
     @JvmOverloads
@@ -441,9 +390,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             R.style.EasyRecyclerViewDefaultStyle
         )
         try {
-            val emptyLayoutId =
-                a.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
-            if (emptyLayoutId != -1) this@EasyRecyclerView.emptyLayoutId = emptyLayoutId
+            val emptyLayoutId = a.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
             bounceOverscrollEnabled =
                 a.getBoolean(EasyRecyclerView_erv_supports_overscroll_bounce, false)
             layoutManagerType = if (getLayoutManagerType() == UNDEFINED) {
@@ -451,6 +398,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             } else {
                 getLayoutManagerType()
             }
+            emptyLayout.setEmptyLayout(emptyLayoutId)
         } finally {
             a.recycle()
         }
@@ -460,7 +408,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         initLoadingIndicator()
         configureRecycler()
         configureLayoutManager()
-        configureEmptyLayout()
         isNestedScrollingEnabled = isNestedScrollingEnabled
     }
 
@@ -499,33 +446,15 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         })
     }
 
-    private fun configureEmptyLayout() {
-        if (emptyLayoutId != null) setEmptyLayout(emptyLayoutId!!)
-    }
-
-    private fun setEmptyLayoutVisibility(visibility: Boolean) {
-        if (emptyLayoutView == null || isShowingEmptyLayout == visibility) return
-        if (visibility) {
-            recyclerEmptyLayoutContainer.visibility = VISIBLE
-            recyclerView.visibility = INVISIBLE
-            if (emptyLayoutListeners != null) emptyLayoutListeners!!.onShow(emptyLayoutView)
-        } else {
-            if (emptyLayoutListeners != null) emptyLayoutListeners!!.onHide(emptyLayoutView)
-            recyclerEmptyLayoutContainer.visibility = INVISIBLE
-            recyclerView.visibility = VISIBLE
-        }
-    }
-
     private class SavedState : BaseSavedState {
         var adapterState: Bundle? = null
         var layoutManagerState: Bundle? = null
         var pullToRefreshState: Bundle? = null
         var lazyLoadingState: Bundle? = null
+        var emptyLayoutState: Bundle? = null
         var overscrollBounceEnabled = false
         var showingLoadingIndicator = false
-        var emptyLayoutShowing = false
         var layoutManagerType = 0
-        var emptyLayoutId = 0
 
         constructor(superState: Parcelable?) : super(superState)
 
@@ -535,11 +464,10 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
                 layoutManagerState = readParcelable(parcel, Bundle::class.java)
                 pullToRefreshState = readParcelable(parcel, Bundle::class.java)
                 lazyLoadingState = readParcelable(parcel, Bundle::class.java)
+                emptyLayoutState = readParcelable(parcel, Bundle::class.java)
                 overscrollBounceEnabled = readBoolean(parcel)!!
                 showingLoadingIndicator = readBoolean(parcel)!!
-                emptyLayoutShowing = readBoolean(parcel)!!
                 layoutManagerType = readInt(parcel)!!
-                emptyLayoutId = readInt(parcel)!!
             }
         }
 
@@ -550,11 +478,10 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
                 writeParcelable(out, layoutManagerState)
                 writeParcelable(out, pullToRefreshState)
                 writeParcelable(out, lazyLoadingState)
+                writeParcelable(out, emptyLayoutState)
                 writeBoolean(out, overscrollBounceEnabled)
                 writeBoolean(out, showingLoadingIndicator)
-                writeBoolean(out, emptyLayoutShowing)
                 writeInt(out, layoutManagerType)
-                writeInt(out, emptyLayoutId)
             }
         }
     }
@@ -570,13 +497,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             fun valueOf(value: Int) = values().first { it.value == value }
         }
     }
-
-    abstract class EasyRecyclerEmptyLayoutListener {
-        open fun onInflated(view: View?) {}
-        open fun onShow(view: View?) {}
-        open fun onHide(view: View?) {}
-    }
-
 
     fun interface AdapterCreator<ItemType : EasyAdapterDataModel> {
         fun create(): EasyRecyclerAdapter<ItemType>
