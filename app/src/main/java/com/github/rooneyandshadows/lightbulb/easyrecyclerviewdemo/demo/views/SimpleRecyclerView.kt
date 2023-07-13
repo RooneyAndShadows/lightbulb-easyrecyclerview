@@ -13,8 +13,10 @@ class SimpleRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
 ) : EasyRecyclerView<DemoModel>(context, attrs) {
-    override val adapter: EasyRecyclerAdapter<DemoModel>
+    override val adapter: SimpleAdapter
         get() = super.adapter as SimpleAdapter
-    override val adapterCreator: AdapterCreator<DemoModel>
-        get() = AdapterCreator { SimpleAdapter() }
+
+    init {
+        setAdapter(SimpleAdapter())
+    }
 }

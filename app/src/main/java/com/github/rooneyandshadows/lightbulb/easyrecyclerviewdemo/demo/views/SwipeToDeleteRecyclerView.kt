@@ -27,8 +27,6 @@ class SwipeToDeleteRecyclerView @JvmOverloads constructor(
 ) : EasyRecyclerView<DemoModel>(context, attrs) {
     override val adapter: SimpleAdapter
         get() = super.adapter as SimpleAdapter
-    override val adapterCreator: AdapterCreator<DemoModel>
-        get() = AdapterCreator { SimpleAdapter() }
 
     init {
         val inflater = LayoutInflater.from(context)
@@ -36,6 +34,7 @@ class SwipeToDeleteRecyclerView @JvmOverloads constructor(
         val emptyLayout = generateEmptyLayout()
         val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
         val swipeCallbacks = getSwipeHandler()
+        setAdapter(SimpleAdapter())
         setSwipeCallbacks(swipeCallbacks)
         addHeaderView(header)
         setEmptyLayout(emptyLayout)
@@ -51,7 +50,12 @@ class SwipeToDeleteRecyclerView @JvmOverloads constructor(
             val progressBar = emptyLayout.findViewById<ProgressBar>(R.id.progressBar)
             emptyLayoutImage.visibility = View.GONE
             progressBar.visibility = View.VISIBLE
-            emptyLayout.postDelayed({ adapter.collection.addAll(generateData(20)) }, 2000)
+            emptyLayout.postDelayed(
+                {
+                    adapter!!.collection.addAll(generateData(20))
+                },
+                2000
+            )
         }
         return emptyLayout
     }

@@ -34,14 +34,11 @@ class FilterableDemoFragment : BaseFragment() {
 
     @Override
     override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        recyclerView.apply {
-            val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
-            addItemDecoration(itemDecoration)
-            if (savedInstanceState == null) {
-                val initialData = generateData(20)
-                adapter.collection.set(initialData)
-            }
-        }
+        val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
+        recyclerView.addItemDecoration(itemDecoration)
+        if (savedInstanceState != null) return
+        val dataToSet = generateData(20)
+        recyclerView.adapter.collection.set(dataToSet)
     }
 
     @Override

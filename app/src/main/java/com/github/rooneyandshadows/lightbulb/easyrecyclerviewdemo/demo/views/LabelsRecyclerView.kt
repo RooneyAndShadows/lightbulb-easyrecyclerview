@@ -12,10 +12,12 @@ class LabelsRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
 ) : EasyRecyclerView<DemoModel>(context, attrs) {
-    override val adapter: LabelsAdapter
+    override val adapter: EasyRecyclerAdapter<DemoModel>
         get() = super.adapter as LabelsAdapter
-    override val adapterCreator: AdapterCreator<DemoModel>
-        get() = AdapterCreator { LabelsAdapter() }
+
+    init {
+        setAdapter(LabelsAdapter())
+    }
 
     @Override
     override fun getLayoutManagerType(): LayoutManagerTypes {

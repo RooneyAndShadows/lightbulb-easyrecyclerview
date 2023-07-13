@@ -12,6 +12,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SwipeToDeleteRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.SimpleAdapter
 
 @Suppress("SameParameterValue")
@@ -19,7 +20,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.ada
 @FragmentConfiguration(layoutName = "fragment_demo_swipe_to_delete")
 class SwipeToDeleteDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: EasyRecyclerView<DemoModel>
+    lateinit var recyclerView: SwipeToDeleteRecyclerView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {

@@ -7,35 +7,30 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LayoutAnimationController
-import android.widget.EdgeEffect
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelUtils
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.LAYOUT_FLOW_HORIZONTAL
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.LAYOUT_FLOW_VERTICAL
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.LAYOUT_LINEAR_HORIZONTAL
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.LAYOUT_LINEAR_VERTICAL
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.UNDEFINED
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.*
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_layout_manager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_supports_overscroll_bounce
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.base.EasyRecyclerItemDecoration
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.edge_factory.BounceEdge
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.empty_layout.EasyRecyclerEmptyLayoutListener
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.empty_layout.EmptyLayout
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler.TouchHelperListeners
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.TouchCallbacks
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalFlowLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalLinearLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalFlowLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.lazy_loading.LazyLoading
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.lazy_loading.LazyLoadingListener
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.pull_to_refresh.PullToRefresh
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.pull_to_refresh.PullToRefreshListener
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.bounce_overscroll.BounceOverscroll
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.empty_layout.EasyRecyclerEmptyLayoutListener
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.empty_layout.EmptyLayout
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.lazy_loading.LazyLoading
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.lazy_loading.LazyLoadingListener
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.pull_to_refresh.PullToRefresh
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.pull_to_refresh.PullToRefreshListener
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler.TouchHelperListeners
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.TouchCallbacks
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.HeaderViewRecyclerAdapter
@@ -56,45 +51,18 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     private val recyclerView: RecyclerView by lazy {
         return@lazy findViewById(R.id.recyclerView)!!
     }
-    private val pullToRefresh: PullToRefresh<ItemType> by lazy {
-        return@lazy PullToRefresh(this)
-    }
-    private val lazyLoading: LazyLoading<ItemType> by lazy {
-        return@lazy LazyLoading(this)
-    }
-    private val emptyLayout: EmptyLayout<ItemType> by lazy {
-        return@lazy EmptyLayout(this)
-    }
-    private val defaultEdgeFactory = object : EdgeEffectFactory() {
-        override fun createEdgeEffect(view: RecyclerView, direction: Int): EdgeEffect {
-            return EdgeEffect(view.context)
-        }
-    }
-    private val dataAdapter: EasyRecyclerAdapter<ItemType> by lazy {
-        val dataAdapter = adapterCreator.create()
-        val wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
-        wrapperAdapter.setDataAdapter(dataAdapter)
-        recyclerView.adapter = wrapperAdapter
-        //empty layout relies on the adapter
-        emptyLayout.setEmptyLayout(emptyLayoutId)
-
-        return@lazy dataAdapter
-    }
+    private var dataAdapter: EasyRecyclerAdapter<ItemType>? = null
+    private var pullToRefresh: PullToRefresh<ItemType>
+    private var lazyLoading: LazyLoading<ItemType>
+    private var emptyLayout: EmptyLayout<ItemType>
+    private var bounceOverscroll: BounceOverscroll<ItemType>
     private var layoutManagerType: LayoutManagerTypes? = null
     private val animationController: LayoutAnimationController? = null
     private var touchHandler: EasyRecyclerViewTouchHandler<ItemType>? = null
-    private var emptyLayoutId: Int = -1
-    var bounceOverscrollEnabled: Boolean
-        set(value) {
-            if (value && pullToRefresh.enabled) {
-                recyclerView.edgeEffectFactory = defaultEdgeFactory
-                return
-            }
-            recyclerView.edgeEffectFactory = if (value) BounceEdge() else defaultEdgeFactory
-        }
-        get() = recyclerView.edgeEffectFactory is BounceEdge
     var emptyLayoutView: View? = null
         private set
+    val isBounceOverscrollEnabled: Boolean
+        get() = bounceOverscroll.enabled
     val isPullToRefreshEnabled: Boolean
         get() = pullToRefresh.hasAttachedListener
     val isAnimating: Boolean
@@ -111,9 +79,8 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         get() = recyclerView.layoutManager
     val itemDecorationCount: Int
         get() = recyclerView.itemDecorationCount
-    open val adapter: EasyRecyclerAdapter<ItemType>
+    open val adapter: EasyRecyclerAdapter<ItemType>?
         get() = dataAdapter
-    protected abstract val adapterCreator: AdapterCreator<ItemType>
 
     companion object {
         private const val LAYOUT_MANAGER_STATE_KEY = "LAYOUT_MANAGER_STATE_KEY"
@@ -122,6 +89,10 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     init {
         inflate(context, R.layout.lv_layout, this)
+        emptyLayout = EmptyLayout(this)
+        pullToRefresh = PullToRefresh(this)
+        lazyLoading = LazyLoading(this)
+        bounceOverscroll = BounceOverscroll(this)
         readAttributes(context, attrs)
         initView()
     }
@@ -130,11 +101,11 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     public override fun onSaveInstanceState(): Parcelable {
         val superState = super.onSaveInstanceState()
         val myState = SavedState(superState)
-        myState.adapterState = adapter.saveAdapterState()
+        myState.adapterState = adapter?.saveAdapterState()
         myState.pullToRefreshState = pullToRefresh.saveState()
         myState.lazyLoadingState = lazyLoading.saveState()
         myState.emptyLayoutState = emptyLayout.saveState()
-        myState.overscrollBounceEnabled = bounceOverscrollEnabled
+        myState.bounceOverscrollState = bounceOverscroll.saveState()
         myState.showingLoadingIndicator = isShowingLoadingHeader
         myState.layoutManagerType = layoutManagerType!!.value
         if (recyclerView.layoutManager != null) {
@@ -152,11 +123,11 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     public override fun onRestoreInstanceState(state: Parcelable) {
         val savedState = state as SavedState
         super.onRestoreInstanceState(savedState.superState)
-        adapter.restoreAdapterState(savedState.adapterState!!)
+        adapter?.restoreAdapterState(savedState.adapterState!!)
         pullToRefresh.restoreState(savedState.pullToRefreshState!!)
         lazyLoading.restoreState(savedState.lazyLoadingState!!)
         emptyLayout.restoreState(savedState.emptyLayoutState!!)
-        bounceOverscrollEnabled = savedState.overscrollBounceEnabled
+        bounceOverscroll.restoreState(savedState.bounceOverscrollState!!)
         layoutManagerType = LayoutManagerTypes.valueOf(savedState.layoutManagerType)
         showLoadingIndicator(savedState.showingLoadingIndicator)
         configureLayoutManager()
@@ -178,6 +149,14 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     protected open fun getLayoutManagerType(): LayoutManagerTypes {
         return UNDEFINED
+    }
+
+    fun setAdapter(adapter: EasyRecyclerAdapter<ItemType>) {
+        dataAdapter = adapter
+        val wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
+        wrapperAdapter.setDataAdapter(adapter)
+        recyclerView.adapter = wrapperAdapter
+        emptyLayout.initialize(adapter)
     }
 
     fun setSwipeCallbacks(swipeCallbacks: TouchCallbacks<ItemType>) {
@@ -238,14 +217,14 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     @JvmOverloads
     fun addHeaderView(view: View, viewListeners: ViewListeners? = null) {
-        dataAdapter.wrapperAdapter?.apply {
+        dataAdapter?.wrapperAdapter?.apply {
             if (containsHeaderView(view)) return@apply
             addHeaderView(view, viewListeners)
         }
     }
 
     fun removeHeaderView(view: View) {
-        dataAdapter.wrapperAdapter?.apply {
+        dataAdapter?.wrapperAdapter?.apply {
             if (!containsHeaderView(view)) return@apply
             removeHeaderView(view)
         }
@@ -253,14 +232,14 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     @JvmOverloads
     fun addFooterView(view: View, viewListeners: ViewListeners? = null) {
-        dataAdapter.wrapperAdapter?.apply {
+        dataAdapter?.wrapperAdapter?.apply {
             if (containsFooterView(view)) return@apply
             addFooterView(view, viewListeners)
         }
     }
 
     fun removeFooterView(view: View) {
-        dataAdapter.wrapperAdapter?.apply {
+        dataAdapter?.wrapperAdapter?.apply {
             if (!containsFooterView(view)) return@apply
             removeFooterView(view)
         }
@@ -291,10 +270,18 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     }
 
     /**
-     * Must be called when lazy loading listener has finished
+     * Must be called when lazy loading listener has finished/
      */
     fun onLazyLoadingFinished(hasMoreData: Boolean) {
         lazyLoading.finalizeLoading(hasMoreData)
+    }
+
+    /**
+     * Method enables or disables bounce effect on overscroll.
+     * @param enabled whether is enabled or not.
+     */
+    fun setBounceOverscrollEnabled(enabled: Boolean) {
+        bounceOverscroll.enabled = enabled
     }
 
     /**
@@ -314,7 +301,9 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
      * @param position - position of the changed item.
      */
     fun itemChanged(position: Int?) {
-        post { dataAdapter.notifyItemChanged(position!!) }
+        post {
+            dataAdapter?.notifyItemChanged(position!!)
+        }
     }
 
     /**
@@ -384,13 +373,15 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         )
         try {
             val layoutManagerInt = a.getInt(EasyRecyclerView_erv_layout_manager, 1)
-            emptyLayoutId = a.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
-            bounceOverscrollEnabled = a.getBoolean(EasyRecyclerView_erv_supports_overscroll_bounce, false)
+            val emptyLayoutId = a.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
+            val enableBounceOverscroll = a.getBoolean(EasyRecyclerView_erv_supports_overscroll_bounce, false)
             layoutManagerType = if (getLayoutManagerType() == UNDEFINED) {
                 LayoutManagerTypes.valueOf(layoutManagerInt)
             } else {
                 getLayoutManagerType()
             }
+            emptyLayout.setEmptyLayout(emptyLayoutId)
+            bounceOverscroll.enabled = enableBounceOverscroll
         } finally {
             a.recycle()
         }
@@ -444,7 +435,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         var pullToRefreshState: Bundle? = null
         var lazyLoadingState: Bundle? = null
         var emptyLayoutState: Bundle? = null
-        var overscrollBounceEnabled = false
+        var bounceOverscrollState: Bundle? = null
         var showingLoadingIndicator = false
         var layoutManagerType = 0
 
@@ -457,7 +448,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
                 pullToRefreshState = readParcelable(parcel, Bundle::class.java)
                 lazyLoadingState = readParcelable(parcel, Bundle::class.java)
                 emptyLayoutState = readParcelable(parcel, Bundle::class.java)
-                overscrollBounceEnabled = readBoolean(parcel)!!
+                bounceOverscrollState = readParcelable(parcel, Bundle::class.java)
                 showingLoadingIndicator = readBoolean(parcel)!!
                 layoutManagerType = readInt(parcel)!!
             }
@@ -471,7 +462,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
                 writeParcelable(out, pullToRefreshState)
                 writeParcelable(out, lazyLoadingState)
                 writeParcelable(out, emptyLayoutState)
-                writeBoolean(out, overscrollBounceEnabled)
+                writeParcelable(out, bounceOverscrollState)
                 writeBoolean(out, showingLoadingIndicator)
                 writeInt(out, layoutManagerType)
             }

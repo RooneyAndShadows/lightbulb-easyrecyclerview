@@ -12,13 +12,14 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateStickyHeadersSimpleData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.StickyRecyclerViewSimple
 
 @Suppress("SameParameterValue")
 @FragmentScreen(screenName = "StickyHeaders", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_sticky_headers_simple")
 class StickyHeadersSimpleDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
-    lateinit var recyclerView: EasyRecyclerView<StickySimpleDemoModel>
+    lateinit var recyclerView: StickyRecyclerViewSimple
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {

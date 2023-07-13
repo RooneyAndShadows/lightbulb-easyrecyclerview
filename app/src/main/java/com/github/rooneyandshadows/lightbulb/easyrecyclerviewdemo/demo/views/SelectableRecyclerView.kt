@@ -13,6 +13,8 @@ class SelectableRecyclerView @JvmOverloads constructor(
 ) : EasyRecyclerView<DemoModel>(context, attrs) {
     override val adapter: SelectableAdapter
         get() = super.adapter as SelectableAdapter
-    override val adapterCreator: AdapterCreator<DemoModel>
-        get() = AdapterCreator { SelectableAdapter() }
+
+    init {
+        setAdapter(SelectableAdapter())
+    }
 }

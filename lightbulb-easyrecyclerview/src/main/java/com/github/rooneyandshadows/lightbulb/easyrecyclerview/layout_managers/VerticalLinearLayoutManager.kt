@@ -28,14 +28,14 @@ class VerticalLinearLayoutManager<ItemType : EasyAdapterDataModel>(
     }
 
     private fun needToLoadData(dx: Int): Boolean {
-        if (dx <= 0) return false
+        val adapter = easyRecyclerView.adapter
+        if (adapter == null || dx <= 0) return false
         val lastView = getChildAt(childCount - 1) ?: return false
-        val recyclerAdapter: EasyRecyclerAdapter<ItemType> = easyRecyclerView.adapter
         val lastViewAdapterPos =
             (lastView.layoutParams as RecyclerView.LayoutParams).absoluteAdapterPosition
-        val headersCount = recyclerAdapter.headersCount
+        val headersCount = adapter.headersCount
         val visibleLastPosition = lastViewAdapterPos - headersCount
-        val totalSize = easyRecyclerView.adapter.collection.size()
+        val totalSize = adapter.collection.size()
         return visibleLastPosition == totalSize - 1
     }
 }

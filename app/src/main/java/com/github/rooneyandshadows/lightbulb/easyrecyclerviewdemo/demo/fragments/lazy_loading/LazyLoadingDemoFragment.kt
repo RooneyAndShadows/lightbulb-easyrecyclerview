@@ -44,14 +44,14 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
             viewModel.getNextPage()
         }
         if (savedInstanceState != null) return
-        recyclerView.adapter.collection.set(viewModel.listData)
+        recyclerView.adapter!!.collection.set(viewModel.listData)
     }
 
     private fun initLazyLoadingAction() {
         viewModel.setListeners(object : LazyLoadingDemoViewModel.DataListener {
             override fun onSuccess(items: List<DemoModel>) {
-                val hasMoreData = recyclerView.adapter.collection.size() + items.size < 40
-                recyclerView.adapter.collection.addAll(items)
+                val hasMoreData = recyclerView.adapter!!.collection.size() + items.size < 40
+                recyclerView.adapter!!.collection.addAll(items)
                 recyclerView.onLazyLoadingFinished(hasMoreData)
                 if (!hasMoreData) InteractionUtils.showMessage(
                     requireContext(),

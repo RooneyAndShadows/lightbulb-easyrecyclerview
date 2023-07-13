@@ -17,12 +17,11 @@ class StickyRecyclerViewSimple @JvmOverloads constructor(
 ) : EasyRecyclerView<StickySimpleDemoModel>(context, attrs) {
     override val adapter: StickyAdapterSimple
         get() = super.adapter as StickyAdapterSimple
-    override val adapterCreator: AdapterCreator<StickySimpleDemoModel>
-        get() = AdapterCreator { StickyAdapterSimple() }
 
     init {
+        setAdapter(StickyAdapterSimple())
         addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-        addItemDecoration(object : StickyHeaderItemDecoration(adapter) {
+        addItemDecoration(object : StickyHeaderItemDecoration(adapter!!) {
             @Override
             override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
                 val firstVisibleItemPosition =

@@ -30,15 +30,15 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
     private var undoClicked = false
     private var snackbar: Snackbar? = null
     private var pendingAction: Runnable? = null
-    private val adapter: EasyRecyclerAdapter<ItemType> = easyRecyclerView.adapter
-    private val configuration: SwipeConfiguration =
-        touchCallbacks.getConfiguration(easyRecyclerView.context)
+    private var touchHelperListeners: TouchHelperListeners? = null
+    private val configuration: SwipeConfiguration = touchCallbacks.getConfiguration(easyRecyclerView.context)
     private val drawerHelper: SwipeToDeleteDrawerHelper = SwipeToDeleteDrawerHelper()
     private val actionsHandler = Handler(Looper.getMainLooper(), null)
     private val isVerticalLayoutManager = easyRecyclerView.layoutManager!!.canScrollVertically()
+    private val adapter: EasyRecyclerAdapter<ItemType>
+        get() = easyRecyclerView.adapter!!
     private lateinit var allowedDragDirections: Directions
     private lateinit var allowedSwipeDirections: Directions
-    private var touchHelperListeners: TouchHelperListeners? = null
 
     @Override
     override fun getMovementFlags(
