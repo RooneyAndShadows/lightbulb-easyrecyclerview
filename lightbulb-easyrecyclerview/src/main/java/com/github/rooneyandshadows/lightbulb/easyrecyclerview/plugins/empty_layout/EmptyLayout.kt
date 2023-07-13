@@ -89,10 +89,8 @@ internal class EmptyLayout<ItemType : EasyAdapterDataModel>(
     }
 
     private fun showInternally(newState: Boolean) {
-        easyRecyclerView.post {
-            emptyLayoutContainer.visibility = if (newState) VISIBLE else GONE
-            recyclerView.visibility = if (newState) GONE else VISIBLE
-        }
+        emptyLayoutContainer.visibility = if (newState) VISIBLE else INVISIBLE
+        recyclerView.visibility = if (newState) INVISIBLE else VISIBLE
         if (layout == null || isShowing == newState) return
         isShowing = newState
         if (newState) {
@@ -101,5 +99,4 @@ internal class EmptyLayout<ItemType : EasyAdapterDataModel>(
             emptyLayoutListeners?.onHide(layout!!)
         }
     }
-
 }
