@@ -155,6 +155,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         dataAdapter = adapter
         val wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
         wrapperAdapter.setDataAdapter(adapter)
+        adapter.wrapperAdapter = wrapperAdapter
         recyclerView.adapter = wrapperAdapter
         emptyLayout.initialize(adapter)
     }
