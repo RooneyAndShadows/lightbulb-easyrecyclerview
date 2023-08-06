@@ -13,6 +13,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.V
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SelectableRecyclerView
+import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.collection.ExtendedCollection
 
 @FragmentScreen(screenName = "Selectable", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_selectable")
@@ -39,6 +40,14 @@ class SelectionDemoFragment : BaseFragment() {
             addItemDecoration(itemDecoration)
             if (savedInstanceState != null) return@apply
             adapter.collection.set(generateData(20))
+            adapter.collection.addOnSelectionChangeListener(object : ExtendedCollection.SelectionChangeListener {
+                override fun onChanged(newSelection: IntArray?) {
+                    val result = Bundle().apply {
+                        putIntArray("DATA", newSelection)
+                    }
+                    parentFragmentManager.setFragmentResult("TEST", result)
+                }
+            })
         }
     }
 }

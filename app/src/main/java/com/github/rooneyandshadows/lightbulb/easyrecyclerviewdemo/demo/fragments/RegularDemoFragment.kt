@@ -7,6 +7,7 @@ import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.F
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
+import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
@@ -20,6 +21,8 @@ class RegularDemoFragment : BaseFragment() {
     @BindView(name = "recycler_view")
     lateinit var recyclerView: SimpleRecyclerView
 
+    var data: IntArray? = null
+
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
         return ActionBarConfiguration(R.id.toolbar)
@@ -28,6 +31,24 @@ class RegularDemoFragment : BaseFragment() {
             .attachToDrawer(true)
             .withSubTitle(ResourceUtils.getPhrase(requireContext(), R.string.regular_demo))
             .withTitle(ResourceUtils.getPhrase(requireContext(), R.string.app_name))
+    }
+
+    override fun doOnCreate(savedInstanceState: Bundle?) {
+        super.doOnCreate(savedInstanceState)
+        parentFragmentManager.setFragmentResultListener(
+            "TEST",
+            this
+        ) { _, result ->
+            data = result.getIntArray("DATA")
+
+        }
+    }
+
+    override fun onEnterTransitionFinished() {
+        super.onEnterTransitionFinished()
+
+        println("========================= RESULT")
+        println(data?.contentToString())
     }
 
     @Override
