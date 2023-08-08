@@ -37,7 +37,7 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.ada
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.HeaderViewRecyclerAdapter.ViewListeners
 import com.google.android.material.progressindicator.LinearProgressIndicator
 
-@Suppress("MemberVisibilityCanBePrivate", "unused", "LeakingThis")
+@Suppress("MemberVisibilityCanBePrivate", "unused", "LeakingThis", "UNCHECKED_CAST")
 abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 @JvmOverloads constructor(
     context: Context,
@@ -51,6 +51,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     private val recyclerView: RecyclerView by lazy {
         return@lazy findViewById(R.id.recyclerView)!!
     }
+    private var wrapperAdapter: HeaderViewRecyclerAdapter<ItemType>? = null
     private var dataAdapter: EasyRecyclerAdapter<ItemType>? = null
     private var pullToRefresh: PullToRefresh<ItemType>
     private var lazyLoading: LazyLoading<ItemType>
@@ -153,11 +154,9 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     fun setAdapter(adapter: EasyRecyclerAdapter<ItemType>) {
         dataAdapter = adapter
-        val wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView)
-        wrapperAdapter.setDataAdapter(adapter)
-        adapter.wrapperAdapter = wrapperAdapter
+        wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView, dataAdapter!!)
         recyclerView.adapter = wrapperAdapter
-        emptyLayout.initialize(adapter)
+        emptyLayout.initialize(recyclerView.adapter as HeaderViewRecyclerAdapter<ItemType>)
     }
 
     fun setSwipeCallbacks(swipeCallbacks: TouchCallbacks<ItemType>) {
@@ -218,14 +217,14 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     @JvmOverloads
     fun addHeaderView(view: View, viewListeners: ViewListeners? = null) {
-        dataAdapter?.wrapperAdapter?.apply {
+        wrapperAdapter?.apply {
             if (containsHeaderView(view)) return@apply
             addHeaderView(view, viewListeners)
         }
     }
 
     fun removeHeaderView(view: View) {
-        dataAdapter?.wrapperAdapter?.apply {
+        wrapperAdapter?.apply {
             if (!containsHeaderView(view)) return@apply
             removeHeaderView(view)
         }
@@ -233,14 +232,14 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     @JvmOverloads
     fun addFooterView(view: View, viewListeners: ViewListeners? = null) {
-        dataAdapter?.wrapperAdapter?.apply {
+        wrapperAdapter?.apply {
             if (containsFooterView(view)) return@apply
             addFooterView(view, viewListeners)
         }
     }
 
     fun removeFooterView(view: View) {
-        dataAdapter?.wrapperAdapter?.apply {
+        wrapperAdapter?.apply {
             if (!containsFooterView(view)) return@apply
             removeFooterView(view)
         }

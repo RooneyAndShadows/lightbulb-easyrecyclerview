@@ -4,16 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater.from
 import android.view.View
 import android.widget.RelativeLayout
-import android.widget.RelativeLayout.*
+import android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM
+import android.widget.RelativeLayout.ALIGN_PARENT_LEFT
+import android.widget.RelativeLayout.ALIGN_PARENT_RIGHT
+import android.widget.RelativeLayout.ALIGN_PARENT_TOP
+import android.widget.RelativeLayout.INVISIBLE
+import android.widget.RelativeLayout.LayoutParams
 import android.widget.RelativeLayout.LayoutParams.MATCH_PARENT
+import android.widget.RelativeLayout.TRUE
+import android.widget.RelativeLayout.VISIBLE
 import androidx.annotation.LayoutRes
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.base.BaseEasyRecyclerPlugin
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.collection.EasyRecyclerAdapterCollection.CollectionChangeListener
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
+import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.HeaderViewRecyclerAdapter
 
 internal class EmptyLayout<ItemType : EasyAdapterDataModel>(
     easyRecyclerView: EasyRecyclerView<ItemType>
@@ -21,10 +27,10 @@ internal class EmptyLayout<ItemType : EasyAdapterDataModel>(
     private val emptyLayoutContainer: RelativeLayout by lazy {
         return@lazy easyRecyclerView.findViewById(R.id.recyclerEmptyLayoutContainer)
     }
-    private var adapter: EasyRecyclerAdapter<ItemType>? = null
-    private var emptyLayoutListeners: EasyRecyclerEmptyLayoutListener? = null
     private var layoutId: Int? = null
     private var layout: View? = null
+    private var emptyLayoutListeners: EasyRecyclerEmptyLayoutListener? = null
+    private var adapter: HeaderViewRecyclerAdapter<ItemType>? = null
 
     var isShowing: Boolean = false
         private set
@@ -48,14 +54,12 @@ internal class EmptyLayout<ItemType : EasyAdapterDataModel>(
         showInternally(isShowing)
     }
 
-    fun initialize(adapter: EasyRecyclerAdapter<ItemType>) {
-        this.adapter = adapter
-        adapter.collection.addOnCollectionChangedListener(object : CollectionChangeListener {
-            override fun onChanged() {
-                showInternally(adapter.collection.isEmpty())
-            }
-        })
-        showInternally(adapter.collection.isEmpty())
+    fun initialize(wrapperAdapter: HeaderViewRecyclerAdapter<ItemType>) {
+        adapter = wrapperAdapter
+        wrapperAdapter.dataAdapter.collection.addOnCollectionChangedListener {
+            showInternally(needsToShowEmptyLayout())
+        }
+        showInternally(needsToShowEmptyLayout())
     }
 
     fun setEmptyLayout(@LayoutRes layoutId: Int, listeners: EasyRecyclerEmptyLayoutListener? = null) {
@@ -76,7 +80,7 @@ internal class EmptyLayout<ItemType : EasyAdapterDataModel>(
         layout = emptyLayout
         emptyLayoutListeners?.onInflated(layout!!)
         emptyLayoutContainer.addView(layout, generateLayoutParams())
-        showInternally(adapter?.collection?.isEmpty() ?: true)
+        showInternally(needsToShowEmptyLayout())
     }
 
     private fun generateLayoutParams(): LayoutParams {
@@ -98,5 +102,12 @@ internal class EmptyLayout<ItemType : EasyAdapterDataModel>(
         } else {
             emptyLayoutListeners?.onHide(layout!!)
         }
+    }
+
+    private fun needsToShowEmptyLayout(): Boolean {
+        if (adapter == null) {
+            return false
+        }
+        return adapter!!.itemCount <= 0
     }
 }
