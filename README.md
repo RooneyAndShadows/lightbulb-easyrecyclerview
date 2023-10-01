@@ -69,21 +69,13 @@ implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:2.2.0'
 
 ```Kotlin
 class DemoModel : EasyAdapterObservableDataModel {
-    @get:Bindable
-    var title: String
-        set(value) {
-            if (field == value) return
-            field = value
-            notifyPropertyChanged(BR.title)
-        }
 
     @get:Bindable
-    var subtitle: String
-        set(value) {
-            if (field == value) return
-            field = value
-            notifyPropertyChanged(BR.subtitle)
-        }
+    var title: String by ObservableProperty("", BR.title)
+
+    @get:Bindable
+    var subtitle: String by ObservableProperty("", BR.subtitle)
+  
     override val itemName: String
         get() = title
 

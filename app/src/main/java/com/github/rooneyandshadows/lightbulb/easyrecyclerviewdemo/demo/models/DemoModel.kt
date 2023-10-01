@@ -14,6 +14,7 @@ class DemoModel : EasyAdapterObservableDataModel {
     @get:Bindable
     var subtitle: String by ObservableProperty("", BR.subtitle)
 
+    @get:Bindable("title")
     override val itemName: String
         get() = title
 
