@@ -3,26 +3,16 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models
 import android.os.Parcel
 import android.os.Parcelable.Creator
 import androidx.databinding.Bindable
+import com.github.rooneyandshadows.lightbulb.commons.databinding.ObservableProperty
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.BR
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterObservableDataModel
 
 class DemoModel : EasyAdapterObservableDataModel {
     @get:Bindable
-    var title: String
-        set(value) {
-            if (field == value) return
-            field = value
-            notifyPropertyChanged(BR.title)
-        }
+    var title: String by ObservableProperty("", BR.title)
 
     @get:Bindable
-    var subtitle: String
-        set(value) {
-            if (field == value) return
-            field = value
-            notifyPropertyChanged(BR.subtitle)
-        }
+    var subtitle: String by ObservableProperty("", BR.subtitle)
 
     override val itemName: String
         get() = title
@@ -32,7 +22,6 @@ class DemoModel : EasyAdapterObservableDataModel {
         this.subtitle = subtitle
     }
 
-    // Parcelling part
     constructor(parcel: Parcel) {
         title = parcel.readString()!!
         subtitle = parcel.readString()!!

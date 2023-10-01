@@ -36,7 +36,7 @@ is lightweight, easy to use, and fully customizable, so you can tweak it to your
 ## Latest releases 🛠
 
 - Kotlin
-  | [v2.0.2](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/2.0.2)
+  | [v2.4.0](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/2.4.0)
 - Java & AndroidX
   | [v1.0.24](https://github.com/RooneyAndShadows/lightbulb-easyrecyclerview/tree/1.0.24)
 
@@ -56,9 +56,9 @@ repositories {
 ### 2. Provide the gradle dependency
 
 ```gradle
-implementation 'com.github.rooneyandshadows:lightbulb-easyrecyclerview:2.0.2'
+implementation 'com.github.rooneyandshadows:lightbulb-easyrecyclerview:2.4.0'
 // Add recycler adapters support
-implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:2.0.2'
+implementation 'com.github.rooneyandshadows:lightbulb-recycleradapters:2.2.0'
 ```
 
 ### Note
@@ -151,15 +151,12 @@ class SimpleRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
 ) : EasyRecyclerView<DemoModel>(context, attrs) {
-    override val adapter: EasyRecyclerAdapter<DemoModel>
+    override val adapter: SimpleAdapter
         get() = super.adapter as SimpleAdapter
 
-    override val adapterCreator: AdapterCreator<DemoModel>
-        get() = object : AdapterCreator<DemoModel> {
-            override fun createAdapter(): SimpleAdapter {
-                return SimpleAdapter()
-            }
-        }
+    init {
+        setAdapter(SimpleAdapter())
+    }
 }
 ```
 
@@ -196,7 +193,6 @@ And that's it. `EasyRecyclerView` is ready to use.
 
 <EasyRecyclerView>
     <attr name="erv_empty_layout_id" format="reference" /><!--Layout to show when there is no data-->
-    <attr name="erv_supports_pull_to_refresh" format="boolean" /><!--Whether pull to refresh is supported.[default:false]-->
     <attr name="erv_supports_overscroll_bounce" format="boolean" /><!--Whether bounce on overscroll is supported.[default:false]-->
     <attr name="erv_layout_manager" format="enum"><!--Type of the layout manager for the recyclerview. [default:LAYOUT_LINEAR_VERTICAL] -->
         <enum name="LAYOUT_LINEAR_VERTICAL" value="1" />
@@ -209,108 +205,40 @@ And that's it. `EasyRecyclerView` is ready to use.
 
 ## Enable pull to refresh
 
-### Note
-
-> To use this feature you must enable it trough XMl by adding erv_supports_pull_to_refresh="true"
-
-### 1. Create a ViewModel which will keep the callback for the data.
+### Setup your fragment/activity
 
 ```kotlin
-class PullToRefreshDemoViewModel : ViewModel() {
-    var pullToRefreshAction: RefreshDataAction<DemoModel>? = null
-
-    @Override
-    override fun onCleared() {
-        super.onCleared()
-        pullToRefreshAction?.dispose()
-    }
-}
-```
-
-### 2. Setup your fragment/activity
-
-```kotlin
-override fun doOnCreate(savedInstanceState: Bundle?, viewModel: PullToRefreshDemoViewModel) {
-    if (savedInstanceState != null) return
-    viewModel.pullToRefreshAction = RefreshDataAction(object : AsyncAction.Action<DemoModel> {
-        override fun execute(easyRecyclerView: EasyRecyclerView<DemoModel>): List<DemoModel> {
-            Thread.sleep(3000) //Simulate API call delay
-            return generateData(10)
-        }
-    }, object : AsyncAction.OnComplete<DemoModel> {
-        override fun execute(
-            result: List<DemoModel>,
-            easyRecyclerView: EasyRecyclerView<DemoModel>
-        ) {
-            easyRecyclerView.adapter.apply {
-                collection.set(result)
-            }
-        }
-    }, object : AsyncAction.OnError<DemoModel> {
-        override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
-            error.printStackTrace()
-        }
-    })
-}
-
 override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-    recyclerView.apply {
-        setRefreshAction(viewModel.pullToRefreshAction) //Set action from the ViewModel
-        addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
-        if (savedInstanceState != null) return@apply
-        val initialCollection = generateData(4)
-        adapter.collection.set(initialCollection)
+    val decoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
+    recyclerView.addItemDecoration(decoration)
+    recyclerView.setPullToRefreshListener {
+        //fetch data
+        val data = generateData(10)
+        recyclerView.adapter.collection.set(data)
+        recyclerView.onRefreshDataFinished()
     }
+    if (savedInstanceState != null) return
+    recyclerView.adapter.collection.set(viewModel.listData)
 }
 ```
 
 ## Enable lazy loading
 
-### 1. Create a ViewModel which will keep the callback for the data.
+### Setup your fragment/activity
 
 ```kotlin
-class LazyLoadingDemoViewModel : ViewModel() {
-    var lazyLoadingAction: LoadMoreDataAction<DemoModel>? = null
-
-    override fun onCleared() {
-        super.onCleared()
-        lazyLoadingAction?.dispose()
-    }
-}
-```
-
-### 2. Setup your fragment/activity
-
-```kotlin
-override fun doOnCreate(savedInstanceState: Bundle?, viewModel: LazyLoadingDemoViewModel) {
-    if (savedInstanceState != null) return
-    viewModel.lazyLoadingAction = LoadMoreDataAction(object : Action<DemoModel> {
-        override fun execute(easyRecyclerView: EasyRecyclerView<DemoModel>): List<DemoModel> {
-            Thread.sleep(3000)
-            val offset = easyRecyclerView.adapter.collection.size()
-            return generateData(10, offset)
-        }
-    }, object : OnComplete<DemoModel> {
-        override fun execute(
-            result: List<DemoModel>,
-            easyRecyclerView: EasyRecyclerView<DemoModel>
-        ) {
-            easyRecyclerView.adapter.apply { collection.addAll(result) }
-        }
-    }, object : OnError<DemoModel> {
-        override fun execute(error: Exception, easyRecyclerView: EasyRecyclerView<DemoModel>) {
-            error.printStackTrace()
-        }
-    })
-}
-
 override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-    recyclerView.apply {
-        setLazyLoadingAction(viewModel.lazyLoadingAction) //Set action from the ViewModel
-        addItemDecoration(VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12)))
-        if (savedInstanceState != null) return@apply
-        adapter.collection.set(generateData(10))
+    val decoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
+    recyclerView.addItemDecoration(decoration)
+    recyclerView.setLazyLoadingListener {
+        val data = generateData(10)
+        val currentSize = recyclerView.adapter.collection.size()
+        val hasMoreData =currentSize + data.size < 40
+        recyclerView.adapter.collection.addAll(data)
+        recyclerView.onLazyLoadingFinished(hasMoreData)
     }
+  if (savedInstanceState != null) return
+  recyclerView.adapter.collection.set(viewModel.listData)
 }
 ```
 

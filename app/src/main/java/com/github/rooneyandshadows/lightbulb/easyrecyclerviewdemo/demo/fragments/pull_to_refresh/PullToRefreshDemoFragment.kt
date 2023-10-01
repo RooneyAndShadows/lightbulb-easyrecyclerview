@@ -46,13 +46,13 @@ class PullToRefreshDemoFragment : BaseFragmentWithViewModel<PullToRefreshDemoVie
             viewModel.refreshData()
         }
         if (savedInstanceState != null) return
-        recyclerView.adapter!!.collection.set(viewModel.listData)
+        recyclerView.adapter.collection.set(viewModel.listData)
     }
 
     private fun initPullToRefreshAction() {
         viewModel.setListeners(object : PullToRefreshDemoViewModel.DataListener {
             override fun onSuccess(items: List<DemoModel>) {
-                recyclerView.adapter!!.collection.set(items)
+                recyclerView.adapter.collection.set(items)
                 recyclerView.onRefreshDataFinished()
             }
 

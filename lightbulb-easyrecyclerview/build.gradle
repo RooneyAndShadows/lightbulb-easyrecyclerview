@@ -8,13 +8,13 @@ repositories {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 33
+        targetSdkVersion 34
+        versionName "2.4.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-        versionName "2.3.0"
     }
     buildFeatures {
         dataBinding true
@@ -27,38 +27,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     namespace "com.github.rooneyandshadows.lightbulb.easyrecyclerview"
-}
-
-tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:unchecked"
-    options.deprecation = true
-}
-
-afterEvaluate {
-    task sourceJar(type: Jar) {
-        from android.sourceSets.main.java.srcDirs
-        classifier "sources"
-    }
-    publishing {
-        repositories {
-            mavenLocal()
-        }
-        publications {
-            release(MavenPublication) {
-                from components.release
-                groupId "$environment.group_id"
-                version android.defaultConfig.versionName
-                artifactId project.name
-                artifact sourceJar {
-                    classifier "sources"
-                }
-            }
-        }
-    }
 }
 
 dependencies {
@@ -73,4 +45,30 @@ dependencies {
     implementation "com.github.rooneyandshadows:java-commons:$versions.misc.java_commons"
     implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycler_adapters"
     implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:unchecked"
+    options.deprecation = true
+}
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            mavenLocal()
+        }
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId "$environment.group_id"
+                version android.defaultConfig.versionName
+                artifactId project.name
+                artifact androidSourcesJar
+            }
+        }
+    }
 }

@@ -46,7 +46,6 @@ class RegularDemoFragment : BaseFragment() {
 
     override fun onEnterTransitionFinished() {
         super.onEnterTransitionFinished()
-
         println("========================= RESULT")
         println(data?.contentToString())
     }

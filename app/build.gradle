@@ -11,11 +11,11 @@ repositories {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
     defaultConfig {
         applicationId "com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -41,14 +41,14 @@ android {
         merge 'META-INF/gradle/incremental.annotation.processors'
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
+    namespace 'com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.core:core-splashscreen:1.0.0'
     implementation "androidx.core:core-ktx:$versions.ktx.core"
     implementation "androidx.appcompat:appcompat:$versions.android.appcompat"
     implementation "com.google.android.material:material:$versions.android.material"
