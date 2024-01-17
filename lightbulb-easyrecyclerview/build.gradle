@@ -3,10 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
 
-repositories {
-    mavenCentral()
-}
-
 android {
     compileSdkVersion 34
     defaultConfig {
@@ -51,6 +47,7 @@ tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:unchecked"
     options.deprecation = true
 }
+
 task androidSourcesJar(type: Jar) {
     archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs

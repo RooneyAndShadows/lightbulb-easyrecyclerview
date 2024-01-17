@@ -1,14 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-
-repositories {
-    google()
-    mavenCentral()
-    maven {
-        url 'https://jitpack.io'
-    }
-}
+apply plugin: 'lb-compile'
 
 android {
     compileSdk 34
@@ -33,6 +26,7 @@ android {
     }
     buildFeatures {
         dataBinding = true
+        viewBinding = true
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
@@ -57,8 +51,6 @@ dependencies {
     implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
     implementation "com.github.rooneyandshadows:lightbulb-application:$versions.lightbulb.application"
     implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycler_adapters"
-    implementation "com.github.rooneyandshadows:lightbulb-annotation-processors:$versions.lightbulb.annotation_processors"
     implementation "io.reactivex.rxjava3:rxandroid:$versions.misc.rx_android"
-    kapt "com.github.rooneyandshadows:lightbulb-annotation-processors:$versions.lightbulb.annotation_processors"
     implementation project(":lightbulb-easyrecyclerview")
 }

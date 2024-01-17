@@ -2,34 +2,35 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragment
 
 import android.os.Bundle
 import android.view.View
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
-import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentScreen
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentViewBinding
+import com.github.rooneyandshadows.lightbulb.apt.annotations.LightbulbFragment
+import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils.Companion.getPhrase
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.FragmentDemoStickyHeadersAdvancedBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateStickyHeadersAdvanceData
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.StickyRecyclerViewAdvanced
 
 @FragmentScreen(screenName = "StickyHeadersAdvanced", screenGroup = "Demo")
-@FragmentConfiguration(layoutName = "fragment_demo_sticky_headers_advanced")
+@LightbulbFragment(layoutName = "fragment_demo_sticky_headers_advanced")
 class StickyHeadersAdvancedDemoFragment : BaseFragment() {
-    @BindView(name = "recycler_view")
-    lateinit var recyclerView: StickyRecyclerViewAdvanced
+    @FragmentViewBinding
+    lateinit var viewBinding: FragmentDemoStickyHeadersAdvancedBinding
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
         return ActionBarConfiguration(R.id.toolbar)
             .withActionButtons(true)
             .attachToDrawer(false)
-            .withSubTitle(ResourceUtils.getPhrase(requireContext(), R.string.sticky_headers_advanced_demo))
-            .withTitle(ResourceUtils.getPhrase(requireContext(), R.string.app_name))
+            .withSubTitle(getPhrase(requireContext(), R.string.sticky_headers_advanced_demo))
+            .withTitle(getPhrase(requireContext(), R.string.app_name))
     }
 
     @Override
-    override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(fragmentView, savedInstanceState)
         if (savedInstanceState != null) return
-        recyclerView.adapter.collection.set(generateStickyHeadersAdvanceData())
+        viewBinding.recyclerView.adapter.collection.set(generateStickyHeadersAdvanceData())
     }
 }

@@ -8,7 +8,7 @@ import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.con
 import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.items.PrimaryMenuItem
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity.MainActivityNavigator.*
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.lightbulb.service.LightbulbService.route
 
 object MenuConfigurations {
     @SuppressLint("InflateParams")

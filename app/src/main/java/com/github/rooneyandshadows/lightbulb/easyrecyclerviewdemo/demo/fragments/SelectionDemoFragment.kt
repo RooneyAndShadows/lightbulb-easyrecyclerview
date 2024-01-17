@@ -3,23 +3,23 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentScreen
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentViewBinding
+import com.github.rooneyandshadows.lightbulb.apt.annotations.LightbulbFragment
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.FragmentDemoSelectableBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SelectableRecyclerView
-import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.collection.ExtendedCollection
+import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.collection.ExtendedCollection.SelectionChangeListener
 
 @FragmentScreen(screenName = "Selectable", screenGroup = "Demo")
-@FragmentConfiguration(layoutName = "fragment_demo_selectable")
+@LightbulbFragment(layoutName = "fragment_demo_selectable")
 class SelectionDemoFragment : BaseFragment() {
-    @BindView(name = "recycler_view")
-    lateinit var recyclerView: SelectableRecyclerView
+    @FragmentViewBinding
+    lateinit var viewBinding: FragmentDemoSelectableBinding
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -32,15 +32,17 @@ class SelectionDemoFragment : BaseFragment() {
 
     @SuppressLint("InflateParams")
     @Override
-    override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        recyclerView.apply {
-            val headerView = layoutInflater.inflate(R.layout.demo_header_item_selectable_layout, null)
+    override fun onViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(fragmentView, savedInstanceState)
+        viewBinding.recyclerView.apply {
+            val headerView =
+                layoutInflater.inflate(R.layout.demo_header_item_selectable_layout, null)
             val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
             addHeaderView(headerView)
             addItemDecoration(itemDecoration)
             if (savedInstanceState != null) return@apply
             adapter.collection.set(generateData(20))
-            adapter.collection.addOnSelectionChangeListener(object : ExtendedCollection.SelectionChangeListener {
+            adapter.collection.addOnSelectionChangeListener(object : SelectionChangeListener {
                 override fun onChanged(newSelection: IntArray?) {
                     val result = Bundle().apply {
                         putIntArray("DATA", newSelection)

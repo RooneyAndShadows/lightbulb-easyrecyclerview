@@ -1,28 +1,27 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.activity
 
 import android.os.Bundle
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.ActivityConfiguration
 import com.github.rooneyandshadows.lightbulb.application.activity.BaseActivity
 import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.config.SliderMenuConfiguration
+import com.github.rooneyandshadows.lightbulb.apt.annotations.LightbulbActivity
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.lightbulb.service.LightbulbService
 
-@ActivityConfiguration
+@LightbulbActivity(fragmentContainerId = "fragmentContainer")
 class MainActivity : BaseActivity() {
 
-    @Override
     override fun doBeforeCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.DemoTheme)
     }
 
-    @Override
     override fun getMenuConfiguration(): SliderMenuConfiguration {
         return MenuConfigurations.getConfiguration(this)
     }
 
-    @Override
-    override fun doOnCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            MainActivityNavigator.route().toDemoRegular().newRootScreen()
+            LightbulbService.route().toDemoRegular().newRootScreen()
         }
     }
 }

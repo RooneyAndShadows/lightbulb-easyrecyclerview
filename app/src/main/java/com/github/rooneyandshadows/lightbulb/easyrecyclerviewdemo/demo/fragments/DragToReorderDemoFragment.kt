@@ -7,28 +7,28 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentScreen
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentViewBinding
+import com.github.rooneyandshadows.lightbulb.apt.annotations.LightbulbFragment
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler.Directions
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler.SwipeConfiguration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.TouchCallbacks
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.FragmentDemoDragToReorderBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 
 @Suppress("SameParameterValue")
 @FragmentScreen(screenName = "Drag", screenGroup = "Demo")
-@FragmentConfiguration(layoutName = "fragment_demo_drag_to_reorder")
+@LightbulbFragment(layoutName = "fragment_demo_drag_to_reorder")
 class DragToReorderDemoFragment : BaseFragment() {
-    @BindView(name = "recycler_view")
-    lateinit var recyclerView: SimpleRecyclerView
+    @FragmentViewBinding
+    lateinit var viewBinding: FragmentDemoDragToReorderBinding
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -41,17 +41,17 @@ class DragToReorderDemoFragment : BaseFragment() {
 
     @SuppressLint("InflateParams")
     @Override
-    override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        super.doOnViewCreated(fragmentView, savedInstanceState)
-        recyclerView.apply {
+    override fun onViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(fragmentView, savedInstanceState)
+        viewBinding.recyclerView.apply {
             val swipeHandler = configureSwipeHandler()
             val emptyLayout = generateEmptyLayout()
             val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
             val headerView = layoutInflater.inflate(R.layout.demo_header_item_drag_to_reorder, null)
-            recyclerView.setSwipeCallbacks(swipeHandler)
+            setSwipeCallbacks(swipeHandler)
             addHeaderView(headerView)
             setEmptyLayout(emptyLayout)
-            recyclerView.addItemDecoration(itemDecoration)
+            addItemDecoration(itemDecoration)
             if (savedInstanceState == null) {
                 adapter.collection.set(generateData(20))
             }
@@ -85,7 +85,11 @@ class DragToReorderDemoFragment : BaseFragment() {
             }
 
             @Override
-            override fun onActionCancelled(item: DemoModel, adapter: EasyRecyclerAdapter<DemoModel>, position: Int) {
+            override fun onActionCancelled(
+                item: DemoModel,
+                adapter: EasyRecyclerAdapter<DemoModel>,
+                position: Int
+            ) {
             }
 
             @Override
@@ -120,7 +124,7 @@ class DragToReorderDemoFragment : BaseFragment() {
             emptyLayoutImage.visibility = View.GONE
             progressBar.visibility = View.VISIBLE
             emptyLayout.postDelayed({
-                recyclerView.adapter.collection.addAll(dataToSet)
+                viewBinding.recyclerView.adapter.collection.addAll(dataToSet)
             }, 2000)
         }
         return emptyLayout

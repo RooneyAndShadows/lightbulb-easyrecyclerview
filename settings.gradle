@@ -1,3 +1,26 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        //noinspection JcenterRepositoryObsolete
+        jcenter()
+        google()
+        mavenLocal()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        jcenter()
+        google()
+        mavenCentral()
+        mavenLocal()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
 rootProject.name = "EasyRecyclerView"
 include ':app'
 include ':lightbulb-easyrecyclerview'

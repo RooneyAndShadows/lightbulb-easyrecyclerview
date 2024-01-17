@@ -10,7 +10,6 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.StickyHeaderItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.StickyAdapterAdvanced
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickyAdvancedDemoModel
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.routing.screens.Screens.Demo.StickyHeadersAdvanced
 
 class StickyRecyclerViewAdvanced @JvmOverloads constructor(
     context: Context,
@@ -22,7 +21,7 @@ class StickyRecyclerViewAdvanced @JvmOverloads constructor(
     init {
         setAdapter(StickyAdapterAdvanced())
         addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-        addItemDecoration(object : StickyHeaderItemDecoration(adapter!!) {
+        addItemDecoration(object : StickyHeaderItemDecoration(adapter) {
             override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
                 val firstVisibleItemPosition =
                     (parent.layoutManager as LinearLayoutManager?)!!.findFirstCompletelyVisibleItemPosition()

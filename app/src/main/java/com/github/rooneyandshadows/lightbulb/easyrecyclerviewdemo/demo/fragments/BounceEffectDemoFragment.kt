@@ -2,22 +2,22 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragment
 
 import android.os.Bundle
 import android.view.View
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentScreen
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentViewBinding
+import com.github.rooneyandshadows.lightbulb.apt.annotations.LightbulbFragment
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.FragmentDemoBouncyBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 
 @FragmentScreen(screenName = "Bouncy", screenGroup = "Demo")
-@FragmentConfiguration(layoutName = "fragment_demo_bouncy")
+@LightbulbFragment(layoutName = "fragment_demo_bouncy")
 class BounceEffectDemoFragment : BaseFragment() {
-    @BindView(name = "recycler_view")
-    lateinit var recyclerView: SimpleRecyclerView
+    @FragmentViewBinding
+    lateinit var viewBinding: FragmentDemoBouncyBinding
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -29,12 +29,12 @@ class BounceEffectDemoFragment : BaseFragment() {
     }
 
     @Override
-    override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        super.doOnViewCreated(fragmentView, savedInstanceState)
+    override fun onViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(fragmentView, savedInstanceState)
         val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
         val dataToSet = generateData(20)
-        recyclerView.addItemDecoration(itemDecoration)
+        viewBinding.recyclerView.addItemDecoration(itemDecoration)
         if (savedInstanceState != null) return
-        recyclerView.adapter.collection.set(dataToSet)
+        viewBinding.recyclerView.adapter.collection.set(dataToSet)
     }
 }

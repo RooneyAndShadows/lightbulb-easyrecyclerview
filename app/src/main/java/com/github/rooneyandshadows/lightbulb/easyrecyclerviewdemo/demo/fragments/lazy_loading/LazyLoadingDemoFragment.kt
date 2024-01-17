@@ -2,28 +2,31 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragment
 
 import android.os.Bundle
 import android.view.View
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
-import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragmentWithViewModel
+import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentScreen
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentViewBinding
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentViewModel
+import com.github.rooneyandshadows.lightbulb.apt.annotations.LightbulbFragment
 import com.github.rooneyandshadows.lightbulb.commons.utils.InteractionUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.FragmentDemoLazyLoadingBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 
 @FragmentScreen(screenName = "LazyLoading", screenGroup = "Demo")
-@FragmentConfiguration(layoutName = "fragment_demo_lazy_loading")
-class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewModel>() {
-    @BindView(name = "recycler_view")
-    lateinit var recyclerView: SimpleRecyclerView
-    override val viewModelClass: Class<LazyLoadingDemoViewModel>
-        get() = LazyLoadingDemoViewModel::class.java
+@LightbulbFragment(layoutName = "fragment_demo_lazy_loading")
+class LazyLoadingDemoFragment : BaseFragment() {
+    @FragmentViewBinding
+    lateinit var viewBinding: FragmentDemoLazyLoadingBinding
 
-    @Override
-    override fun doOnCreate(savedInstanceState: Bundle?, viewModel: LazyLoadingDemoViewModel) {
+    @FragmentViewModel
+    lateinit var viewModel: LazyLoadingDemoViewModel
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         initLazyLoadingAction()
     }
 
@@ -37,22 +40,23 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
     }
 
     @Override
-    override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(fragmentView, savedInstanceState)
         val decoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
-        recyclerView.addItemDecoration(decoration)
-        recyclerView.setLazyLoadingListener {
+        viewBinding.recyclerView.addItemDecoration(decoration)
+        viewBinding.recyclerView.setLazyLoadingListener {
             viewModel.getNextPage()
         }
         if (savedInstanceState != null) return
-        recyclerView.adapter.collection.set(viewModel.listData)
+        viewBinding.recyclerView.adapter.collection.set(viewModel.listData)
     }
 
     private fun initLazyLoadingAction() {
         viewModel.setListeners(object : LazyLoadingDemoViewModel.DataListener {
             override fun onSuccess(items: List<DemoModel>) {
-                val hasMoreData = recyclerView.adapter.collection.size() + items.size < 40
-                recyclerView.adapter.collection.addAll(items)
-                recyclerView.onLazyLoadingFinished(hasMoreData)
+                val hasMoreData = viewBinding.recyclerView.adapter.collection.size() + items.size < 40
+                viewBinding.recyclerView.adapter.collection.addAll(items)
+                viewBinding.recyclerView.onLazyLoadingFinished(hasMoreData)
                 if (!hasMoreData) InteractionUtils.showMessage(
                     requireContext(),
                     "All data has been loaded."
@@ -61,7 +65,7 @@ class LazyLoadingDemoFragment : BaseFragmentWithViewModel<LazyLoadingDemoViewMod
 
             override fun onFailure(errorDetails: String?) {
                 println(errorDetails)
-                recyclerView.onLazyLoadingFinished(true)
+                viewBinding.recyclerView.onLazyLoadingFinished(true)
             }
         })
     }

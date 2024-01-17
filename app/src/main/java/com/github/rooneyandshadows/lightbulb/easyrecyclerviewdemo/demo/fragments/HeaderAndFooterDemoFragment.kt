@@ -3,22 +3,22 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.fragment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentConfiguration
-import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.FragmentScreen
 import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragment
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentScreen
+import com.github.rooneyandshadows.lightbulb.apt.annotations.FragmentViewBinding
+import com.github.rooneyandshadows.lightbulb.apt.annotations.LightbulbFragment
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.VerticalAndHorizontalSpaceItemDecoration
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
+import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.databinding.FragmentDemoHeaderAndFooterBinding
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.generateData
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.SimpleRecyclerView
 
 @FragmentScreen(screenName = "HeaderAndFooter", screenGroup = "Demo")
-@FragmentConfiguration(layoutName = "fragment_demo_header_and_footer")
+@LightbulbFragment(layoutName = "fragment_demo_header_and_footer")
 class HeaderAndFooterDemoFragment : BaseFragment() {
-    @BindView(name = "recycler_view")
-    lateinit var recyclerView: SimpleRecyclerView
+    @FragmentViewBinding
+    lateinit var viewBinding: FragmentDemoHeaderAndFooterBinding
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
@@ -31,8 +31,8 @@ class HeaderAndFooterDemoFragment : BaseFragment() {
 
     @SuppressLint("InflateParams")
     @Override
-    override fun doOnViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        recyclerView.apply {
+    override fun onViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
+        viewBinding.recyclerView.apply {
             val headerView: View = layoutInflater.inflate(R.layout.demo_header_item_layout, null)
             val footerView: View = layoutInflater.inflate(R.layout.demo_footer_item_layout, null)
             val itemDemoRecyclerView = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
