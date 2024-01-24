@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'lb-compile'
+apply plugin: 'com.github.rooneyandshadows.lightbulb-apt'
 
 android {
     compileSdk 34
@@ -39,6 +39,10 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     namespace 'com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo'
+}
+
+lightbulb {
+    debug=true
 }
 
 dependencies {

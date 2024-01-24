@@ -24,4 +24,9 @@ class MainActivity : BaseActivity() {
             LightbulbService.route().toDemoRegular().newRootScreen()
         }
     }
+
+    override fun onUnhandledException(paramThread: Thread?, exception: Throwable) {
+        super.onUnhandledException(paramThread, exception)
+        exception.printStackTrace()
+    }
 }
