@@ -1,14 +1,18 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'com.github.rooneyandshadows.lightbulb-apt'
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.lightbulb.apt)
+
+    id("org.jetbrains.kotlin.kapt")
+}
+
 
 android {
-    compileSdk 34
+    compileSdk 36
     defaultConfig {
         applicationId "com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo"
         minSdk 24
-        targetSdk 34
+        targetSdk 36
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -47,14 +51,16 @@ lightbulb {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.core:core-ktx:$versions.ktx.core"
-    implementation "androidx.appcompat:appcompat:$versions.android.appcompat"
-    implementation "com.google.android.material:material:$versions.android.material"
-    implementation "androidx.constraintlayout:constraintlayout:$versions.android.constraint_layout"
-    implementation "com.github.rooneyandshadows:java-commons:$versions.misc.java_commons"
-    implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
-    implementation "com.github.rooneyandshadows:lightbulb-application:$versions.lightbulb.application"
-    implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycler_adapters"
-    implementation "io.reactivex.rxjava3:rxandroid:$versions.misc.rx_android"
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.rxandroid)
+
+    implementation(libs.java.commons)
+    implementation(libs.lightbulb.commons)
+    implementation(libs.lightbulb.application)
+    implementation(libs.lightbulb.recycler.adapters)
+    implementation(libs.lightbulb.apt.core)
     implementation project(":lightbulb-easyrecyclerview")
 }

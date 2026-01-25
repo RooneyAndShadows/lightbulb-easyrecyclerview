@@ -1,13 +1,15 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'maven-publish'
-
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.kapt")
+    id("maven-publish")
+}
 android {
-    compileSdkVersion 34
+    namespace "com.github.rooneyandshadows.lightbulb.easyrecyclerview"
+    compileSdkVersion 36
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 34
+        targetSdkVersion 36
         versionName "2.4.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -26,31 +28,25 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    namespace "com.github.rooneyandshadows.lightbulb.easyrecyclerview"
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains:annotations:15.0"
-    implementation "androidx.core:core-ktx:$versions.ktx.core"
-    implementation "androidx.appcompat:appcompat:$versions.android_appcompat"
-    implementation "androidx.recyclerview:recyclerview:$versions.android_recyclerview"
-    implementation "androidx.dynamicanimation:dynamicanimation:$versions.android.dynamication"
-    implementation "com.google.android.material:material:$versions.android.material"
-    implementation "com.google.android.flexbox:flexbox:$versions.android.flexbox"
-    implementation "com.github.rooneyandshadows:java-commons:$versions.misc.java_commons"
-    implementation "com.github.rooneyandshadows:lightbulb-recycleradapters:$versions.lightbulb.recycler_adapters"
-    implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
-}
-
-tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:unchecked"
-    options.deprecation = true
-}
-
-task androidSourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.srcDirs
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.dynamicanimation)
+    implementation(libs.material)
+    implementation(libs.flexbox)
+    implementation(libs.java.commons)
+    implementation(libs.lightbulb.recycler.adapters)
+    implementation(libs.lightbulb.commons)
 }
 
 afterEvaluate {
@@ -64,7 +60,6 @@ afterEvaluate {
                 groupId "$environment.group_id"
                 version android.defaultConfig.versionName
                 artifactId project.name
-                artifact androidSourcesJar
             }
         }
     }

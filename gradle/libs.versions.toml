@@ -1,0 +1,47 @@
+[versions]
+agp = "8.13.2"
+kotlin = "2.3.0"
+coreKtx = "1.17.0"
+appcompat = "1.7.1"
+recyclerview = "1.4.0"
+dynamicanimation = "1.1.0"
+material = "1.13.0"
+flexbox = "3.0.0"
+constraintLayout = "2.2.1"
+rxAndroid = "3.0.2"
+
+lbApplication = "1.6.0"
+lbApt = "2.0.0-RC5-1"
+lbAptCore = "2.0.0-RC5-1"
+lbCommons = "[1.3.0,1.4.0["
+lbRecyclerAdapters = "[2.4.0,2.5.0["
+
+javaCommons = "[1.0.7,1.1.0["
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-dynamicanimation = { group = "androidx.dynamicanimation", name = "dynamicanimation", version.ref = "dynamicanimation" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
+
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
+
+rxandroid = { group = "io.reactivex.rxjava3", name = "rxandroid", version.ref = "rxAndroid" }
+
+java-commons = { group = "com.github.rooneyandshadows", name = "java-commons", version.ref = "javaCommons" }
+lightbulb-recycler-adapters = { group = "com.github.rooneyandshadows", name = "lightbulb-recycleradapters", version.ref = "lbRecyclerAdapters" }
+lightbulb-commons = { group = "com.github.rooneyandshadows", name = "lightbulb-commons", version.ref = "lbCommons" }
+lightbulb-application = { group = "com.github.rooneyandshadows", name = "lightbulb-application", version.ref = "lbApplication" }
+
+#TODO REMOVE TEMPORARY OVERRIDE AFTER apt 2.0.1
+lightbulb-apt-core = { group = "com.github.rooneyandshadows.lightbulb-apt", name = "lb-apt-core", version.ref = "lbAptCore" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+maven-publish = { id = "maven-publish" }
+lightbulb-apt = { id = "com.github.rooneyandshadows.lightbulb-apt", version.ref = "lbApt" }

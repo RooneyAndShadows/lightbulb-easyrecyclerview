@@ -5,6 +5,7 @@ pluginManagement {
         //noinspection JcenterRepositoryObsolete
         jcenter()
         google()
+        mavenLocal()
         maven { url 'https://jitpack.io' }
     }
 }
@@ -15,6 +16,7 @@ dependencyResolutionManagement {
         jcenter()
         google()
         mavenCentral()
+        mavenLocal()
         maven { url 'https://jitpack.io' }
     }
 }
