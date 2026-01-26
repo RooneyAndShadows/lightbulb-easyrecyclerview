@@ -45,7 +45,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.flexbox)
     implementation(libs.java.commons)
-    implementation(libs.lightbulb.recycler.adapters)
+    api(libs.lightbulb.recycler.adapters)
     implementation(libs.lightbulb.commons)
 }
 
