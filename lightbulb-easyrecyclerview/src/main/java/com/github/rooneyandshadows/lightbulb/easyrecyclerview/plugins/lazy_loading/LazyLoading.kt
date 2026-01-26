@@ -32,6 +32,12 @@ internal class LazyLoading<ItemType : EasyAdapterDataModel>(
         private const val IS_LOADING_KEY = "IS_LOADING_KEY"
     }
 
+    override fun register() {
+    }
+
+    override fun unregister() {
+    }
+
     override fun saveState(): Bundle {
         val out = Bundle()
         BundleUtils.putBoolean(HAS_MORE_DATA_TO_LOAD_KEY, out, hasMoreData)

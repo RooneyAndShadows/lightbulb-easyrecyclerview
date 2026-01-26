@@ -39,6 +39,12 @@ internal class PullToRefresh<ItemType : EasyAdapterDataModel>(
         setEnabled(false)
     }
 
+    override fun unregister() {
+    }
+
+    override fun register() {
+    }
+
     override fun saveState(): Bundle {
         val out = Bundle()
         BundleUtils.putBoolean(ENABLED_KEY, out, enabled)

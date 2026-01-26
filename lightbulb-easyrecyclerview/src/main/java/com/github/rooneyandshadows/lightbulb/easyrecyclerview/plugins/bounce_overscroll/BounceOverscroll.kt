@@ -28,6 +28,12 @@ internal class BounceOverscroll<ItemType : EasyAdapterDataModel>(
         syncEdgeFactory()
     }
 
+    override fun register() {
+    }
+
+    override fun unregister() {
+    }
+
     override fun saveState(): Bundle {
         val out = Bundle()
         BundleUtils.putBoolean(ENABLED_KEY, out, enabled)

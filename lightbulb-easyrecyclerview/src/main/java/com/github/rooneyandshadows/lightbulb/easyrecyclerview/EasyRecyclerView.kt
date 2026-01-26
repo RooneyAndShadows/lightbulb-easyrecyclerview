@@ -90,10 +90,18 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     init {
         inflate(context, R.layout.lv_layout, this)
-        emptyLayout = EmptyLayout(this)
-        pullToRefresh = PullToRefresh(this)
-        lazyLoading = LazyLoading(this)
-        bounceOverscroll = BounceOverscroll(this)
+        emptyLayout = EmptyLayout(this).apply {
+            register()
+        }
+        pullToRefresh = PullToRefresh(this).apply {
+            register()
+        }
+        lazyLoading = LazyLoading(this).apply {
+            register()
+        }
+        bounceOverscroll = BounceOverscroll(this).apply {
+            register()
+        }
         readAttributes(context, attrs)
         initView()
     }
@@ -146,6 +154,10 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         touchHandler?.apply { cancelPendingAction() }
+        emptyLayout.unregister()
+        pullToRefresh.unregister()
+        lazyLoading.unregister()
+        bounceOverscroll.unregister()
     }
 
     protected open fun getLayoutManagerType(): LayoutManagerTypes {
@@ -156,7 +168,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         dataAdapter = adapter
         wrapperAdapter = HeaderViewRecyclerAdapter(recyclerView, dataAdapter!!)
         recyclerView.adapter = wrapperAdapter
-        emptyLayout.initialize(recyclerView.adapter as HeaderViewRecyclerAdapter<ItemType>)
+        emptyLayout.adapterChanged(wrapperAdapter!!)
     }
 
     fun setSwipeCallbacks(swipeCallbacks: TouchCallbacks<ItemType>) {

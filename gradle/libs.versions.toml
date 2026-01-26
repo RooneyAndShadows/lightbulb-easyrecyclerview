@@ -12,6 +12,7 @@ rxAndroid = "3.0.2"
 
 lbApplication = "1.6.0"
 lbApt = "2.0.0-RC5-1"
+#TODO REMOVE TEMPORARY OVERRIDE WITH NEWEST VERSION AFTER DEMO REWORK apt 2.0.1
 lbAptCore = "2.0.0-RC5-1"
 lbCommons = "[1.3.0,1.4.0["
 lbRecyclerAdapters = "[2.4.0,2.5.0["
@@ -35,7 +36,6 @@ lightbulb-recycler-adapters = { group = "com.github.rooneyandshadows", name = "l
 lightbulb-commons = { group = "com.github.rooneyandshadows", name = "lightbulb-commons", version.ref = "lbCommons" }
 lightbulb-application = { group = "com.github.rooneyandshadows", name = "lightbulb-application", version.ref = "lbApplication" }
 
-#TODO REMOVE TEMPORARY OVERRIDE AFTER apt 2.0.1
 lightbulb-apt-core = { group = "com.github.rooneyandshadows.lightbulb-apt", name = "lb-apt-core", version.ref = "lbAptCore" }
 
 [plugins]
