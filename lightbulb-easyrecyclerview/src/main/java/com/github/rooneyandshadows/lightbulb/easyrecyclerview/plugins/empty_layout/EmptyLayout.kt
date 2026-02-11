@@ -120,6 +120,10 @@ internal class EmptyLayout<ItemType : EasyAdapterDataModel>(
 
     private fun createAdapterDataObserver(): RecyclerView.AdapterDataObserver {
         return object : RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                showInternally(needsToShowEmptyLayout())
+            }
+
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 showInternally(needsToShowEmptyLayout())
             }

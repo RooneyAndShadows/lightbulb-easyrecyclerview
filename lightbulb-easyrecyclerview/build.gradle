@@ -10,7 +10,7 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 36
-        versionName "2.4.1"
+        versionName "2.4.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -43,7 +43,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.dynamicanimation)
     implementation(libs.material)
-    implementation(libs.flexbox)
+    api(libs.flexbox)
     implementation(libs.java.commons)
     api(libs.lightbulb.recycler.adapters)
     implementation(libs.lightbulb.commons)

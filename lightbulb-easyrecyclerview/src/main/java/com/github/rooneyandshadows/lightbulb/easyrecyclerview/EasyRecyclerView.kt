@@ -13,13 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelUtils
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.LayoutManagerTypes.*
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_layout_manager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.styleable.EasyRecyclerView_erv_supports_overscroll_bounce
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.base.EasyRecyclerItemDecoration
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalFlowLayoutManager
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.HorizontalLinearLayoutManager
-import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalFlowLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.bounce_overscroll.BounceOverscroll
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.empty_layout.EasyRecyclerEmptyLayoutListener
@@ -57,7 +52,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     private var lazyLoading: LazyLoading<ItemType>
     private var emptyLayout: EmptyLayout<ItemType>
     private var bounceOverscroll: BounceOverscroll<ItemType>
-    private var layoutManagerType: LayoutManagerTypes? = null
     private val animationController: LayoutAnimationController? = null
     private var touchHandler: EasyRecyclerViewTouchHandler<ItemType>? = null
     var emptyLayoutView: View? = null
@@ -116,7 +110,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         myState.emptyLayoutState = emptyLayout.saveState()
         myState.bounceOverscrollState = bounceOverscroll.saveState()
         myState.showingLoadingIndicator = isShowingLoadingHeader
-        myState.layoutManagerType = layoutManagerType!!.value
         if (recyclerView.layoutManager != null) {
             val layoutManagerBundle = Bundle()
             layoutManagerBundle.putParcelable(
@@ -137,9 +130,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         lazyLoading.restoreState(savedState.lazyLoadingState!!)
         emptyLayout.restoreState(savedState.emptyLayoutState!!)
         bounceOverscroll.restoreState(savedState.bounceOverscrollState!!)
-        layoutManagerType = LayoutManagerTypes.valueOf(savedState.layoutManagerType)
         showLoadingIndicator(savedState.showingLoadingIndicator)
-        configureLayoutManager()
         if (savedState.layoutManagerState != null && recyclerView.layoutManager != null) {
             val layoutManagerState = BundleUtils.getParcelable(
                 LAYOUT_MANAGER_STATE_KEY,
@@ -160,8 +151,8 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         bounceOverscroll.unregister()
     }
 
-    protected open fun getLayoutManagerType(): LayoutManagerTypes {
-        return UNDEFINED
+    open fun createLayoutManager(): LayoutManager {
+        return VerticalLinearLayoutManager(this)
     }
 
     fun setAdapter(adapter: EasyRecyclerAdapter<ItemType>) {
@@ -384,14 +375,10 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
             R.style.EasyRecyclerViewDefaultStyle
         )
         try {
-            val layoutManagerInt = a.getInt(EasyRecyclerView_erv_layout_manager, 1)
-            val emptyLayoutId = a.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
-            val enableBounceOverscroll = a.getBoolean(EasyRecyclerView_erv_supports_overscroll_bounce, false)
-            layoutManagerType = if (getLayoutManagerType() == UNDEFINED) {
-                LayoutManagerTypes.valueOf(layoutManagerInt)
-            } else {
-                getLayoutManagerType()
-            }
+            val emptyLayoutId =
+                a.getResourceId(R.styleable.EasyRecyclerView_erv_empty_layout_id, -1)
+            val enableBounceOverscroll =
+                a.getBoolean(EasyRecyclerView_erv_supports_overscroll_bounce, false)
             emptyLayout.setEmptyLayout(emptyLayoutId)
             bounceOverscroll.enabled = enableBounceOverscroll
         } finally {
@@ -402,30 +389,12 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     private fun initView() {
         initLoadingIndicator()
         configureRecycler()
-        configureLayoutManager()
+        recyclerView.layoutManager = createLayoutManager()
         isNestedScrollingEnabled = isNestedScrollingEnabled
     }
 
     private fun initLoadingIndicator() {
         loadingIndicator.visibility = if (isShowingLoadingHeader) VISIBLE else GONE
-    }
-
-    private fun configureLayoutManager() {
-        when (layoutManagerType) {
-            UNDEFINED, LAYOUT_LINEAR_VERTICAL ->
-                recyclerView.layoutManager = VerticalLinearLayoutManager(this)
-
-            LAYOUT_LINEAR_HORIZONTAL ->
-                recyclerView.layoutManager = HorizontalLinearLayoutManager(this)
-
-            LAYOUT_FLOW_VERTICAL ->
-                recyclerView.layoutManager = VerticalFlowLayoutManager(this)
-
-            LAYOUT_FLOW_HORIZONTAL ->
-                recyclerView.layoutManager = HorizontalFlowLayoutManager(this)
-
-            else -> {}
-        }
     }
 
     private fun configureRecycler() {
@@ -449,7 +418,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         var emptyLayoutState: Bundle? = null
         var bounceOverscrollState: Bundle? = null
         var showingLoadingIndicator = false
-        var layoutManagerType = 0
 
         constructor(superState: Parcelable?) : super(superState)
 
@@ -462,7 +430,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
                 emptyLayoutState = readParcelable(parcel, Bundle::class.java)
                 bounceOverscrollState = readParcelable(parcel, Bundle::class.java)
                 showingLoadingIndicator = readBoolean(parcel)!!
-                layoutManagerType = readInt(parcel)!!
             }
         }
 
@@ -476,20 +443,7 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
                 writeParcelable(out, emptyLayoutState)
                 writeParcelable(out, bounceOverscrollState)
                 writeBoolean(out, showingLoadingIndicator)
-                writeInt(out, layoutManagerType)
             }
-        }
-    }
-
-    enum class LayoutManagerTypes(val value: Int) {
-        LAYOUT_LINEAR_VERTICAL(1),
-        LAYOUT_LINEAR_HORIZONTAL(2),
-        LAYOUT_FLOW_VERTICAL(3),
-        LAYOUT_FLOW_HORIZONTAL(4),
-        UNDEFINED(5);
-
-        companion object {
-            fun valueOf(value: Int) = values().first { it.value == value }
         }
     }
 
