@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.StickyHeaderItemDecoration
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.StickyAdapterSimple
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.StickySimpleDemoModel
 
@@ -29,5 +30,6 @@ class StickyRecyclerViewSimple @JvmOverloads constructor(
                 if (firstVisibleItemPosition != 0) super.onDrawOver(c, parent, state)
             }
         })
+        setLayoutManager(VerticalLinearLayoutManager(this))
     }
 }

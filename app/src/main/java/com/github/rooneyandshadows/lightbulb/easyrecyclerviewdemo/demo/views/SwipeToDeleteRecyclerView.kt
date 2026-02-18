@@ -12,6 +12,7 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView.*
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.item_decorations.VerticalAndHorizontalSpaceItemDecoration
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.TouchCallbacks
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.R
@@ -31,14 +32,15 @@ class SwipeToDeleteRecyclerView @JvmOverloads constructor(
     init {
         val inflater = LayoutInflater.from(context)
         val header = inflater.inflate(R.layout.demo_header_item_swipe_to_delete, null)
-      //  val emptyLayout = generateEmptyLayout()
+        //val emptyLayout = generateEmptyLayout()
         val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
         val swipeCallbacks = getSwipeHandler()
         setAdapter(SimpleAdapter())
         setSwipeCallbacks(swipeCallbacks)
         addHeaderView(header)
-      //  setEmptyLayout(emptyLayout)
+        //setEmptyLayout(emptyLayout)
         addItemDecoration(itemDecoration)
+        setLayoutManager(VerticalLinearLayoutManager(this))
     }
 
     @SuppressLint("InflateParams")

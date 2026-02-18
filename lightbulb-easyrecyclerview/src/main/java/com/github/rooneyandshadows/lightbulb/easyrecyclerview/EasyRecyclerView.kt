@@ -151,8 +151,8 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         bounceOverscroll.unregister()
     }
 
-    open fun createLayoutManager(): LayoutManager {
-        return VerticalLinearLayoutManager(this)
+    fun setLayoutManager(layoutManager: LayoutManager) {
+        recyclerView.layoutManager = layoutManager
     }
 
     fun setAdapter(adapter: EasyRecyclerAdapter<ItemType>) {
@@ -389,7 +389,6 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     private fun initView() {
         initLoadingIndicator()
         configureRecycler()
-        recyclerView.layoutManager = createLayoutManager()
         isNestedScrollingEnabled = isNestedScrollingEnabled
     }
 

@@ -3,6 +3,7 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views
 import android.content.Context
 import android.util.AttributeSet
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
+import com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers.VerticalLinearLayoutManager
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.views.adapters.SelectableAdapter
 import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models.DemoModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
@@ -16,5 +17,6 @@ class SelectableRecyclerView @JvmOverloads constructor(
 
     init {
         setAdapter(SelectableAdapter())
+        setLayoutManager(VerticalLinearLayoutManager(this))
     }
 }

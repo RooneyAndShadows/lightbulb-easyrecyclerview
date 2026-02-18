@@ -4,13 +4,14 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
     id("maven-publish")
 }
+
 android {
     namespace "com.github.rooneyandshadows.lightbulb.easyrecyclerview"
     compileSdkVersion 36
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 36
-        versionName "2.4.2"
+        versionName "2.4.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
