@@ -19,6 +19,7 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.Easy
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.touch_handler.EasyRecyclerViewTouchHandler.Directions.RIGHT
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
+import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.StaticViewsAdapter
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 
@@ -31,10 +32,10 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
     private var snackbar: Snackbar? = null
     private var pendingAction: Runnable? = null
     private var touchHelperListeners: TouchHelperListeners? = null
-    private val configuration: SwipeConfiguration = touchCallbacks.getConfiguration(easyRecyclerView.context)
+    private val configuration: SwipeConfiguration =
+        touchCallbacks.getConfiguration(easyRecyclerView.context)
     private val drawerHelper: SwipeToDeleteDrawerHelper = SwipeToDeleteDrawerHelper()
     private val actionsHandler = Handler(Looper.getMainLooper(), null)
-    private val isVerticalLayoutManager = easyRecyclerView.layoutManager!!.canScrollVertically()
     private val adapter: EasyRecyclerAdapter<ItemType>
         get() = easyRecyclerView.adapter!!
     private lateinit var allowedDragDirections: Directions
@@ -45,9 +46,9 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
     ): Int {
-        val position = viewHolder.absoluteAdapterPosition
-        if (adapter.headersCount > 0 && position < adapter.headersCount) return 0
-        if (adapter.footersCount > 0 && position >= adapter.itemCount) return 0
+        if (viewHolder.bindingAdapter is StaticViewsAdapter) {
+            return makeMovementFlags(0, 0)
+        }
         val item = getItem(viewHolder)!!
         allowedSwipeDirections = touchCallbacks.getAllowedSwipeDirections(item)
         allowedDragDirections = touchCallbacks.getAllowedDragDirections(item)
@@ -65,8 +66,8 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder,
     ): Boolean {
-        val fromPosition = viewHolder.absoluteAdapterPosition - adapter.headersCount
-        val toPosition = target.absoluteAdapterPosition - adapter.headersCount
+        val fromPosition = viewHolder.bindingAdapterPosition
+        val toPosition = target.bindingAdapterPosition
         if (toPosition < 0 || toPosition > adapter.itemCount) return false
         adapter.collection.move(fromPosition, toPosition)
         return true
@@ -74,6 +75,10 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
 
     @Override
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        if (viewHolder.bindingAdapter is StaticViewsAdapter) {
+            return
+        }
+
         val item = getItem(viewHolder)
         showSwipedItemSnackBar(item!!, Directions.valueOf(direction))
     }
@@ -122,13 +127,13 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
         dy: Float
     ) {
         val itemView = viewHolder.itemView
-        val itemPosition = viewHolder.absoluteAdapterPosition - adapter.headersCount
+        val itemPosition = viewHolder.bindingAdapterPosition
         if (itemPosition != -1) {
             val item: ItemType? = getItem(viewHolder)
             var moved = -1
             if (item != null) {
                 var direction: Directions? = null
-                if (isVerticalLayoutManager) {
+                if (easyRecyclerView.layoutManager!!.canScrollVertically()) {
                     if (dx > 0) direction = RIGHT else if (dx < 0) direction = LEFT
                 } else {
                     if (dy > 0) direction = Directions.UP else if (dy < 0) direction =
@@ -185,7 +190,7 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
         pendingAction = Runnable {
             val position = adapter.collection.getPosition(item)
             if (undoClicked) {
-                adapter.notifyItemChanged(position + adapter.headersCount)
+                adapter.notifyItemChanged(position)
                 touchCallbacks.onActionCancelled(item, adapter, position)
             } else {
                 touchCallbacks.onSwipeActionApplied(item, position, adapter, direction)
@@ -239,8 +244,14 @@ class EasyRecyclerViewTouchHandler<ItemType : EasyAdapterDataModel>(
     }
 
     private fun getItem(viewHolder: RecyclerView.ViewHolder): ItemType? {
-        val position = viewHolder.absoluteAdapterPosition - adapter.headersCount
-        return adapter.collection.getItem(position)
+        val bindingAdapter = viewHolder.bindingAdapter
+
+        if (bindingAdapter != adapter) return null
+
+        val localPosition = viewHolder.bindingAdapterPosition
+        if (localPosition == RecyclerView.NO_POSITION) return null
+
+        return adapter.collection.getItem(localPosition)
     }
 
     private inner class SwipeToDeleteDrawerHelper {

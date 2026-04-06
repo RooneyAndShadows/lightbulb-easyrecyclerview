@@ -41,7 +41,11 @@ class SelectableAdapter : EasyRecyclerAdapter<DemoModel>() {
     }
 
     @Override
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
         if (payloads.isEmpty()) {
             super.onBindViewHolder(holder, position, payloads)
             return
@@ -65,7 +69,7 @@ class SelectableAdapter : EasyRecyclerAdapter<DemoModel>() {
         private val collection: ExtendedCollection<DemoModel>
             get() = adapter.collection
         private val positionInAdapter: Int
-            get() = absoluteAdapterPosition - adapter.headersCount
+            get() = absoluteAdapterPosition
 
         init {
             demoItemView.setOnClickListener {

@@ -4,7 +4,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutParams
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 import kotlin.math.abs
 
@@ -62,9 +61,7 @@ class HorizontalLinearLayoutManager<ItemType : EasyAdapterDataModel>(
         val lastView = getChildAt(childCount - 1) ?: return false
         val lastViewAdapterPos =
             (lastView.layoutParams as LayoutParams).absoluteAdapterPosition
-        val headersCount = adapter.headersCount
-        val visibleLastPosition = lastViewAdapterPos - headersCount
         val totalSize = adapter.collection.size()
-        return visibleLastPosition == totalSize - 1
+        return lastViewAdapterPos == totalSize - 1
     }
 }

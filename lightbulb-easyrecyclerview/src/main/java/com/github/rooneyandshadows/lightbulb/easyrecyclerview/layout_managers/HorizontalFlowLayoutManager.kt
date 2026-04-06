@@ -2,7 +2,6 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerview.layout_managers
 
 import androidx.recyclerview.widget.RecyclerView
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRecyclerAdapter
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -71,9 +70,7 @@ class HorizontalFlowLayoutManager<ItemType : EasyAdapterDataModel>(
         val lastView = getChildAt(childCount - 1) ?: return false
         val lastViewAdapterPos =
             (lastView.layoutParams as RecyclerView.LayoutParams).absoluteAdapterPosition
-        val headersCount = adapter.headersCount
-        val visibleLastPosition = lastViewAdapterPos - headersCount
         val totalSize = adapter.collection.size()
-        return visibleLastPosition == totalSize - 1
+        return lastViewAdapterPos == totalSize - 1
     }
 }

@@ -39,9 +39,7 @@ class VerticalFlowLayoutManager<ItemType : EasyAdapterDataModel>(
         val lastView = getChildAt(childCount - 1) ?: return false
         val lastViewAdapterPos =
             (lastView.layoutParams as RecyclerView.LayoutParams).absoluteAdapterPosition
-        val headersCount = adapter.headersCount
-        val visibleLastPosition = lastViewAdapterPos - headersCount
         val totalSize = adapter.collection.size()
-        return visibleLastPosition == totalSize - 1
+        return lastViewAdapterPos == totalSize - 1
     }
 }
