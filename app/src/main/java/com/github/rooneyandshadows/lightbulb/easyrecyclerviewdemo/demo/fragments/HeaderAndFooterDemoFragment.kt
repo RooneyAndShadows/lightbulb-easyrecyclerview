@@ -25,7 +25,12 @@ class HeaderAndFooterDemoFragment : BaseFragment() {
         return ActionBarConfiguration(R.id.toolbar)
             .withActionButtons(true)
             .attachToDrawer(false)
-            .withSubTitle(ResourceUtils.getPhrase(requireContext(), R.string.header_and_footer_demo))
+            .withSubTitle(
+                ResourceUtils.getPhrase(
+                    requireContext(),
+                    R.string.header_and_footer_demo
+                )
+            )
             .withTitle(ResourceUtils.getPhrase(requireContext(), R.string.app_name))
     }
 
@@ -33,11 +38,14 @@ class HeaderAndFooterDemoFragment : BaseFragment() {
     @Override
     override fun onViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         viewBinding.recyclerView.apply {
-            val headerView: View = layoutInflater.inflate(R.layout.demo_header_item_layout, null)
-            val footerView: View = layoutInflater.inflate(R.layout.demo_footer_item_layout, null)
-            val itemDemoRecyclerView = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
-            addHeaderView(headerView)
-            addFooterView(footerView)
+            val itemDemoRecyclerView =
+                VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
+            addHeaderView("HEADER_VIEW", viewFactory = {
+                layoutInflater.inflate(R.layout.demo_header_item_layout, null)
+            })
+            addFooterView("FOOTER_VIEW", viewFactory = {
+                layoutInflater.inflate(R.layout.demo_footer_item_layout, null)
+            })
             addItemDecoration(itemDemoRecyclerView)
             if (savedInstanceState != null) return@apply
             adapter.collection.set(generateData(20))

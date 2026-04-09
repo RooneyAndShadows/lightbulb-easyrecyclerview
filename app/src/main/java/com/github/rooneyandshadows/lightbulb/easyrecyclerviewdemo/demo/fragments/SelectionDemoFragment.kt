@@ -35,10 +35,10 @@ class SelectionDemoFragment : BaseFragment() {
     override fun onViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
         super.onViewCreated(fragmentView, savedInstanceState)
         viewBinding.recyclerView.apply {
-            val headerView =
-                layoutInflater.inflate(R.layout.demo_header_item_selectable_layout, null)
             val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
-            addHeaderView(headerView)
+            addHeaderView("HEADER_VIEW", viewFactory = {
+                layoutInflater.inflate(R.layout.demo_header_item_selectable_layout, null)
+            })
             addItemDecoration(itemDecoration)
             if (savedInstanceState != null) return@apply
             adapter.collection.set(generateData(20))

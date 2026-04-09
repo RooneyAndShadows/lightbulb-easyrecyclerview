@@ -47,9 +47,10 @@ class DragToReorderDemoFragment : BaseFragment() {
             val swipeHandler = configureSwipeHandler()
             val emptyLayout = generateEmptyLayout()
             val itemDecoration = VerticalAndHorizontalSpaceItemDecoration(ResourceUtils.dpToPx(12))
-            val headerView = layoutInflater.inflate(R.layout.demo_header_item_drag_to_reorder, null)
             setSwipeCallbacks(swipeHandler)
-            addHeaderView(headerView)
+            addHeaderView("HEADER_VIEW", viewFactory = {
+                layoutInflater.inflate(R.layout.demo_header_item_drag_to_reorder, null)
+            })
             setEmptyLayout(emptyLayout)
             addItemDecoration(itemDecoration)
             if (savedInstanceState == null) {
