@@ -3,7 +3,7 @@ package com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.lazy_load
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.LayoutInflater.*
+import android.view.ViewGroup
 import android.view.View
 import com.github.rooneyandshadows.lightbulb.commons.utils.BundleUtils
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.EasyRecyclerView
@@ -11,32 +11,26 @@ import com.github.rooneyandshadows.lightbulb.easyrecyclerview.R.layout.lv_loadin
 import com.github.rooneyandshadows.lightbulb.easyrecyclerview.plugins.base.BaseEasyRecyclerPlugin
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 
-@Suppress("JoinDeclarationAndAssignment")
 @SuppressLint("InflateParams")
 internal class LazyLoading<ItemType : EasyAdapterDataModel>(
     easyRecyclerView: EasyRecyclerView<ItemType>
 ) : BaseEasyRecyclerPlugin<ItemType>(easyRecyclerView) {
     private var loadingListener: LazyLoadingListener<ItemType>? = null
-    private var loadingFooterView: View
     var hasMoreData = true
         private set
     var isLoading = false
         private set
 
-    init {
-        loadingFooterView = inflater.inflate(lv_loading_footer, null)
-    }
+    private var footerUpdateRunnable: Runnable? = null
 
     companion object {
         private const val HAS_MORE_DATA_TO_LOAD_KEY = "HAS_MORE_DATA_TO_LOAD_KEY"
         private const val IS_LOADING_KEY = "IS_LOADING_KEY"
+        private const val FOOTER_ID = "footer_loading"
     }
 
-    override fun register() {
-    }
-
-    override fun unregister() {
-    }
+    override fun register() {}
+    override fun unregister() {}
 
     override fun saveState(): Bundle {
         val out = Bundle()
@@ -49,7 +43,7 @@ internal class LazyLoading<ItemType : EasyAdapterDataModel>(
         hasMoreData = BundleUtils.getBoolean(HAS_MORE_DATA_TO_LOAD_KEY, savedState)
         isLoading = BundleUtils.getBoolean(IS_LOADING_KEY, savedState)
         if (isLoading) {
-            enableLoadingFooter(true)
+            toggleLoadingFooter(true)
         }
     }
 
@@ -58,28 +52,41 @@ internal class LazyLoading<ItemType : EasyAdapterDataModel>(
     }
 
     fun load(showFooterLayout: Boolean = true) {
-        if (loadingListener == null || !hasMoreData || isLoading) {
-            return
-        }
+        if (loadingListener == null || !hasMoreData || isLoading) return
+
         isLoading = true
-        enableLoadingFooter(showFooterLayout)
+        toggleLoadingFooter(showFooterLayout)
+
         loadingListener!!.execute(easyRecyclerView)
     }
 
-
     fun finalizeLoading(hasMoreDataToLoad: Boolean) {
         isLoading = false
-        enableLoadingFooter(false)
+        toggleLoadingFooter(false)
         hasMoreData = hasMoreDataToLoad
     }
 
-    private fun enableLoadingFooter(newState: Boolean) {
-        easyRecyclerView.post {
-            if (newState) {
-                easyRecyclerView.addFooterView(loadingFooterView)
+    private fun toggleLoadingFooter(show: Boolean) {
+        footerUpdateRunnable?.let { easyRecyclerView.removeCallbacks(it) }
+        footerUpdateRunnable = Runnable {
+            if (show) {
+                if (!easyRecyclerView.containsFooterView(FOOTER_ID)) {
+                    easyRecyclerView.addFooterView(
+                        id = FOOTER_ID,
+                        viewFactory = { parent: ViewGroup ->
+                            LayoutInflater.from(parent.context)
+                                .inflate(lv_loading_footer, parent, false)
+                        }
+                    )
+                }
             } else {
-                easyRecyclerView.removeFooterView(loadingFooterView)
+                if (easyRecyclerView.containsFooterView(FOOTER_ID)) {
+                    easyRecyclerView.removeFooterView(FOOTER_ID)
+                }
             }
+            footerUpdateRunnable = null
         }
+
+        easyRecyclerView.post(footerUpdateRunnable!!)
     }
 }

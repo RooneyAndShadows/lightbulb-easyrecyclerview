@@ -15,7 +15,7 @@ lbApt = "2.0.0-RC5-1"
 #TODO REMOVE TEMPORARY OVERRIDE WITH NEWEST VERSION AFTER DEMO REWORK apt 2.0.1
 lbAptCore = "2.0.0-RC5-1"
 lbCommons = "[1.3.0,1.4.0["
-lbRecyclerAdapters = "[2.4.0,2.5.0["
+lbRecyclerAdapters = "[2.5.0,2.6.0["
 
 javaCommons = "[1.0.7,1.1.0["
 

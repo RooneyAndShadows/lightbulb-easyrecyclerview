@@ -6,6 +6,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.LayoutAnimationController
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -219,24 +220,61 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
         emptyLayout.setEmptyLayout(layout, layoutListener)
     }
 
-    fun addHeaderView(view: View, viewListeners: ViewListeners? = null) {
-        if (adapterManager.headersAdapter.containsView(view)) return
-        adapterManager.headersAdapter.addView(view, viewListeners)
+    fun addHeaderView(
+        id: String,
+        viewFactory: (ViewGroup) -> View,
+        viewListeners: ViewListeners? = null
+    ) {
+        val adapter = adapterManager.headersAdapter
+        if (adapter.containsView(id)) return
+        adapter.addView(
+            id = id,
+            viewFactory = viewFactory,
+            listeners = viewListeners
+        )
     }
 
-    fun removeHeaderView(view: View) {
-        if (!adapterManager.headersAdapter.containsView(view)) return
-        adapterManager.headersAdapter.removeView(view)
+    fun removeHeaderView(id: String) {
+        val adapter = adapterManager.headersAdapter
+        if (!adapter.containsView(id)) return
+        adapter.removeViewById(id)
     }
 
-    fun addFooterView(view: View, viewListeners: ViewListeners? = null) {
-        if (adapterManager.footersAdapter.containsView(view)) return
-        adapterManager.footersAdapter.addView(view, viewListeners)
+    fun addFooterView(
+        id: String,
+        viewFactory: (ViewGroup) -> View,
+        viewBinder: ((View, Int) -> Unit)? = null,
+        viewListeners: ViewListeners? = null
+    ) {
+        val adapter = adapterManager.footersAdapter
+        if (adapter.containsView(id)) return
+        adapter.addView(
+            id = id,
+            viewFactory = viewFactory,
+            viewBinder = viewBinder,
+            listeners = viewListeners
+        )
     }
 
-    fun removeFooterView(view: View) {
-        if (!adapterManager.footersAdapter.containsView(view)) return
-        adapterManager.footersAdapter.removeView(view)
+    fun removeFooterView(id: String) {
+        val adapter = adapterManager.footersAdapter
+        if (!adapter.containsView(id)) return
+        adapter.removeViewById(id)
+    }
+
+    fun containsHeaderView(id: String): Boolean {
+        return adapterManager.headersAdapter.containsView(id)
+    }
+
+    fun containsFooterView(id: String): Boolean {
+        return adapterManager.footersAdapter.containsView(id)
+    }
+
+    fun updateFooterViewById(id: String) {
+        val adapter = adapterManager.footersAdapter
+        if (adapter.containsView(id)) {
+            adapter.updateViewById(id)
+        }
     }
 
     fun refreshData(showRefreshLayout: Boolean = false) {
