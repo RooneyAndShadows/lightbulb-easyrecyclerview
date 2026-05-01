@@ -63,11 +63,21 @@ class DemoItemView(
     private fun setupTextViews() {
         titleTextView.apply {
             isDuplicateParentStateEnabled = true
-            setTextColor(ContextCompat.getColorStateList(context, R.color.demo_item_text_color_primary))
+            setTextColor(
+                ContextCompat.getColorStateList(
+                    context,
+                    R.color.demo_item_text_color_primary
+                )
+            )
         }
         subtitleTextView.apply {
             isDuplicateParentStateEnabled = true
-            setTextColor(ContextCompat.getColorStateList(context, R.color.demo_item_text_color_secondary))
+            setTextColor(
+                ContextCompat.getColorStateList(
+                    context,
+                    R.color.demo_item_text_color_secondary
+                )
+            )
         }
     }
 
@@ -108,13 +118,18 @@ class DemoItemView(
         return drawableState
     }
 
-    companion object DemoItemViewBindings {
+    object DemoItemViewBindings {
         @BindingAdapter(value = ["DemoItemViewTitleTextChanged"], requireAll = false)
         @JvmStatic
         fun bindTitleTextChangedEvent(view: DemoItemView, bindingListener: InverseBindingListener) {
             bindingListener.onChange()
             view.titleTextView.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -142,10 +157,18 @@ class DemoItemView(
 
         @BindingAdapter(value = ["DemoItemViewSubtitleTextChanged"], requireAll = false)
         @JvmStatic
-        fun bindSubtitleTextChangedEvent(view: DemoItemView, bindingListener: InverseBindingListener) {
+        fun bindSubtitleTextChangedEvent(
+            view: DemoItemView,
+            bindingListener: InverseBindingListener
+        ) {
             bindingListener.onChange()
             view.subtitleTextView.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -157,7 +180,10 @@ class DemoItemView(
             })
         }
 
-        @InverseBindingAdapter(attribute = "div_subtitle", event = "DemoItemViewSubtitleTextChanged")
+        @InverseBindingAdapter(
+            attribute = "div_subtitle",
+            event = "DemoItemViewSubtitleTextChanged"
+        )
         @JvmStatic
         fun getSubtitleText(view: DemoItemView): String {
             return view.subtitle

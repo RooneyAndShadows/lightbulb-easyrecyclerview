@@ -1,14 +1,18 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerview
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import android.os.Parcelable.ClassLoaderCreator
+import android.os.Parcelable.Creator
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LayoutAnimationController
 import android.widget.RelativeLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
@@ -31,7 +35,7 @@ import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.EasyRe
 import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterDataModel
 import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.adapters.StaticViewsAdapter.ViewListeners
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import androidx.core.view.isVisible
+
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "LeakingThis", "UNCHECKED_CAST")
 abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
@@ -104,20 +108,13 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     public override fun onSaveInstanceState(): Parcelable {
         val superState = super.onSaveInstanceState()
         val myState = SavedState(superState)
-        myState.adapterState = adapter?.saveAdapterState()
+        myState.adapterState = adapter?.onSaveInstanceState()
+        myState.layoutManagerState = recyclerView.layoutManager?.onSaveInstanceState()
         myState.pullToRefreshState = pullToRefresh.saveState()
         myState.lazyLoadingState = lazyLoading.saveState()
         myState.emptyLayoutState = emptyLayout.saveState()
         myState.bounceOverscrollState = bounceOverscroll.saveState()
         myState.showingLoadingIndicator = isShowingLoadingHeader
-        if (recyclerView.layoutManager != null) {
-            val layoutManagerBundle = Bundle()
-            layoutManagerBundle.putParcelable(
-                LAYOUT_MANAGER_STATE_KEY,
-                recyclerView.layoutManager!!.onSaveInstanceState()
-            )
-            myState.layoutManagerState = layoutManagerBundle
-        }
         return myState
     }
 
@@ -125,20 +122,13 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
     public override fun onRestoreInstanceState(state: Parcelable) {
         val savedState = state as SavedState
         super.onRestoreInstanceState(savedState.superState)
-        adapter?.restoreAdapterState(savedState.adapterState!!)
+        adapter?.onRestoreInstanceState(savedState.adapterState!!)
+        recyclerView.layoutManager?.onRestoreInstanceState(savedState.layoutManagerState)
         pullToRefresh.restoreState(savedState.pullToRefreshState!!)
         lazyLoading.restoreState(savedState.lazyLoadingState!!)
         emptyLayout.restoreState(savedState.emptyLayoutState!!)
         bounceOverscroll.restoreState(savedState.bounceOverscrollState!!)
         showLoadingIndicator(savedState.showingLoadingIndicator)
-        if (savedState.layoutManagerState != null && recyclerView.layoutManager != null) {
-            val layoutManagerState = BundleUtils.getParcelable(
-                LAYOUT_MANAGER_STATE_KEY,
-                savedState.layoutManagerState!!,
-                Parcelable::class.java
-            )
-            recyclerView.layoutManager!!.onRestoreInstanceState(layoutManagerState)
-        }
     }
 
     @Override
@@ -416,20 +406,11 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
     private fun configureRecycler() {
         recyclerView.clearOnScrollListeners()
-        //animationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
-        //recyclerView.setLayoutAnimation(animationController);
-        //recyclerView.viewTreeObserver.addOnGlobalLayoutListener(object :
-        //    ViewTreeObserver.OnGlobalLayoutListener {
-        //    override fun onGlobalLayout() {
-        //        if (renderedCallback != null) renderedCallback!!.execute()
-        //        recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-        //    }
-        //})
     }
 
     private class SavedState : BaseSavedState {
         var adapterState: Bundle? = null
-        var layoutManagerState: Bundle? = null
+        var layoutManagerState: Parcelable? = null
         var pullToRefreshState: Bundle? = null
         var lazyLoadingState: Bundle? = null
         var emptyLayoutState: Bundle? = null
@@ -438,15 +419,18 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
 
         constructor(superState: Parcelable?) : super(superState)
 
-        private constructor(parcel: Parcel) : super(parcel) {
+        private constructor(parcel: Parcel) : this(parcel, null)
+
+        constructor(source: Parcel, loader: ClassLoader?) : super(source, loader) {
             ParcelUtils.apply {
-                adapterState = readParcelable(parcel, Bundle::class.java)
-                layoutManagerState = readParcelable(parcel, Bundle::class.java)
-                pullToRefreshState = readParcelable(parcel, Bundle::class.java)
-                lazyLoadingState = readParcelable(parcel, Bundle::class.java)
-                emptyLayoutState = readParcelable(parcel, Bundle::class.java)
-                bounceOverscrollState = readParcelable(parcel, Bundle::class.java)
-                showingLoadingIndicator = readBoolean(parcel)!!
+                adapterState = readParcelable(source, Bundle::class.java)
+                @Suppress("DEPRECATION")
+                layoutManagerState = readParcelable(source, loader)
+                pullToRefreshState = readParcelable(source, Bundle::class.java)
+                lazyLoadingState = readParcelable(source, Bundle::class.java)
+                emptyLayoutState = readParcelable(source, Bundle::class.java)
+                bounceOverscrollState = readParcelable(source, Bundle::class.java)
+                showingLoadingIndicator = readBoolean(source)!!
             }
         }
 
@@ -460,6 +444,23 @@ abstract class EasyRecyclerView<ItemType : EasyAdapterDataModel>
                 writeParcelable(out, emptyLayoutState)
                 writeParcelable(out, bounceOverscrollState)
                 writeBoolean(out, showingLoadingIndicator)
+            }
+        }
+
+        companion object CREATOR : ClassLoaderCreator<SavedState> {
+            override fun createFromParcel(
+                parcel: Parcel,
+                loader: ClassLoader?
+            ): SavedState {
+                return SavedState(parcel, loader)
+            }
+
+            override fun createFromParcel(parcel: Parcel): SavedState {
+                return SavedState(parcel)
+            }
+
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
             }
         }
     }

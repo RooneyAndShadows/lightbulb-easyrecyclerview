@@ -1,27 +1,13 @@
 package com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.demo.models
 
-import androidx.databinding.Bindable
 import com.github.rooneyandshadows.lightbulb.apt.annotations.LightbulbParcelable
-import com.github.rooneyandshadows.lightbulb.easyrecyclerviewdemo.BR
-import com.github.rooneyandshadows.lightbulb.recycleradapters.abstraction.data.EasyAdapterObservableDataModel
+import com.github.rooneyandshadows.lightbulb.recycleradapters.implementation.collection.ExtendedCollection.Item
 
 @LightbulbParcelable
-class DemoModel(title: String, subtitle: String) : EasyAdapterObservableDataModel() {
-    @get:Bindable
-    var title: String = title
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.title)
-        }
-
-    @get:Bindable
-    var subtitle: String = subtitle
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.subtitle)
-        }
-
-    @get:Bindable("title")
+class DemoModel(
+    var title: String,
+    var subtitle: String
+) : Item() {
     override val itemName: String
         get() = title
 }
